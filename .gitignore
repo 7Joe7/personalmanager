@@ -1,0 +1,7 @@
+/.idea
+*.iml
+/pkg
+/bin
+personal-manager.db
+personal-manager.log
+personalmanager
