@@ -25,6 +25,7 @@ type Goals struct {
 type Habits struct {
 	Habits      map[string]*Habit
 	NoneAllowed bool
+	Status      *Status
 }
 
 type Mod struct {
@@ -86,4 +87,10 @@ type Habit struct {
 	LastStreak    int
 	LastStreakEnd *time.Time
 	Repetition    string
+	BasePoints    int
+}
+
+type Status struct {
+	Score int
+	Today int
 }

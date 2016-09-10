@@ -27,7 +27,7 @@ func NewGoal(name string) *Goal {
 
 func NewHabit(name string) *Habit {
 	checks.VerifyHabit(name)
-	return &Habit{Name:name,Active:false}
+	return &Habit{Name:name}
 }
 
 func NewAlfredIcon(color string) *AlfredIcon {
