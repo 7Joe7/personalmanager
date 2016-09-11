@@ -56,20 +56,20 @@ func main() {
 	flag.Parse()
 	switch *action {
 	case resources.ACT_CREATE_TASK:
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task",
-			operations.AddTask(*name, *projectId)))
+		operations.AddTask(*name, *projectId)
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"))
 	case resources.ACT_CREATE_PROJECT:
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "project",
-			operations.AddProject(*name)))
+		operations.AddProject(*name)
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "project"))
 	case resources.ACT_CREATE_TAG:
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag",
-			operations.AddTag(*name)))
+		operations.AddTag(*name)
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"))
 	case resources.ACT_CREATE_GOAL:
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal",
-			operations.AddGoal(*name)))
+		operations.AddGoal(*name)
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit",
-			operations.AddHabit(*name, *repetition, *activeFlag)))
+		operations.AddHabit(*name, *repetition, *activeFlag)
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetTasks(), *noneAllowed})
 	case resources.ACT_PRINT_PROJECTS:

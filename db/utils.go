@@ -2,55 +2,50 @@ package db
 
 import (
 	"strconv"
-	"encoding/json"
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/boltdb/bolt"
+	"encoding/json"
 )
 
 var (
 	db *bolt.DB
 )
 
-func addEntity(entity resources.Entity, bucketName []byte) (string, error) {
-	var id string
-	err := db.Update(func (tx *bolt.Tx) error {
-		var err error
-		id, err = getAddEntityInner(entity, bucketName)(tx)
-		return err
-	})
-	if err != nil {
-		return id, err
-	}
-	return id, nil
+func deleteEntity(bucketName, id []byte) error {
+	tr := newTransaction()
+	tr.Add(func () error { return tr.DeleteEntity(bucketName, id) })
+	return tr.execute()
 }
 
-func deleteEntity(entityId []byte, bucketName []byte) error {
-	return db.Update(func (tx *bolt.Tx) error {
-		return tx.Bucket(bucketName).Delete(entityId)
-	})
+func retrieveEntity(bucketName, id []byte, entity resources.Entity) error {
+	tr := newTransaction()
+	tr.Add(func () error { return tr.RetrieveEntity(bucketName, id, entity)})
+	return tr.execute()
 }
 
-func retrieveEntity(bucketName, entityId []byte, entity interface{}) error {
-	return db.View(func (tx *bolt.Tx) error {
-		return json.Unmarshal(tx.Bucket(bucketName).Get(entityId), entity)
-	})
+func modifyEntity(bucketName []byte, id []byte, entity resources.Entity, modify func ()) error {
+	tr := newTransaction()
+	tr.Add(func () error { return tr.ModifyEntity(bucketName, id, entity, modify)})
+	return tr.execute()
 }
 
-func modifyEntity(bucketName []byte, entityId []byte, entity interface{}, modify func ()) error {
-	return db.Update(getModifyEntityInner(bucketName, entityId, entity, modify))
+func retrieveEntities(bucketName []byte, getObject func (string) resources.Entity) error {
+	tr := newTransaction()
+	tr.Add(func () error { return tr.RetrieveEntities(bucketName, getObject) })
+	return tr.execute()
 }
 
-func retrieveEntities(bucketName []byte, getObject func (string) interface{}) error {
-	return db.View(getRetrieveEntitiesInner(getObject, bucketName))
+func mapEntities(entity resources.Entity, bucketName []byte, mapFunc func ()) error {
+	tr := newTransaction()
+	tr.Add(func () error { return tr.MapEntities(bucketName, entity, mapFunc) })
+	return tr.execute()
 }
 
-func mapEntities(entity interface{}, bucketName []byte, mapFunc func ()) error {
-	return db.Update(getMapEntitiesInner(bucketName, entity, mapFunc))
-}
-
-func filterEntities(bucketName []byte, entity interface{}, filterFunc func () bool, copyFunc func ()) error {
-	return db.View(getFilterEntitiesInner(bucketName, entity, filterFunc, copyFunc))
+func filterEntities(bucketName []byte, entity resources.Entity, filterFunc func () bool, copyFunc func ()) error {
+	tr := newTransaction()
+	tr.Add(func () error { return tr.FilterEntities(bucketName, entity, filterFunc, copyFunc)})
+	return tr.view()
 }
 
 func getIncrementedId(bucket *bolt.Bucket) string {
@@ -67,4 +62,16 @@ func open(path string) error {
 		return err
 	}
 	return nil
+}
+
+func modifyEntityInner(bucket *bolt.Bucket, key, value []byte, entity interface{}, modify func ()) error {
+	if err := json.Unmarshal(value, entity); err != nil {
+		return err
+	}
+	modify()
+	resultValue, err := json.Marshal(entity)
+	if err != nil {
+		return err
+	}
+	return bucket.Put(key, resultValue)
 }

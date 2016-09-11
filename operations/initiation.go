@@ -3,11 +3,10 @@ package operations
 import (
 	"time"
 
-	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
 )
 
-func synchronize(t db.Transaction) {
+func synchronize(t resources.Transaction) {
 	t.Add(func () error {
 		lastSync := string(t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_LAST_SYNC_KEY))
 		if lastSync == "" || isTimeForSync(lastSync) {
@@ -28,7 +27,7 @@ func synchronize(t db.Transaction) {
 	})
 }
 
-func initializeBuckets(t db.Transaction, bucketsToInitialize [][]byte) {
+func initializeBuckets(t resources.Transaction, bucketsToInitialize [][]byte) {
 	t.Add(func () error {
 		for i := 0; i < len(bucketsToInitialize); i++ {
 			if err := t.InitializeBucket(bucketsToInitialize[i]); err != nil {
@@ -39,7 +38,7 @@ func initializeBuckets(t db.Transaction, bucketsToInitialize [][]byte) {
 	})
 }
 
-func ensureValues(t db.Transaction) {
+func ensureValues(t resources.Transaction) {
 	t.Add(func () error {
 		return t.EnsureEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, &resources.Status{})
 	})

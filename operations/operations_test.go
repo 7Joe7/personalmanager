@@ -24,7 +24,9 @@ const (
 	MODIFY_ENTITY_CALLED_FORMAT     = "ModifyEntity%s%s%v%v"
 	MAP_ENTITIES_CALLED_FORMAT      = "MapEntities%s%v%v"
 	INITIALIZE_BUCKET_CALLED_FORMAT = "InitializeBucket%s"
+	FILTER_ENTITIES_CALLED_FORMAT   = "FilterEntities%s%v%v%v"
 	EXECUTE_CALLED_FORMAT           = "Execute"
+	VIEW_CALLED_FORMAT              = "View"
 	ADD_CALLED_FORMAT               = "Add"
 )
 
@@ -43,14 +45,14 @@ func (tm *transactionMock) SetValue(bucketName, key, value []byte) error {
 	return nil
 }
 
-func (tm *transactionMock) EnsureEntity(bucketName, key []byte, entity interface{}) error {
+func (tm *transactionMock) EnsureEntity(bucketName, key []byte, entity resources.Entity) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(bucketName), string(key), entity))
 	return nil
 }
 
-func (tm *transactionMock) AddEntity(bucketName []byte, entity resources.Entity) (string, error) {
+func (tm *transactionMock) AddEntity(bucketName []byte, entity resources.Entity) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(ADD_ENTITY_CALLED_FORMAT, string(bucketName), entity))
-	return "", nil
+	return nil
 }
 
 func (tm *transactionMock) DeleteEntity(bucketName, id []byte) error {
@@ -58,17 +60,17 @@ func (tm *transactionMock) DeleteEntity(bucketName, id []byte) error {
 	return nil
 }
 
-func (tm *transactionMock) RetrieveEntity(bucketName, id []byte, entity interface{}) error {
+func (tm *transactionMock) RetrieveEntity(bucketName, id []byte, entity resources.Entity) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(RETRIEVE_ENTITY_CALLED_FORMAT, string(bucketName), string(id), entity))
 	return nil
 }
 
-func (tm *transactionMock) ModifyEntity(bucketName, key []byte, entity interface{}, modifyFunc func()) error {
+func (tm *transactionMock) ModifyEntity(bucketName, key []byte, entity resources.Entity, modifyFunc func()) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MODIFY_ENTITY_CALLED_FORMAT, string(bucketName), string(key), entity, modifyFunc))
 	return nil
 }
 
-func (tm *transactionMock) MapEntities(bucketName []byte, entity interface{}, mapFunc func()) error {
+func (tm *transactionMock) MapEntities(bucketName []byte, entity resources.Entity, mapFunc func()) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(bucketName), entity, mapFunc))
 	return nil
 }
@@ -78,16 +80,24 @@ func (tm *transactionMock) InitializeBucket(bucketName []byte) error {
 	return nil
 }
 
-func (tm *transactionMock) RetrieveEntities(bucketName []byte, getObject func(string) interface{}) error {
+func (tm *transactionMock) RetrieveEntities(bucketName []byte, getObject func(string) resources.Entity) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(RETRIEVE_ENTITIES_CALLED_FORMAT, string(bucketName), getObject))
+	return nil
+}
+
+func (tm *transactionMock) FilterEntities(bucketName []byte, entity resources.Entity, filterFunc func () bool, copyFunc func ()) error {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(FILTER_ENTITIES_CALLED_FORMAT, string(bucketName), entity, filterFunc, copyFunc))
 	return nil
 }
 
 func (tm *transactionMock) Execute() {
 	tm.functionsCalled = append(tm.functionsCalled, EXECUTE_CALLED_FORMAT)
-	for i := 0; i < len(tm.execs); i++ {
-		tm.execs[i]()
-	}
+	for i := 0; i < len(tm.execs); i++ { tm.execs[i]() }
+}
+
+func (tm *transactionMock) View() {
+	tm.functionsCalled = append(tm.functionsCalled, VIEW_CALLED_FORMAT)
+	for i := 0; i < len(tm.execs); i++ { tm.execs[i]() }
 }
 
 func (tm *transactionMock) Add(exec func() error) {

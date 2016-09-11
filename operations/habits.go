@@ -108,7 +108,6 @@ func failHabit(h *resources.Habit) {
 		h.ActualStreak = 0
 	}
 	h.ActualStreak -= 1
-	h.Successes -= 1
 }
 
 func activateHabit(h *resources.Habit, repetition string) {
@@ -132,12 +131,16 @@ func deactivateHabit(h *resources.Habit) {
 	h.BasePoints = 0
 }
 
-func addHabit(name, repetition string, activeFlag bool) string {
+func addHabit(name, repetition string, activeFlag bool) {
 	h := resources.NewHabit(name)
 	if activeFlag {
 		activateHabit(h, repetition)
 	}
-	return db.AddEntity(h, resources.DB_DEFAULT_HABITS_BUCKET_NAME)
+	tr := db.NewTransaction()
+	tr.Add(func () error {
+		return tr.AddEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h)
+	})
+	tr.Execute()
 }
 
 func deleteHabit(habitId string) {
@@ -164,13 +167,17 @@ func modifyHabit(habitId, name, repetition, deadline string, toggleActive, toggl
 
 func getHabit(habitId string) *resources.Habit {
 	habit := &resources.Habit{}
-	db.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), habit)
+	tr := db.NewTransaction()
+	tr.Add(func () error {
+		return tr.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), habit)
+	})
+	tr.Execute()
 	return habit
 }
 
 func getHabits() map[string]*resources.Habit {
 	habits := map[string]*resources.Habit{}
-	db.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, func (id string) interface{} {
+	db.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, func (id string) resources.Entity {
 		habits[id] = &resources.Habit{}
 		return habits[id]
 	})

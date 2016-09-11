@@ -21,6 +21,10 @@ func getAddScoreFunc(s, changeStatus *resources.Status) func () {
 
 func GetStatus() *resources.Status {
 	status := &resources.Status{}
-	db.RetrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status)
+	tr := db.NewTransaction()
+	tr.Add(func () error {
+		return tr.RetrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status)
+	})
+	tr.Execute()
 	return status
 }

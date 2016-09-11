@@ -13,8 +13,12 @@ func getModifyProjectFunc(p *resources.Project, name string) func () {
 	}
 }
 
-func AddProject(name string) string {
-	return db.AddEntity(resources.NewProject(name), resources.DB_DEFAULT_PROJECTS_BUCKET_NAME)
+func AddProject(name string) {
+	tr := db.NewTransaction()
+	tr.Add(func () error {
+		return tr.AddEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, resources.NewProject(name))
+	})
+	tr.Execute()
 }
 
 func DeleteProject(projectId string) {
@@ -28,13 +32,17 @@ func ModifyProject(projectId, name string) {
 
 func GetProject(projectId string) *resources.Project {
 	project := &resources.Project{}
-	db.RetrieveEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), project)
+	tr := db.NewTransaction()
+	tr.Add(func () error {
+		return tr.RetrieveEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), project)
+	})
+	tr.Execute()
 	return project
 }
 
 func GetProjects() map[string]*resources.Project {
 	projects := map[string]*resources.Project{}
-	db.RetrieveEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, func (id string) interface{} {
+	db.RetrieveEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, func (id string) resources.Entity {
 		projects[id] = &resources.Project{}
 		return projects[id]
 	})

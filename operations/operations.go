@@ -2,23 +2,22 @@ package operations
 
 import (
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/db"
 )
 
-func Synchronize(t db.Transaction) {
+func Synchronize(t resources.Transaction) {
 	synchronize(t)
 }
 
-func InitializeBuckets(t db.Transaction) {
+func InitializeBuckets(t resources.Transaction) {
 	initializeBuckets(t, resources.BUCKETS_TO_INTIALIZE)
 }
 
-func EnsureValues(t db.Transaction) {
+func EnsureValues(t resources.Transaction) {
 	ensureValues(t)
 }
 
-func AddTask(name, projectId string) string {
-	return addTask(name, projectId)
+func AddTask(name, projectId string) {
+	addTask(name, projectId)
 }
 
 func DeleteTask(taskId string) {
@@ -37,8 +36,8 @@ func GetTasks() map[string]*resources.Task {
 	return getTasks()
 }
 
-func AddHabit(name, repetition string, activeFlag bool) string {
-	return addHabit(name, repetition, activeFlag)
+func AddHabit(name, repetition string, activeFlag bool) {
+	addHabit(name, repetition, activeFlag)
 }
 
 func DeleteHabit(habitId string) {

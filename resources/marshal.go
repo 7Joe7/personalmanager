@@ -6,6 +6,14 @@ import (
 	"sort"
 )
 
+func (t *Task) MarshalJSON() ([]byte, error) {
+	type mTask Task
+	if t.Project != nil {
+		t.Project = &Project{Id:t.Project.Id}
+	}
+	return json.Marshal(mTask(*t))
+}
+
 func (t *Task) getItem(id string) *AlfredItem {
 	var subtitle string
 	if t.Project != nil {

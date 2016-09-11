@@ -3,7 +3,7 @@ package resources
 const (
 	DB_PATH = "./personal-manager.db"
 
-	MSG_CREATE_SUCCESS = "Successfully created %s with id '%s'."
+	MSG_CREATE_SUCCESS = "Successfully created %s."
 	MSG_DELETE_SUCCESS = "Successfully deleted %s."
 	MSG_MODIFY_SUCCESS = "Successfully modified %s."
 

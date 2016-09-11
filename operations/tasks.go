@@ -5,7 +5,7 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 )
 
-func getModifyTaskFunc(t *resources.Task, name, projectId string, tr db.Transaction) func () {
+func getModifyTaskFunc(t *resources.Task, name, projectId string, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			t.Name = name
@@ -29,9 +29,7 @@ func addTask(name, projectId string) string {
 			}
 		}
 		task := resources.NewTask(name, project)
-		var err error
-		id, err = t.AddEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, task)
-		return err
+		return t.AddEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, task)
 	})
 	t.Execute()
 	return id
@@ -68,7 +66,7 @@ func getTasks() map[string]*resources.Task {
 	tasks := map[string]*resources.Task{}
 	t := db.NewTransaction()
 	t.Add(func () error {
-		return t.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, func (id string) interface{} {
+		return t.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, func (id string) resources.Entity {
 			tasks[id] = &resources.Task{}
 			return tasks[id]
 		})

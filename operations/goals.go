@@ -14,7 +14,13 @@ func getModifyGoalFunc(g *resources.Goal, name string) func () {
 }
 
 func AddGoal(name string) string {
-	return db.AddEntity(resources.NewGoal(name), resources.DB_DEFAULT_GOALS_BUCKET_NAME)
+	goal := resources.NewGoal(name)
+	tr := db.NewTransaction()
+	tr.Add(func () error {
+		return tr.AddEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, goal)
+	})
+	tr.Execute()
+	return goal.Id
 }
 
 func DeleteGoal(goalId string) {
@@ -28,13 +34,17 @@ func ModifyGoal(goalId, name string) {
 
 func GetGoal(goalId string) *resources.Goal {
 	goal := &resources.Goal{}
-	db.RetrieveEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal)
+	tr := db.NewTransaction()
+	tr.Add(func () error {
+		return tr.RetrieveEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal)
+	})
+	tr.Execute()
 	return goal
 }
 
 func GetGoals() map[string]*resources.Goal {
 	goals := map[string]*resources.Goal{}
-	db.RetrieveEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, func (id string) interface{} {
+	db.RetrieveEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, func (id string) resources.Entity {
 		goals[id] = &resources.Goal{}
 		return goals[id]
 	})

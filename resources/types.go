@@ -1,10 +1,8 @@
 package resources
 
-import "time"
-
-type Entity interface {
-	SetId(string)
-}
+import (
+	"time"
+)
 
 type Tasks struct {
 	Tasks       map[string]*Task
@@ -64,15 +62,26 @@ type AlfredIcon struct {
 }
 
 type Task struct {
-	Name    string `json:"title"`
-	Note    string
-	Tags    []*Tag
+	Name    string `json:",omitempty"`
+	Note    string `json:",omitempty"`
+	Tags    []*Tag `json:",omitempty"`
 	Project *Project
-	Id      string
+	Id      string `json:",omitempty"`
 }
 
 func (t *Task) SetId(id string) {
 	t.Id = id
+}
+
+func (t *Task) GetId() string {
+	return t.Id
+}
+
+func (t *Task) Load(tr Transaction) error {
+	if t.Project != nil {
+		return tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(t.Project.Id), t.Project)
+	}
+	return nil
 }
 
 type Tag struct {
@@ -84,14 +93,30 @@ func (t *Tag) SetId(id string) {
 	t.Id = id
 }
 
-type Project struct {
-	Name string
-	Note string
-	Id   string
+func (t *Tag) GetId() string {
+	return t.Id
 }
 
-func (t *Project) SetId(id string) {
-	t.Id = id
+func (t *Tag) Load(tr Transaction) error {
+	return nil
+}
+
+type Project struct {
+	Name string `json:",omitempty"`
+	Note string `json:",omitempty"`
+	Id   string `json:",omitempty"`
+}
+
+func (p *Project) SetId(id string) {
+	p.Id = id
+}
+
+func (p *Project) GetId() string {
+	return p.Id
+}
+
+func (p *Project) Load(tr Transaction) error {
+	return nil
 }
 
 type Goal struct {
@@ -99,8 +124,16 @@ type Goal struct {
 	Id   string
 }
 
-func (t *Goal) SetId(id string) {
-	t.Id = id
+func (g *Goal) SetId(id string) {
+	g.Id = id
+}
+
+func (g *Goal) GetId() string {
+	return g.Id
+}
+
+func (g *Goal) Load(tr Transaction) error {
+	return nil
 }
 
 type Habit struct {
@@ -118,11 +151,29 @@ type Habit struct {
 	Id            string
 }
 
-func (t *Habit) SetId(id string) {
-	t.Id = id
+func (h *Habit) SetId(id string) {
+	h.Id = id
+}
+
+func (h *Habit) GetId() string {
+	return h.Id
+}
+
+func (h *Habit) Load(tr Transaction) error {
+	return nil
 }
 
 type Status struct {
 	Score int
 	Today int
+}
+
+func (s *Status) SetId(id string) {}
+
+func (s *Status) GetId() string {
+	return ""
+}
+
+func (s *Status) Load(tr Transaction) error {
+	return nil
 }
