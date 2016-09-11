@@ -12,27 +12,36 @@ const (
 	HBT_REPETITION_DAILY   = "Daily"
 	HBT_REPETITION_WEEKLY  = "Weekly"
 	HBT_REPETITION_MONTHLY = "Monthly"
-)
 
-var (
-	DB_DEFAULT_BASIC_BUCKET_NAME    = []byte("default")
-	DB_DEFAULT_TASKS_BUCKET_NAME    = []byte("default.tasks")
-	DB_DEFAULT_TAGS_BUCKET_NAME     = []byte("default.tags")
-	DB_DEFAULT_PROJECTS_BUCKET_NAME = []byte("default.projects")
-	DB_DEFAULT_HABITS_BUCKET_NAME   = []byte("default.habits")
-	DB_DEFAULT_GOALS_BUCKET_NAME    = []byte("default.goals")
+	ICO_BLACK_ALT = "./icons/black_alt@2x.png"
+	ICO_BLACK = "./icons/black@2x.png"
+	ICO_BLUE = "./icons/blue@2x.png"
+	ICO_CYAN = "./icons/cyan@2x.png"
+	ICO_EXCLAMATION = "./icons/exclamation@2x.png"
+	ICO_GREEN = "./icons/green@2x.png"
+	ICO_ORANGE = "./icons/orange@2x.png"
+	ICO_PURPLE = "./icons/purple@2x.png"
+	ICO_QUESTION = "./icons/question@2x.png"
+	ICO_QUESTION_ALT = "./icons/question_alt@2x.png"
+	ICO_RED = "./icons/red@2x.png"
+	ICO_WHITE = "./icons/white@2x.png"
+	ICO_WHITE_ALT = "./icons/white_alt@2x.png"
+	ICO_YELLOW = "./icons/yellow@2x.png"
+	ICO_SPECIAL = "./icons/special.png"
 
-	BUCKETS_TO_INTIALIZE = [][]byte{
-		DB_DEFAULT_BASIC_BUCKET_NAME,
-		DB_DEFAULT_PROJECTS_BUCKET_NAME,
-		DB_DEFAULT_TAGS_BUCKET_NAME,
-		DB_DEFAULT_TASKS_BUCKET_NAME,
-		DB_DEFAULT_GOALS_BUCKET_NAME,
-		DB_DEFAULT_HABITS_BUCKET_NAME}
+	DEADLINE_FORMAT = "2.1.2006 15:04"
 
-	DB_LAST_ID_KEY       = []byte("last.id")
-	DB_LAST_SYNC_KEY     = []byte("last.sync")
-	DB_ACTUAL_STATUS_KEY = []byte("actual.status")
+	SUB_FORMAT_ACTIVE_HABIT = "%s, %d/%d, actual %d, %v, base points %d"
+	SUB_FORMAT_NON_ACTIVE_HABIT = "%d/%d"
+	SUB_FORMAT_TASK = "%s %s"
+	SUB_FORMAT_PROJECT = "%s"
+	SUB_FORMAT_TAG = ""
+	SUB_FORMAT_GOAL = ""
+	NAME_FORMAT_STATUS = "Total %d, today %d."
+	NAME_FORMAT_EMPTY = "There are no %s."
+
+	HBT_DONE_BASE_ORDER = 200
+	HBT_BASE_ORDER = 100
 
 	ACT_CREATE_TASK    = "create-task"
 	ACT_PRINT_TASKS    = "print-tasks"
@@ -54,6 +63,27 @@ var (
 	ACT_PRINT_HABITS   = "print-habits"
 	ACT_DELETE_HABIT   = "delete-habit"
 	ACT_MODIFY_HABIT   = "modify-habit"
+)
+
+var (
+	DB_DEFAULT_BASIC_BUCKET_NAME    = []byte("default")
+	DB_DEFAULT_TASKS_BUCKET_NAME    = []byte("default.tasks")
+	DB_DEFAULT_TAGS_BUCKET_NAME     = []byte("default.tags")
+	DB_DEFAULT_PROJECTS_BUCKET_NAME = []byte("default.projects")
+	DB_DEFAULT_HABITS_BUCKET_NAME   = []byte("default.habits")
+	DB_DEFAULT_GOALS_BUCKET_NAME    = []byte("default.goals")
+
+	BUCKETS_TO_INTIALIZE = [][]byte{
+		DB_DEFAULT_BASIC_BUCKET_NAME,
+		DB_DEFAULT_PROJECTS_BUCKET_NAME,
+		DB_DEFAULT_TAGS_BUCKET_NAME,
+		DB_DEFAULT_TASKS_BUCKET_NAME,
+		DB_DEFAULT_GOALS_BUCKET_NAME,
+		DB_DEFAULT_HABITS_BUCKET_NAME}
+
+	DB_LAST_ID_KEY       = []byte("last.id")
+	DB_LAST_SYNC_KEY     = []byte("last.sync")
+	DB_ACTUAL_STATUS_KEY = []byte("actual.status")
 
 	ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,

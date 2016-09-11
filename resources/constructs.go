@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"log"
 	"github.com/7joe7/personalmanager/checks"
 )
 
@@ -30,14 +29,6 @@ func NewHabit(name string) *Habit {
 	return &Habit{Name:name}
 }
 
-func NewAlfredIcon(color string) *AlfredIcon {
-	switch color {
-	case "black_alt","black","blue","cyan","exclamation","green","orange","purple","question","question_alt","red","white","white_alt","yellow":
-		return &AlfredIcon{Path: "./icons/" + color + "@2x.png"}
-	case "special":
-		return &AlfredIcon{Path: "./icons/" + color + ".png"}
-	default:
-		log.Fatalf("Icon '%s' not supported. Add icon to icons folder and add it to the supported icons switch.", color)
-		return nil
-	}
+func NewAlfredIcon(path string) *AlfredIcon {
+	return &AlfredIcon{Path:path}
 }

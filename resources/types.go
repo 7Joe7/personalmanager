@@ -2,6 +2,10 @@ package resources
 
 import "time"
 
+type Entity interface {
+	SetId(string)
+}
+
 type Tasks struct {
 	Tasks       map[string]*Task
 	NoneAllowed bool
@@ -49,7 +53,10 @@ type AlfredItem struct {
 	Valid    bool        `json:"valid"`
 	Icon     *AlfredIcon `json:"icon,omitempty"`
 	Mods     *Mods       `json:"mods,omitempty"`
+	order    int
 }
+
+type items []*AlfredItem
 
 type AlfredIcon struct {
 	Type string `json:"type,omitempty"`
@@ -61,19 +68,39 @@ type Task struct {
 	Note    string
 	Tags    []*Tag
 	Project *Project
+	Id      string
+}
+
+func (t *Task) SetId(id string) {
+	t.Id = id
 }
 
 type Tag struct {
 	Name string
+	Id   string
+}
+
+func (t *Tag) SetId(id string) {
+	t.Id = id
 }
 
 type Project struct {
 	Name string
 	Note string
+	Id   string
+}
+
+func (t *Project) SetId(id string) {
+	t.Id = id
 }
 
 type Goal struct {
 	Name string
+	Id   string
+}
+
+func (t *Goal) SetId(id string) {
+	t.Id = id
 }
 
 type Habit struct {
@@ -88,6 +115,11 @@ type Habit struct {
 	LastStreakEnd *time.Time
 	Repetition    string
 	BasePoints    int
+	Id            string
+}
+
+func (t *Habit) SetId(id string) {
+	t.Id = id
 }
 
 type Status struct {
