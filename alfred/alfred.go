@@ -1,9 +1,11 @@
 package alfred
 
+import "os"
+
 func PrintEntities(entities interface{}) {
-	printEntities(entities)
+	printEntities(entities, os.Stdout)
 }
 
 func PrintResult(result string) {
-	printResult(result)
+	printResult(result, os.Stdout)
 }

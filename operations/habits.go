@@ -1,7 +1,6 @@
 package operations
 
 import (
-	"log"
 	"time"
 
 	"github.com/7joe7/personalmanager/resources"
@@ -9,21 +8,14 @@ import (
 	"github.com/7joe7/personalmanager/db"
 )
 
-func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, toggleActive, toggleDone bool, basePoints int, scoreChange *int) func () {
+func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int, status *resources.Status) func () {
 	return func () {
 		if name != "" {
 			h.Name = name
 		}
 		if toggleActive {
 			if h.Active {
-				h.Active = false
-				h.Deadline = nil
-				h.Done = false
-				h.ActualStreak = 0
-				h.LastStreakEnd = nil
-				h.LastStreak = 0
-				h.Repetition = ""
-				h.BasePoints = 0
+				deactivateHabit(h)
 			} else {
 				activateHabit(h, repetition)
 			}
@@ -38,30 +30,60 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 					failHabit(h)
 				} else {
 					h.Done = true
-					if h.ActualStreak < 0 {
-						h.ActualStreak = 0
-					}
-					if h.LastStreakEnd != nil && h.Deadline.Equal(*h.LastStreakEnd) {
-						h.LastStreakEnd = nil
-						h.ActualStreak = h.LastStreak
-					}
-					h.Successes += 1
-					h.ActualStreak += 1
+					succeedHabit(h, h.LastStreakEnd)
 				}
-				scoreChange = utils.GetIntPointer(h.ActualStreak * h.BasePoints)
+				status.Score += h.ActualStreak * h.BasePoints
+				status.Today += status.Score
 			}
 			if deadline != "" {
-				t, err := time.Parse("2.1.2006 15:04", deadline)
+				t, err := time.Parse(resources.DEADLINE_FORMAT, deadline)
 				if err != nil {
-					log.Fatalf("Unable to parse deadline. %v", err)
+					panic(err)
 				}
 				h.Deadline = &t
+			}
+			if toggleDonePrevious {
+				succeedHabit(h, addPeriod(h.Repetition, h.LastStreakEnd))
+				change := (h.ActualStreak - 1) * h.BasePoints
+				if h.Done {
+					status.Today += change
+					change *= 2
+
+				}
+				status.Score += change
 			}
 		}
 	}
 }
 
-func getSyncHabitFunc(h *resources.Habit, scoreChange *int) func () {
+func succeedHabit(h *resources.Habit, lastStreakEnd *time.Time) {
+	if h.ActualStreak < 0 {
+		h.ActualStreak = 0
+	}
+	if lastStreakEnd != nil && h.Deadline.Equal(*lastStreakEnd) {
+		h.LastStreakEnd = nil
+		h.ActualStreak += h.LastStreak
+	}
+	h.Successes += 1
+	h.ActualStreak += 1
+}
+
+func addPeriod(repetition string, deadline *time.Time) *time.Time {
+	if deadline == nil {
+		return nil
+	}
+	switch repetition {
+	case resources.HBT_REPETITION_DAILY:
+		return utils.GetTimePointer(deadline.Add(24 * time.Hour))
+	case resources.HBT_REPETITION_WEEKLY:
+		return utils.GetTimePointer(deadline.Add(7 * 24 * time.Hour))
+	case resources.HBT_REPETITION_MONTHLY:
+		return utils.GetTimePointer(deadline.AddDate(0, 1, 0))
+	}
+	return nil
+}
+
+func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status) func () {
 	return func () {
 		if !h.Active {
 			return
@@ -70,16 +92,9 @@ func getSyncHabitFunc(h *resources.Habit, scoreChange *int) func () {
 		if h.Deadline.Before(time.Now()) {
 			if !h.Done {
 				failHabit(h)
-				scoreChange = utils.GetIntPointer(h.ActualStreak * h.BasePoints)
+				changeStatus.Score = h.ActualStreak * h.BasePoints
 			}
-			switch h.Repetition {
-			case resources.HBT_REPETITION_DAILY:
-				h.Deadline = utils.GetTimePointer(h.Deadline.Add(24 * time.Hour))
-			case resources.HBT_REPETITION_WEEKLY:
-				h.Deadline = utils.GetTimePointer(h.Deadline.Add(7 * 24 * time.Hour))
-			case resources.HBT_REPETITION_MONTHLY:
-				h.Deadline = utils.GetTimePointer(h.Deadline.AddDate(0, 1, 0))
-			}
+			h.Deadline = addPeriod(h.Repetition, h.Deadline)
 			h.Done = false
 			h.Tries += 1
 		}
@@ -106,6 +121,17 @@ func activateHabit(h *resources.Habit, repetition string) {
 	h.Deadline = utils.GetTimePointer(time.Now().Add(24 * time.Hour).Truncate(24 * time.Hour))
 }
 
+func deactivateHabit(h *resources.Habit) {
+	h.Active = false
+	h.Deadline = nil
+	h.Done = false
+	h.ActualStreak = 0
+	h.LastStreakEnd = nil
+	h.LastStreak = 0
+	h.Repetition = ""
+	h.BasePoints = 0
+}
+
 func addHabit(name, repetition string, activeFlag bool) string {
 	h := resources.NewHabit(name)
 	if activeFlag {
@@ -118,17 +144,17 @@ func deleteHabit(habitId string) {
 	db.DeleteEntity([]byte(habitId), resources.DB_DEFAULT_HABITS_BUCKET_NAME)
 }
 
-func modifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone bool, basePoints int) {
-	var scoreChange *int
+func modifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
 	habit := &resources.Habit{}
-	modifyHabit := GetModifyHabitFunc(habit, name, repetition, deadline, toggleActive, toggleDone, basePoints, scoreChange)
+	habitStatus := &resources.Status{}
+	modifyHabit := getModifyHabitFunc(habit, name, repetition, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints, habitStatus)
 	status := &resources.Status{}
 	t := db.NewTransaction()
 	t.Add(func () error {
 		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), habit, modifyHabit); err != nil {
 			return err
 		}
-		if err := t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status, GetAddScoreFunc(status, *scoreChange)); err != nil {
+		if err := t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status, getAddScoreFunc(status, habitStatus)); err != nil {
 			return err
 		}
 		return nil
@@ -154,24 +180,19 @@ func getHabits() map[string]*resources.Habit {
 func filterHabits(filter func(*resources.Habit) bool) map[string]*resources.Habit {
 	habits := map[string]*resources.Habit{}
 	h := &resources.Habit{}
-	db.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h, func (id string) {
-		if filter(h) {
-			hCopy := &resources.Habit{}
-			*hCopy = *h
-			habits[id] = hCopy
-		}
-	})
+	copyFunc := func () {
+		c := &resources.Habit{}
+		*c = *h
+		habits[h.Id] = c
+	}
+	db.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h, func () bool { return filter(h) }, copyFunc)
 	return habits
 }
 
 func getActiveHabits() map[string]*resources.Habit {
-	return FilterHabits(func (h *resources.Habit) bool {
-		return h.Active
-	})
+	return FilterHabits(func (h *resources.Habit) bool { return h.Active })
 }
 
 func getNonActiveHabits() map[string]*resources.Habit {
-	return FilterHabits(func (h *resources.Habit) bool {
-		return !h.Active
-	})
+	return FilterHabits(func (h *resources.Habit) bool { return !h.Active })
 }

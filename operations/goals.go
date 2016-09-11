@@ -23,7 +23,7 @@ func DeleteGoal(goalId string) {
 
 func ModifyGoal(goalId, name string) {
 	goal := &resources.Goal{}
-	db.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal, GetModifyGoalFunc(goal, name))
+	db.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal, getModifyGoalFunc(goal, name))
 }
 
 func GetGoal(goalId string) *resources.Goal {

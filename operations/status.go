@@ -5,17 +5,17 @@ import (
 	"github.com/7joe7/personalmanager/db"
 )
 
-func getSyncStatusFunc(s *resources.Status, scoreChange int) func () {
+func getSyncStatusFunc(s, changeStatus *resources.Status) func () {
 	return func () {
-		s.Score += scoreChange
+		s.Score += changeStatus.Score
 		s.Today = 0
 	}
 }
 
-func getAddScoreFunc(s *resources.Status, scoreChange int) func () {
+func getAddScoreFunc(s, changeStatus *resources.Status) func () {
 	return func () {
-		s.Score += scoreChange
-		s.Today += scoreChange
+		s.Score += changeStatus.Score
+		s.Today += changeStatus.Today
 	}
 }
 

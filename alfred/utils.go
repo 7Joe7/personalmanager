@@ -3,20 +3,20 @@ package alfred
 import (
 	"fmt"
 	"encoding/json"
-	"log"
+	"io"
 )
 
-func printEntities(entities interface{}) {
+func printEntities(entities interface{}, w io.Writer) {
 	bytes, err := json.Marshal(entities)
 	if err != nil {
-		log.Fatalf("Unable to marshal entities. %v", err)
+		panic(err)
 	}
-	printResult(string(bytes))
+	printResult(string(bytes), w)
 }
 
-func printResult(result string) {
-	_, err := fmt.Print(result)
+func printResult(result string, w io.Writer) {
+	_, err := fmt.Fprint(w, result)
 	if err != nil {
-		log.Fatalf("Unable to print result '%s'. %v", result, err)
+		panic(fmt.Errorf("Unable to print result '%s'. %v", result, err))
 	}
 }

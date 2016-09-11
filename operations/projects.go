@@ -23,7 +23,7 @@ func DeleteProject(projectId string) {
 
 func ModifyProject(projectId, name string) {
 	project := &resources.Project{}
-	db.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), project, GetModifyProjectFunc(project, name))
+	db.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), project, getModifyProjectFunc(project, name))
 }
 
 func GetProject(projectId string) *resources.Project {

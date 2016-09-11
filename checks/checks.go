@@ -1,35 +1,31 @@
 package checks
 
-import (
-	"log"
-)
-
 func VerifyTask(name string) {
-	if name == "" {
-		log.Fatal("Task name is empty.")
+	if err := verifyTask(name); err != nil {
+		panic(err)
 	}
 }
 
 func VerifyProject(name string) {
-	if name == "" {
-		log.Fatal("Project name is empty.")
+	if err := verifyProject(name); err != nil {
+		panic(err)
 	}
 }
 
 func VerifyTag(name string) {
-	if name == "" {
-		log.Fatal("Tag name is empty.")
+	if err := verifyTag(name); err != nil {
+		panic(err)
 	}
 }
 
 func VerifyGoal(name string) {
-	if name == "" {
-		log.Fatal("Goal name is empty.")
+	if err := verifyGoal(name); err != nil {
+		panic(err)
 	}
 }
 
 func VerifyHabit(name string) {
-	if name == "" {
-		log.Fatal("Habit name is empty.")
+	if err := verifyHabit(name); err != nil {
+		panic(err)
 	}
 }

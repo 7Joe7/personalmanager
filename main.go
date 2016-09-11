@@ -3,20 +3,20 @@ package main
 import (
 	"flag"
 	"fmt"
-
-	"github.com/7joe7/personalmanager/alfred"
-	"github.com/7joe7/personalmanager/db"
-	"github.com/7joe7/personalmanager/resources"
+	"io"
 	"log"
 	"os"
 	"runtime/debug"
-	"io"
+
+	"github.com/7joe7/personalmanager/alfred"
+	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
+	"github.com/7joe7/personalmanager/resources"
 )
 
 var (
 	action, id, name, projectId, repetition, deadline *string
-	noneAllowed, activeFlag, doneFlag                 *bool
+	noneAllowed, activeFlag, doneFlag, donePrevious   *bool
 	basePoints                                        *int
 )
 
@@ -27,12 +27,13 @@ func init() {
 	name = flag.String("name", "", "Provide name.")
 	activeFlag = flag.Bool("active", false, "Toggle active/show active only.")
 	doneFlag = flag.Bool("done", false, "Toggle done.")
+	donePrevious = flag.Bool("donePrevious", false, "Set done for previous period.")
 	repetition = flag.String("repetition", "", "Select repetition period.")
 	basePoints = flag.Int("basePoints", -1, "Set base points for success/failure.")
 	deadline = flag.String("deadline", "", "Specify deadine in format 'dd.MM.YYYY HH:mm'.")
 	noneAllowed = flag.Bool("noneAllowed", false, "Provide information whether list should be retrieved with none value allowed.")
 
-	db.Open()
+	db.Open(resources.DB_PATH)
 	t := db.NewTransaction()
 	operations.InitializeBuckets(t)
 	operations.EnsureValues(t)
@@ -41,7 +42,7 @@ func init() {
 
 	f, err := os.OpenFile(resources.LOG_FILE_PATH, os.O_APPEND|os.O_CREATE, 777)
 	if err != nil {
-		log.Fatalf("Unable to open log file. %v", err)
+		panic(err)
 	}
 	log.SetOutput(io.MultiWriter(os.Stdout, f))
 }
@@ -111,7 +112,7 @@ func main() {
 		operations.ModifyGoal(*id, *name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
-		operations.ModifyHabit(*id, *name, *repetition, *deadline, *activeFlag, *doneFlag, *basePoints)
+		operations.ModifyHabit(*id, *name, *repetition, *deadline, *activeFlag, *doneFlag, *donePrevious, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	default:
 		flag.Usage()

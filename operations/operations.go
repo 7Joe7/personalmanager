@@ -5,47 +5,15 @@ import (
 	"github.com/7joe7/personalmanager/db"
 )
 
-func GetModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, toggleActive, toggleDone bool, basePoints int, scoreChange *int) func () {
-	return getModifyHabitFunc(h, name, repetition, deadline, toggleActive, toggleDone, basePoints, scoreChange)
-}
-
-func GetSyncHabitFunc(h *resources.Habit, scoreChange *int) func () {
-	return getSyncHabitFunc(h, scoreChange)
-}
-
-func GetAddScoreFunc(s *resources.Status, scoreChange int) func () {
-	return getAddScoreFunc(s, scoreChange)
-}
-
-func GetModifyTaskFunc(t *resources.Task, name, projectId string) func () {
-	return getModifyTaskFunc(t, name, projectId)
-}
-
-func GetModifyProjectFunc(p *resources.Project, name string) func () {
-	return getModifyProjectFunc(p, name)
-}
-
-func GetModifyTagFunc(t *resources.Tag, name string) func () {
-	return getModifyTagFunc(t, name)
-}
-
-func GetModifyGoalFunc(g *resources.Goal, name string) func () {
-	return getModifyGoalFunc(g, name)
-}
-
-func GetSyncStatusFunc(s *resources.Status, scoreChange int) func () {
-	return getSyncStatusFunc(s, scoreChange)
-}
-
-func Synchronize(t *db.Transaction) {
+func Synchronize(t db.Transaction) {
 	synchronize(t)
 }
 
-func InitializeBuckets(t *db.Transaction) {
+func InitializeBuckets(t db.Transaction) {
 	initializeBuckets(t, resources.BUCKETS_TO_INTIALIZE)
 }
 
-func EnsureValues(t *db.Transaction) {
+func EnsureValues(t db.Transaction) {
 	ensureValues(t)
 }
 
@@ -77,8 +45,8 @@ func DeleteHabit(habitId string) {
 	deleteHabit(habitId)
 }
 
-func ModifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone bool, basePoints int) {
-	modifyHabit(habitId, name, repetition, deadline, toggleActive, toggleDone, basePoints)
+func ModifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
+	modifyHabit(habitId, name, repetition, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints)
 }
 
 func GetHabit(habitId string) *resources.Habit {

@@ -23,7 +23,7 @@ func DeleteTag(tagId string) {
 
 func ModifyTag(tagId, name string) {
 	tag := &resources.Tag{}
-	db.ModifyEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(tagId), tag, GetModifyTagFunc(tag, name))
+	db.ModifyEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(tagId), tag, getModifyTagFunc(tag, name))
 }
 
 func GetTag(tagId string) *resources.Tag {

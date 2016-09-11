@@ -11,7 +11,10 @@ func getMapEntitiesInner(bucketName []byte, entity interface{}, mapFunc func ())
 	return func (tx *bolt.Tx) error {
 		b := tx.Bucket(bucketName)
 		return b.ForEach(func (k, v []byte) error {
-			return modifyEntityInner(b, k, v, entity, mapFunc)
+			if string(k) != string(resources.DB_LAST_ID_KEY) {
+				return modifyEntityInner(b, k, v, entity, mapFunc)
+			}
+			return nil
 		})
 	}
 }
@@ -35,7 +38,7 @@ func modifyEntityInner(bucket *bolt.Bucket, key, value []byte, entity interface{
 	return bucket.Put(key, resultValue)
 }
 
-func getFilterEntitiesInner(bucketName []byte, entity interface{}, filterFunc func (string)) func (*bolt.Tx) error {
+func getFilterEntitiesInner(bucketName []byte, entity interface{}, filterFunc func () bool, copyFunc func ()) func (*bolt.Tx) error {
 	return func (tx *bolt.Tx) error {
 		return tx.Bucket(bucketName).ForEach(func (k, v []byte) error {
 			key := string(k)
@@ -45,7 +48,9 @@ func getFilterEntitiesInner(bucketName []byte, entity interface{}, filterFunc fu
 			if err := json.Unmarshal(v, entity); err != nil {
 				return err
 			}
-			filterFunc(key)
+			if filterFunc() {
+				copyFunc()
+			}
 			return nil
 		})
 	}
@@ -63,20 +68,19 @@ func getRetrieveEntitiesInner(getObject func (string) interface{}, bucketName []
 	}
 }
 
-func getAddEntityInner(entity interface{}, bucketName []byte, incrementedId *string) func (*bolt.Tx) error {
-	return func (tx *bolt.Tx) error {
+func getAddEntityInner(entity resources.Entity, bucketName []byte) func (*bolt.Tx) (string, error) {
+	return func (tx *bolt.Tx) (string, error) {
 		bucket := tx.Bucket(bucketName)
 		id := getIncrementedId(bucket)
-		incrementedId = &id
+		entity.SetId(id)
 		value, err := json.Marshal(entity)
 		if err != nil {
-			return err
+			return "", err
 		}
 		incrementedIdBytes := []byte(id)
-		err = bucket.Put(incrementedIdBytes, value)
-		if err != nil {
-			return err
+		if err = bucket.Put(incrementedIdBytes, value); err != nil {
+			return id, err
 		}
-		return bucket.Put(resources.DB_LAST_ID_KEY, incrementedIdBytes)
+		return id, bucket.Put(resources.DB_LAST_ID_KEY, incrementedIdBytes)
 	}
 }
