@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/test"
 )
@@ -106,8 +105,6 @@ func (tm *transactionMock) Add(exec func() error) {
 }
 
 func TestInitializeBuckets(t *testing.T) {
-	db.Open(TEST_DB_PATH)
-
 	tm := &transactionMock{functionsCalled: []string{}}
 	initializeBuckets(tm, resources.BUCKETS_TO_INTIALIZE)
 	tm.Execute()
@@ -117,13 +114,9 @@ func TestInitializeBuckets(t *testing.T) {
 		expected := fmt.Sprintf(INITIALIZE_BUCKET_CALLED_FORMAT, string(resources.BUCKETS_TO_INTIALIZE[j-2]))
 		test.ExpectString(expected, tm.functionsCalled[j], t)
 	}
-
-	removeDb(t)
 }
 
 func TestEnsureValues(t *testing.T) {
-	db.Open(TEST_DB_PATH)
-
 	tm := &transactionMock{functionsCalled: []string{}}
 	ensureValues(tm)
 	tm.Execute()
@@ -131,13 +124,9 @@ func TestEnsureValues(t *testing.T) {
 
 	expected := fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ACTUAL_STATUS_KEY), &resources.Status{})
 	test.ExpectString(expected, tm.functionsCalled[2], t)
-
-	removeDb(t)
 }
 
 func TestSynchronize(t *testing.T) {
-	db.Open(TEST_DB_PATH)
-
 	tm := &transactionMock{functionsCalled: []string{}}
 	synchronize(tm)
 	tm.Execute()
@@ -154,8 +143,6 @@ func TestSynchronize(t *testing.T) {
 	test.ExpectString(expected, tm.functionsCalled[4], t)
 	expected = fmt.Sprintf(SET_VALUE_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_LAST_SYNC_KEY), time.Now().Format("Mon Jan 2 15:04:05 -0700 MST 2006"))
 	test.ExpectString(expected, tm.functionsCalled[5], t)
-
-	removeDb(t)
 }
 
 func verifyTransactionFlow(t *testing.T, tm *transactionMock) {
@@ -163,7 +150,7 @@ func verifyTransactionFlow(t *testing.T, tm *transactionMock) {
 		t.Errorf("Initialize buckets failed. No add called.")
 	}
 
-	if tm.functionsCalled[1] != "Execute" {
+	if tm.functionsCalled[1] != "Execute" && tm.functionsCalled[1] != "View" {
 		t.Errorf("Initialize buckets failed. No execute called.")
 	}
 }

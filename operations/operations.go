@@ -36,8 +36,8 @@ func GetTasks() map[string]*resources.Task {
 	return getTasks()
 }
 
-func AddHabit(name, repetition string, activeFlag bool) {
-	addHabit(name, repetition, activeFlag)
+func AddHabit(name, repetition, deadline string, activeFlag bool, basePoints int) {
+	addHabit(name, repetition, deadline, activeFlag, basePoints)
 }
 
 func DeleteHabit(habitId string) {

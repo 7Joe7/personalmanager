@@ -32,8 +32,9 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 					h.Done = true
 					succeedHabit(h, h.LastStreakEnd)
 				}
-				status.Score += h.ActualStreak * h.BasePoints
-				status.Today += status.Score
+				change := h.ActualStreak * h.BasePoints
+				status.Score += change
+				status.Today += change
 			}
 			if deadline != "" {
 				t, err := time.Parse(resources.DEADLINE_FORMAT, deadline)
@@ -44,13 +45,13 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 			}
 			if toggleDonePrevious {
 				succeedHabit(h, addPeriod(h.Repetition, h.LastStreakEnd))
-				change := (h.ActualStreak - 1) * h.BasePoints
 				if h.Done {
-					status.Today += change
-					change *= 2
+					status.Score += h.ActualStreak * h.BasePoints + (h.ActualStreak - 1) * h.BasePoints
+					status.Today += (h.ActualStreak - 1) * h.BasePoints
 
+				} else {
+					status.Score += (h.ActualStreak + 1) * h.BasePoints
 				}
-				status.Score += change
 			}
 		}
 	}
@@ -61,7 +62,6 @@ func succeedHabit(h *resources.Habit, lastStreakEnd *time.Time) {
 		h.ActualStreak = 0
 	}
 	if lastStreakEnd != nil && h.Deadline.Equal(*lastStreakEnd) {
-		h.LastStreakEnd = nil
 		h.ActualStreak += h.LastStreak
 	}
 	h.Successes += 1
@@ -131,10 +131,18 @@ func deactivateHabit(h *resources.Habit) {
 	h.BasePoints = 0
 }
 
-func addHabit(name, repetition string, activeFlag bool) {
+func addHabit(name, repetition, deadline string, activeFlag bool, basePoints int) {
 	h := resources.NewHabit(name)
 	if activeFlag {
 		activateHabit(h, repetition)
+		deadlineT, err := time.Parse(resources.DEADLINE_FORMAT, deadline)
+		if err != nil {
+			panic(err)
+		}
+		h.Deadline = &deadlineT
+		if basePoints != -1 {
+			h.BasePoints = basePoints
+		}
 	}
 	tr := db.NewTransaction()
 	tr.Add(func () error {

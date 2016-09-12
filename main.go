@@ -68,7 +68,7 @@ func main() {
 		operations.AddGoal(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
-		operations.AddHabit(*name, *repetition, *activeFlag)
+		operations.AddHabit(*name, *repetition, *deadline, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetTasks(), *noneAllowed})

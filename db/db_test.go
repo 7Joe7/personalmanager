@@ -163,7 +163,7 @@ func TestOpen(t *testing.T) {
 	removeDb(t)
 }
 
-func TestFilterEntities(t *testing.T) {
+func TestTransaction_FilterEntities(t *testing.T) {
 	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testTask2 := &resources.Task{Name: "test2", Note: "note2", Project: nil}
@@ -258,7 +258,20 @@ func TestTransaction_Execute(t *testing.T) {
 	removeDb(t)
 }
 
-
+func TestTransaction_View(t *testing.T) {
+	testOpen(t)
+	var addWasCalled bool
+	tr := newTransaction()
+	tr.Add(func () error {
+		addWasCalled = true
+		return nil
+	})
+	test.ExpectSuccess(t, tr.view())
+	if !addWasCalled {
+		t.Errorf("Expected true, got %v.", addWasCalled)
+	}
+	removeDb(t)
+}
 
 func testRetrieveTask(expectedProject *resources.Project, expectedEntity, gotEntity *resources.Task, err error, t *testing.T) {
 	test.ExpectSuccess(t, err)
