@@ -2,17 +2,15 @@ package operations
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/test"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 const (
-	TEST_DB_PATH = "./test-db.db"
-
 	GET_VALUE_CALLED_FORMAT         = "GetValue%s%s"
 	SET_VALUE_CALLED_FORMAT         = "SetValue%s%s%s"
 	ENSURE_ENTITY_CALLED_FORMAT     = "EnsureEntity%s%s%v"
@@ -122,8 +120,10 @@ func TestEnsureValues(t *testing.T) {
 	tm.Execute()
 	verifyTransactionFlow(t, tm)
 
-	expected := fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ACTUAL_STATUS_KEY), &resources.Status{})
+	expected := fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_REVIEW_SETTINGS_KEY), &resources.Review{Repetition:resources.HBT_REPETITION_WEEKLY, Deadline:utils.GetFirstSaturday()})
 	test.ExpectString(expected, tm.functionsCalled[2], t)
+	expected = fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ACTUAL_STATUS_KEY), &resources.Status{})
+	test.ExpectString(expected, tm.functionsCalled[3], t)
 }
 
 func TestSynchronize(t *testing.T) {
@@ -153,8 +153,4 @@ func verifyTransactionFlow(t *testing.T, tm *transactionMock) {
 	if tm.functionsCalled[1] != "Execute" && tm.functionsCalled[1] != "View" {
 		t.Errorf("Initialize buckets failed. No execute called.")
 	}
-}
-
-func removeDb(t *testing.T) {
-	test.ExpectSuccess(t, os.Remove(TEST_DB_PATH))
 }

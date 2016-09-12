@@ -6,6 +6,13 @@ import (
 	"sort"
 )
 
+func (r *Review) GetItem() *AlfredItem {
+	return &AlfredItem{
+		Name: fmt.Sprintf("Review repeated %s, next: %s.", r.Repetition, r.Deadline.Format(DATE_FORMAT)),
+		Icon: NewAlfredIcon(ICO_BLACK),
+		Valid: true}
+}
+
 func (t *Task) MarshalJSON() ([]byte, error) {
 	type mTask Task
 	if t.Project != nil {

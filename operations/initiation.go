@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 func synchronize(t resources.Transaction) {
@@ -40,6 +41,10 @@ func initializeBuckets(t resources.Transaction, bucketsToInitialize [][]byte) {
 
 func ensureValues(t resources.Transaction) {
 	t.Add(func () error {
+		err := t.EnsureEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, &resources.Review{Repetition:resources.HBT_REPETITION_WEEKLY, Deadline:utils.GetFirstSaturday()})
+		if err != nil {
+			return err
+		}
 		return t.EnsureEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, &resources.Status{})
 	})
 }

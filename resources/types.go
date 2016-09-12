@@ -4,6 +4,10 @@ import (
 	"time"
 )
 
+type Items struct {
+	Items []*AlfredItem `json:"items"`
+}
+
 type Tasks struct {
 	Tasks       map[string]*Task
 	NoneAllowed bool
@@ -120,8 +124,9 @@ func (p *Project) Load(tr Transaction) error {
 }
 
 type Goal struct {
-	Name string
-	Id   string
+	Name     string
+	Deadline *time.Time
+	Id       string
 }
 
 func (g *Goal) SetId(id string) {
@@ -175,5 +180,20 @@ func (s *Status) GetId() string {
 }
 
 func (s *Status) Load(tr Transaction) error {
+	return nil
+}
+
+type Review struct {
+	Deadline   *time.Time
+	Repetition string
+}
+
+func (r *Review) SetId(id string) {}
+
+func (r *Review) GetId() string {
+	return ""
+}
+
+func (r *Review) Load(tr Transaction) error {
 	return nil
 }

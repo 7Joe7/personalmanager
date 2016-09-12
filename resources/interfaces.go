@@ -22,3 +22,7 @@ type Entity interface {
 	GetId() string
 	Load(Transaction) error
 }
+
+type Item interface {
+	GetItem() *AlfredItem
+}

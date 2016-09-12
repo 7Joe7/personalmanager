@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 
 	"github.com/7joe7/personalmanager/utils"
+	"github.com/7joe7/personalmanager/test"
 )
 
 var (
@@ -45,6 +46,9 @@ var (
 	expectedHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"Daily, 7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"Weekly, 2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}}]}`, testDeadlineFormatted, testDeadlineFormatted)
 	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"Daily, 7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"Weekly, 2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"None","arg":"-1","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`, testDeadlineFormatted, testDeadlineFormatted)
 	testHabitsOrdering = map[int]string{0:"testHabitActive",1:"testHabitNonActive", 2:"testHabitDone"}
+
+	testItems = Items{[]*AlfredItem{(&Review{Repetition:HBT_REPETITION_WEEKLY, Deadline:utils.GetFirstSaturday()}).GetItem()}}
+	expectedTestItemsJson = `{"items":[{"title":"Review repeated Weekly, next: 17.9.2016.","valid":false,"icon":{"path":"./icons/black@2x.png"}}]}`
 )
 
 func TestOrdering(t *testing.T) {
@@ -84,6 +88,8 @@ func TestMarshalTasks(t *testing.T) {
 	testMarshalling(testTags, expectedNoneTagsJson, t)
 	testMarshalling(testGoals, expectedNoneGoalsJson, t)
 	testMarshalling(testHabits, expectedNoneHabitsJson, t)
+
+	testMarshalling(testItems, expectedTestItemsJson, t)
 }
 
 func TestGetTaskItem(t *testing.T) {
@@ -111,9 +117,7 @@ func TestGetHabitNonActiveItem(t *testing.T) {
 	testCommonAttr(ai, true, testId, testHabitNonActive.Name, fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT,
 		testHabitNonActive.Successes, testHabitNonActive.Tries), ICO_BLACK, t)
 	expectedOrder := HBT_BASE_ORDER
-	if ai.order != expectedOrder {
-		t.Errorf("Expected order to be %d, it was %d.", expectedOrder, ai.order)
-	}
+	test.ExpectInt(expectedOrder, ai.order, t)
 }
 
 func TestGetHabitActiveItem(t *testing.T) {
@@ -123,9 +127,7 @@ func TestGetHabitActiveItem(t *testing.T) {
 		testHabitActive.ActualStreak, testHabitActive.Deadline.Format(DEADLINE_FORMAT),
 		testHabitActive.BasePoints), ICO_RED, t)
 	expectedOrder := HBT_BASE_ORDER - testHabitActive.BasePoints
-	if ai.order != expectedOrder {
-		t.Errorf("Expected order to be %d, it was %d.", expectedOrder, ai.order)
-	}
+	test.ExpectInt(expectedOrder, ai.order, t)
 }
 
 func TestGetHabitDoneItem(t *testing.T) {
@@ -134,9 +136,7 @@ func TestGetHabitDoneItem(t *testing.T) {
 		testHabitDone.Repetition, testHabitDone.Successes, testHabitDone.Tries, testHabitDone.ActualStreak,
 		testHabitDone.Deadline.Format(DEADLINE_FORMAT), testHabitDone.BasePoints), ICO_GREEN, t)
 	expectedOrder := HBT_DONE_BASE_ORDER - testHabitDone.BasePoints
-	if ai.order != expectedOrder {
-		t.Errorf("Expected order to be %d, it was %d.", expectedOrder, ai.order)
-	}
+	test.ExpectInt(expectedOrder, ai.order, t)
 }
 
 func TestGetStatusItem(t *testing.T) {
@@ -155,30 +155,15 @@ func TestGetZeroItem(t *testing.T) {
 }
 
 func testCommonAttr(ai *AlfredItem, valid bool, testId, expectedName, expectedSubtitle, expectedIconPath string, t *testing.T) {
-	if ai.Arg != testId {
-		t.Errorf("Expected Arg attribute to be %s, it was %s.", testId, ai.Arg)
-	}
-	if ai.Name != expectedName {
-		t.Errorf("Expected Name attribute to be %s, it was %s.", expectedName, ai.Name)
-	}
-	if ai.Valid != valid {
-		t.Errorf("Expected Valid attribute to be %v, it was %v.", valid, ai.Valid)
-	}
-	if ai.Subtitle != expectedSubtitle {
-		t.Errorf("Expected Subtitle attribute to be %s, it was %s.", expectedSubtitle, ai.Subtitle)
-	}
-	if ai.Icon.Path != expectedIconPath {
-		t.Errorf("Expected Icon attribute to be %s, it was %s.", expectedIconPath, ai.Icon.Path)
-	}
+	test.ExpectString(testId, ai.Arg, t)
+	test.ExpectString(expectedName, ai.Name, t)
+	test.ExpectBool(valid, ai.Valid, t)
+	test.ExpectString(expectedSubtitle, ai.Subtitle, t)
+	test.ExpectString(expectedIconPath, ai.Icon.Path, t)
 }
 
 func testMarshalling(entity interface{}, expectedJson string, t *testing.T) {
 	bytes, err := json.Marshal(entity)
-	if err != nil {
-		t.Errorf("Expected success, got error %v.", err)
-	}
-	actualJson := string(bytes)
-	if actualJson != expectedJson {
-		t.Errorf("Expected '%s', got '%s'.", expectedJson, actualJson)
-	}
+	test.ExpectSuccess(t, err)
+	test.ExpectString(expectedJson, string(bytes), t)
 }

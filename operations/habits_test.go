@@ -2,11 +2,11 @@ package operations
 
 import (
 	"testing"
+	"time"
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/utils"
-	"time"
 )
 
 var (
@@ -83,13 +83,15 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	verifyHabitState("testHabit8", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit8", true, false,
 		14, 7, 1, 3, 9, 0, 0, h, changeStatus, t)
 
-	// sync done habit
+	// sync undone habit
 	h = getActiveHabit("testHabit9", resources.HBT_REPETITION_DAILY, 19, 12, 3, 2, 8)
 	changeStatus = &resources.Status{}
-	h.Deadline = utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
+	todayDeadline := utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
+	h.Deadline = todayDeadline
 	getSyncHabitFunc(h, changeStatus)()
 	verifyHabitState("testHabit9", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit9", true, false,
 		20, 12, -1, 3, 8, -8, 0, h, changeStatus, t)
+	test.ExpectString(todayDeadline.Format(resources.DEADLINE_FORMAT), h.LastStreakEnd.Format(resources.DEADLINE_FORMAT), t)
 }
 
 func verifyHabitState(expectedName, expectedRepetition, expectedDeadline, expectedId string, expectedActive, expectedDone bool,

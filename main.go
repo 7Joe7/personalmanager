@@ -84,6 +84,8 @@ func main() {
 		} else {
 			alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
 		}
+	case resources.ACT_PRINT_REVIEW:
+		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_DELETE_TASK:
 		operations.DeleteTask(*id)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "task"))
@@ -109,11 +111,14 @@ func main() {
 		operations.ModifyTag(*id, *name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
 	case resources.ACT_MODIFY_GOAL:
-		operations.ModifyGoal(*id, *name)
+		operations.ModifyGoal(*id, *name, *deadline)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
 		operations.ModifyHabit(*id, *name, *repetition, *deadline, *activeFlag, *doneFlag, *donePrevious, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
+	case resources.ACT_MODIFY_REVIEW:
+		operations.ModifyReview(*repetition, *deadline)
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "review"))
 	default:
 		flag.Usage()
 	}

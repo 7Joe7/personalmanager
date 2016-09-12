@@ -4,6 +4,14 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 )
 
+func GetReview() *resources.Review {
+	return getReview()
+}
+
+func ModifyReview(repetition, deadline string) {
+	modifyReview(repetition, deadline)
+}
+
 func Synchronize(t resources.Transaction) {
 	synchronize(t)
 }

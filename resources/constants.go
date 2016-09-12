@@ -13,35 +13,36 @@ const (
 	HBT_REPETITION_WEEKLY  = "Weekly"
 	HBT_REPETITION_MONTHLY = "Monthly"
 
-	ICO_BLACK_ALT = "./icons/black_alt@2x.png"
-	ICO_BLACK = "./icons/black@2x.png"
-	ICO_BLUE = "./icons/blue@2x.png"
-	ICO_CYAN = "./icons/cyan@2x.png"
-	ICO_EXCLAMATION = "./icons/exclamation@2x.png"
-	ICO_GREEN = "./icons/green@2x.png"
-	ICO_ORANGE = "./icons/orange@2x.png"
-	ICO_PURPLE = "./icons/purple@2x.png"
-	ICO_QUESTION = "./icons/question@2x.png"
+	ICO_BLACK_ALT    = "./icons/black_alt@2x.png"
+	ICO_BLACK        = "./icons/black@2x.png"
+	ICO_BLUE         = "./icons/blue@2x.png"
+	ICO_CYAN         = "./icons/cyan@2x.png"
+	ICO_EXCLAMATION  = "./icons/exclamation@2x.png"
+	ICO_GREEN        = "./icons/green@2x.png"
+	ICO_ORANGE       = "./icons/orange@2x.png"
+	ICO_PURPLE       = "./icons/purple@2x.png"
+	ICO_QUESTION     = "./icons/question@2x.png"
 	ICO_QUESTION_ALT = "./icons/question_alt@2x.png"
-	ICO_RED = "./icons/red@2x.png"
-	ICO_WHITE = "./icons/white@2x.png"
-	ICO_WHITE_ALT = "./icons/white_alt@2x.png"
-	ICO_YELLOW = "./icons/yellow@2x.png"
-	ICO_SPECIAL = "./icons/special.png"
+	ICO_RED          = "./icons/red@2x.png"
+	ICO_WHITE        = "./icons/white@2x.png"
+	ICO_WHITE_ALT    = "./icons/white_alt@2x.png"
+	ICO_YELLOW       = "./icons/yellow@2x.png"
+	ICO_SPECIAL      = "./icons/special.png"
 
 	DEADLINE_FORMAT = "2.1.2006 15:04"
+	DATE_FORMAT     = "2.1.2006"
 
-	SUB_FORMAT_ACTIVE_HABIT = "%s, %d/%d, actual %d, %v, base points %d"
+	SUB_FORMAT_ACTIVE_HABIT     = "%s, %d/%d, actual %d, %v, base points %d"
 	SUB_FORMAT_NON_ACTIVE_HABIT = "%d/%d"
-	SUB_FORMAT_TASK = "%s %s"
-	SUB_FORMAT_PROJECT = "%s"
-	SUB_FORMAT_TAG = ""
-	SUB_FORMAT_GOAL = ""
-	NAME_FORMAT_STATUS = "Total %d, today %d."
-	NAME_FORMAT_EMPTY = "There are no %s."
+	SUB_FORMAT_TASK             = "%s %s"
+	SUB_FORMAT_PROJECT          = "%s"
+	SUB_FORMAT_TAG              = ""
+	SUB_FORMAT_GOAL             = ""
+	NAME_FORMAT_STATUS          = "Total %d, today %d."
+	NAME_FORMAT_EMPTY           = "There are no %s."
 
 	HBT_DONE_BASE_ORDER = 200
-	HBT_BASE_ORDER = 100
+	HBT_BASE_ORDER      = 100
 
 	ACT_CREATE_TASK    = "create-task"
 	ACT_PRINT_TASKS    = "print-tasks"
@@ -63,6 +64,8 @@ const (
 	ACT_PRINT_HABITS   = "print-habits"
 	ACT_DELETE_HABIT   = "delete-habit"
 	ACT_MODIFY_HABIT   = "modify-habit"
+	ACT_PRINT_REVIEW   = "print-review"
+	ACT_MODIFY_REVIEW  = "modify-review"
 )
 
 var (
@@ -81,14 +84,15 @@ var (
 		DB_DEFAULT_GOALS_BUCKET_NAME,
 		DB_DEFAULT_HABITS_BUCKET_NAME}
 
-	DB_LAST_ID_KEY       = []byte("last.id")
-	DB_LAST_SYNC_KEY     = []byte("last.sync")
-	DB_ACTUAL_STATUS_KEY = []byte("actual.status")
+	DB_LAST_ID_KEY         = []byte("last.id")
+	DB_LAST_SYNC_KEY       = []byte("last.sync")
+	DB_ACTUAL_STATUS_KEY   = []byte("actual.status")
+	DB_REVIEW_SETTINGS_KEY = []byte("review.settings")
 
 	ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,
 		ACT_CREATE_PROJECT, ACT_PRINT_PROJECTS, ACT_DELETE_PROJECT, ACT_MODIFY_PROJECT,
 		ACT_CREATE_TAG, ACT_PRINT_TAGS, ACT_DELETE_TAG, ACT_MODIFY_TAG, ACT_CREATE_GOAL,
 		ACT_PRINT_GOALS, ACT_DELETE_GOAL, ACT_MODIFY_GOAL, ACT_CREATE_HABIT, ACT_PRINT_HABITS,
-		ACT_DELETE_HABIT, ACT_MODIFY_HABIT}
+		ACT_DELETE_HABIT, ACT_MODIFY_HABIT, ACT_PRINT_REVIEW, ACT_MODIFY_REVIEW}
 )
