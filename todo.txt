@@ -1,1 +1,7 @@
 * finish operations tests
+* add deadline, log time, estimate and points to tasks
+* add showing task note into some alfred action on full screen
+* add integration with work tasks - new bucket for tasks, new abbreviation and the whole cycle
+* add links to work tasks to jira on keystroke
+* add work task notes to full screen
+* some basic integration tests

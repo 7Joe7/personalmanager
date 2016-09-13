@@ -1,10 +1,9 @@
 package operations
 
 import (
-	"time"
-
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 func getModifyGoalFunc(g *resources.Goal, name, deadline string) func () {
@@ -13,11 +12,7 @@ func getModifyGoalFunc(g *resources.Goal, name, deadline string) func () {
 			g.Name = name
 		}
 		if deadline != "" {
-			d, err := time.Parse(resources.DEADLINE_FORMAT, deadline)
-			if err != nil {
-				panic(err)
-			}
-			g.Deadline = &d
+			g.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 		}
 	}
 }

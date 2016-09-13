@@ -65,29 +65,6 @@ type AlfredIcon struct {
 	Path string `json:"path"`
 }
 
-type Task struct {
-	Name    string `json:",omitempty"`
-	Note    string `json:",omitempty"`
-	Tags    []*Tag `json:",omitempty"`
-	Project *Project
-	Id      string `json:",omitempty"`
-}
-
-func (t *Task) SetId(id string) {
-	t.Id = id
-}
-
-func (t *Task) GetId() string {
-	return t.Id
-}
-
-func (t *Task) Load(tr Transaction) error {
-	if t.Project != nil {
-		return tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(t.Project.Id), t.Project)
-	}
-	return nil
-}
-
 type Tag struct {
 	Name string
 	Id   string

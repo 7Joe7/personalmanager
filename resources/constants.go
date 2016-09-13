@@ -66,6 +66,7 @@ const (
 	ACT_MODIFY_HABIT   = "modify-habit"
 	ACT_PRINT_REVIEW   = "print-review"
 	ACT_MODIFY_REVIEW  = "modify-review"
+	ACT_DEBUG_DATABASE = "debug-database"
 )
 
 var (

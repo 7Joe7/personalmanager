@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	action, id, name, projectId, repetition, deadline *string
+	action, id, name, projectId, repetition, deadline, estimate *string
 	noneAllowed, activeFlag, doneFlag, donePrevious   *bool
 	basePoints                                        *int
 )
@@ -31,6 +31,7 @@ func init() {
 	repetition = flag.String("repetition", "", "Select repetition period.")
 	basePoints = flag.Int("basePoints", -1, "Set base points for success/failure.")
 	deadline = flag.String("deadline", "", "Specify deadine in format 'dd.MM.YYYY HH:mm'.")
+	estimate = flag.String("estimate", "", "Specify time estimate in format '2h45m'.")
 	noneAllowed = flag.Bool("noneAllowed", false, "Provide information whether list should be retrieved with none value allowed.")
 
 	db.Open(resources.DB_PATH)
@@ -56,7 +57,7 @@ func main() {
 	flag.Parse()
 	switch *action {
 	case resources.ACT_CREATE_TASK:
-		operations.AddTask(*name, *projectId)
+		operations.AddTask(*name, *projectId, *deadline, *estimate, *activeFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"))
 	case resources.ACT_CREATE_PROJECT:
 		operations.AddProject(*name)
@@ -102,7 +103,7 @@ func main() {
 		operations.DeleteHabit(*id)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_TASK:
-		operations.ModifyTask(*id, *name, *projectId)
+		operations.ModifyTask(*id, *name, *projectId, *deadline, *estimate, *basePoints, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "task"))
 	case resources.ACT_MODIFY_PROJECT:
 		operations.ModifyProject(*id, *name)
@@ -119,6 +120,8 @@ func main() {
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "review"))
+	case resources.ACT_DEBUG_DATABASE:
+		db.PrintoutDbContents(*id)
 	default:
 		flag.Usage()
 	}

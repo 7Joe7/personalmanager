@@ -146,11 +146,6 @@ func TestSynchronize(t *testing.T) {
 }
 
 func verifyTransactionFlow(t *testing.T, tm *transactionMock) {
-	if tm.functionsCalled[0] != "Add" {
-		t.Errorf("Initialize buckets failed. No add called.")
-	}
-
-	if tm.functionsCalled[1] != "Execute" && tm.functionsCalled[1] != "View" {
-		t.Errorf("Initialize buckets failed. No execute called.")
-	}
+	test.ExpectString("Add", tm.functionsCalled[0], t)
+	test.ExpectBool(false,  tm.functionsCalled[1] != "Execute" && tm.functionsCalled[1] != "View", t)
 }

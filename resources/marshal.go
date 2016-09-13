@@ -13,29 +13,6 @@ func (r *Review) GetItem() *AlfredItem {
 		Valid: true}
 }
 
-func (t *Task) MarshalJSON() ([]byte, error) {
-	type mTask Task
-	if t.Project != nil {
-		t.Project = &Project{Id:t.Project.Id}
-	}
-	return json.Marshal(mTask(*t))
-}
-
-func (t *Task) getItem(id string) *AlfredItem {
-	var subtitle string
-	if t.Project != nil {
-		subtitle = t.Project.Name + " "
-	}
-	subtitle = subtitle + t.Note
-
-	return &AlfredItem{
-		Name:     t.Name,
-		Arg:      id,
-		Subtitle: subtitle,
-		Icon:     NewAlfredIcon(""),
-		Valid:    true}
-}
-
 func (p *Project) getItem(id string) *AlfredItem {
 	return &AlfredItem{
 		Name:     p.Name,
@@ -76,7 +53,7 @@ func (h *Habit) getItem(id string) *AlfredItem {
 			order = HBT_BASE_ORDER
 		}
 		subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT, h.Repetition, h.Successes, h.Tries, h.ActualStreak,
-			h.Deadline.Format(DEADLINE_FORMAT), h.BasePoints)
+			h.Deadline.Format(DATE_FORMAT), h.BasePoints)
 	} else {
 		icon = NewAlfredIcon(ICO_BLACK)
 		order = HBT_BASE_ORDER
@@ -170,7 +147,7 @@ func getZeroItem(noneAllowed, empty bool, elementType string) *AlfredItem {
 	if noneAllowed {
 		return &AlfredItem{
 			Name:  "None",
-			Arg:   "-1",
+			Arg:   "",
 			Icon:  NewAlfredIcon(ICO_BLACK),
 			Valid: true}
 	} else if empty {

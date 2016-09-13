@@ -37,11 +37,7 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 				status.Today += change
 			}
 			if deadline != "" {
-				t, err := time.Parse(resources.DEADLINE_FORMAT, deadline)
-				if err != nil {
-					panic(err)
-				}
-				h.Deadline = &t
+				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 			}
 			if toggleDonePrevious {
 				succeedHabit(h, addPeriod(h.Repetition, h.LastStreakEnd))
@@ -135,11 +131,7 @@ func addHabit(name, repetition, deadline string, activeFlag bool, basePoints int
 	h := resources.NewHabit(name)
 	if activeFlag {
 		activateHabit(h, repetition)
-		deadlineT, err := time.Parse(resources.DEADLINE_FORMAT, deadline)
-		if err != nil {
-			panic(err)
-		}
-		h.Deadline = &deadlineT
+		h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 		if basePoints != -1 {
 			h.BasePoints = basePoints
 		}

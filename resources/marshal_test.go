@@ -14,7 +14,7 @@ import (
 var (
 	testId = "test"
 	testDeadlineTime = utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
-	testDeadlineFormatted = testDeadlineTime.Format(DEADLINE_FORMAT)
+	testDeadlineFormatted = testDeadlineTime.Format(DATE_FORMAT)
 	testTask = &Task{Name:"testing task", Note:"testing task note", Project: &Project{Name:"testing project", Note:"testing project note"}}
 	testProject = &Project{Name:"testing project", Note:"testing project note"}
 	testTag = &Tag{Name:"testing tag"}
@@ -26,29 +26,29 @@ var (
 
 	testTasks = Tasks{Tasks:map[string]*Task{"testTask":testTask}}
 	expectedEmptyTasksJson = `{"items":[{"title":"There are no tasks.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
-	expectedTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project testing task note","valid":true,"icon":{"path":""}}]}`
-	expectedNoneTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project testing task note","valid":true,"icon":{"path":""}},{"title":"None","arg":"-1","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project; Spent: ?/?","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedNoneTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project; Spent: ?/?","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"None","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
 	testProjects = Projects{Projects:map[string]*Project{"testProject":testProject}}
 	expectedEmptyProjectsJson = `{"items":[{"title":"There are no projects.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	expectedProjectJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"testing project note","valid":true,"icon":{"path":""}}]}`
-	expectedNoneProjectsJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"testing project note","valid":true,"icon":{"path":""}},{"title":"None","arg":"-1","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedNoneProjectsJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"testing project note","valid":true,"icon":{"path":""}},{"title":"None","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
 	testTags = Tags{Tags:map[string]*Tag{"testTag":testTag}}
 	expectedEmptyTagsJson = `{"items":[{"title":"There are no tags.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	expectedTagsJson = `{"items":[{"title":"testing tag","arg":"testTag","valid":true,"icon":{"path":""}}]}`
-	expectedNoneTagsJson = `{"items":[{"title":"testing tag","arg":"testTag","valid":true,"icon":{"path":""}},{"title":"None","arg":"-1","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedNoneTagsJson = `{"items":[{"title":"testing tag","arg":"testTag","valid":true,"icon":{"path":""}},{"title":"None","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
 	testGoals = Goals{Goals:map[string]*Goal{"testGoal":testGoal}}
 	expectedEmptyGoalsJson = `{"items":[{"title":"There are no goals.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	expectedGoalsJson = `{"items":[{"title":"testing goal","arg":"testGoal","valid":true,"icon":{"path":""}}]}`
-	expectedNoneGoalsJson = `{"items":[{"title":"testing goal","arg":"testGoal","valid":true,"icon":{"path":""}},{"title":"None","arg":"-1","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedNoneGoalsJson = `{"items":[{"title":"testing goal","arg":"testGoal","valid":true,"icon":{"path":""}},{"title":"None","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
 
 	testHabits = Habits{Habits:map[string]*Habit{"testHabitActive":testHabitActive, "testHabitDone":testHabitDone, "testHabitNonActive":testHabitNonActive}}
 	expectedEmptyHabitsJson = `{"items":[{"title":"There are no habits.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	expectedHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"Daily, 7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"Weekly, 2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}}]}`, testDeadlineFormatted, testDeadlineFormatted)
-	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"Daily, 7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"Weekly, 2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"None","arg":"-1","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`, testDeadlineFormatted, testDeadlineFormatted)
+	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"Daily, 7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"Weekly, 2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"None","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`, testDeadlineFormatted, testDeadlineFormatted)
 	testHabitsOrdering = map[int]string{0:"testHabitActive",1:"testHabitNonActive", 2:"testHabitDone"}
 
 	testItems = Items{[]*AlfredItem{(&Review{Repetition:HBT_REPETITION_WEEKLY, Deadline:utils.GetFirstSaturday()}).GetItem()}}
-	expectedTestItemsJson = `{"items":[{"title":"Review repeated Weekly, next: 17.9.2016.","valid":false,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedTestItemsJson = `{"items":[{"title":"Review repeated Weekly, next: 17.9.2016.","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
 )
 
 func TestOrdering(t *testing.T) {
@@ -94,7 +94,7 @@ func TestMarshalTasks(t *testing.T) {
 
 func TestGetTaskItem(t *testing.T) {
 	ai := testTask.getItem(testId)
-	testCommonAttr(ai, true, testId, testTask.Name, fmt.Sprintf(SUB_FORMAT_TASK, testTask.Project.Name, testTask.Note), "", t)
+	testCommonAttr(ai, true, testId, testTask.Name, fmt.Sprintf("%s; Spent: ?/?", testTask.Project.Name), "./icons/black@2x.png", t)
 }
 
 func TestGetProjectItem(t *testing.T) {
@@ -124,7 +124,7 @@ func TestGetHabitActiveItem(t *testing.T) {
 	ai := testHabitActive.getItem(testId)
 	testCommonAttr(ai, true, testId, testHabitActive.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT,
 		testHabitActive.Repetition, testHabitActive.Successes, testHabitActive.Tries,
-		testHabitActive.ActualStreak, testHabitActive.Deadline.Format(DEADLINE_FORMAT),
+		testHabitActive.ActualStreak, testHabitActive.Deadline.Format(DATE_FORMAT),
 		testHabitActive.BasePoints), ICO_RED, t)
 	expectedOrder := HBT_BASE_ORDER - testHabitActive.BasePoints
 	test.ExpectInt(expectedOrder, ai.order, t)
@@ -134,7 +134,7 @@ func TestGetHabitDoneItem(t *testing.T) {
 	ai := testHabitDone.getItem(testId)
 	testCommonAttr(ai, true, testId, testHabitDone.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT,
 		testHabitDone.Repetition, testHabitDone.Successes, testHabitDone.Tries, testHabitDone.ActualStreak,
-		testHabitDone.Deadline.Format(DEADLINE_FORMAT), testHabitDone.BasePoints), ICO_GREEN, t)
+		testHabitDone.Deadline.Format(DATE_FORMAT), testHabitDone.BasePoints), ICO_GREEN, t)
 	expectedOrder := HBT_DONE_BASE_ORDER - testHabitDone.BasePoints
 	test.ExpectInt(expectedOrder, ai.order, t)
 }
@@ -146,7 +146,7 @@ func TestGetStatusItem(t *testing.T) {
 
 func TestGetZeroItem(t *testing.T) {
 	ai := getZeroItem(true, false, "entity")
-	testCommonAttr(ai, true, "-1", "None", "", ICO_BLACK, t)
+	testCommonAttr(ai, true, "", "None", "", ICO_BLACK, t)
 	if ai = getZeroItem(false, false, "entity"); ai != nil {
 		t.Errorf("Expected zero item to be nil, it was %v.", ai)
 	}

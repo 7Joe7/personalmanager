@@ -1,10 +1,9 @@
 package operations
 
 import (
-	"time"
-
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 func modifyReview(repetition, deadline string) {
@@ -22,11 +21,7 @@ func getModifyReviewFunc(r *resources.Review, repetition, deadline string) func 
 			r.Repetition = repetition
 		}
 		if deadline != "" {
-			d, err := time.Parse(resources.DATE_FORMAT, deadline)
-			if err != nil {
-				panic(err)
-			}
-			r.Deadline = &d
+			r.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 		}
 	}
 }

@@ -24,16 +24,16 @@ func EnsureValues(t resources.Transaction) {
 	ensureValues(t)
 }
 
-func AddTask(name, projectId string) {
-	addTask(name, projectId)
+func AddTask(name, projectId, deadline, estimate string, active bool) {
+	addTask(name, projectId, deadline, estimate, active)
 }
 
 func DeleteTask(taskId string) {
 	deleteTask(taskId)
 }
 
-func ModifyTask(taskId, name, projectId string) {
-	modifyTask(taskId, name, projectId)
+func ModifyTask(taskId, name, projectId, deadline, estimate string, basePoints int, activeFlag, doneFlag bool) {
+	modifyTask(taskId, name, projectId, deadline, estimate, basePoints, activeFlag, doneFlag)
 }
 
 func GetTask(taskId string) *resources.Task {

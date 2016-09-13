@@ -11,7 +11,7 @@ import (
 
 var (
 	tomorrowDeadline = utils.GetTimePointer(time.Now().Add(24 * time.Hour).Truncate(24 * time.Hour))
-	tomorrowDeadlineStr = tomorrowDeadline.Format(resources.DEADLINE_FORMAT)
+	tomorrowDeadlineStr = tomorrowDeadline.Format(resources.DATE_FORMAT)
 )
 
 func TestGetModifyHabitFunc(t *testing.T) {
@@ -53,7 +53,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	getModifyHabitFunc(h, "", "", "", false, true, false, -1, changeStatus)()
 	verifyHabitState("testHabit5", resources.HBT_REPETITION_MONTHLY, tomorrowDeadlineStr, "testHabit5", true, false,
 		2, 1, -1, 1, 12, -12, -12, h, changeStatus, t)
-	test.ExpectString(h.Deadline.Format(resources.DEADLINE_FORMAT), h.LastStreakEnd.Format(resources.DEADLINE_FORMAT), t)
+	test.ExpectString(h.Deadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT), t)
 
 	// set habit done previous period
 	h = getActiveHabit("testHabit6", resources.HBT_REPETITION_WEEKLY, 8, 6, -1, 6, 3)
@@ -91,7 +91,27 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	getSyncHabitFunc(h, changeStatus)()
 	verifyHabitState("testHabit9", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit9", true, false,
 		20, 12, -1, 3, 8, -8, 0, h, changeStatus, t)
-	test.ExpectString(todayDeadline.Format(resources.DEADLINE_FORMAT), h.LastStreakEnd.Format(resources.DEADLINE_FORMAT), t)
+	test.ExpectString(todayDeadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT), t)
+}
+
+func TestGetHabits(t *testing.T) {
+	tm := &transactionMock{functionsCalled: []string{}}
+	tm.Add(func () error {
+		return tm.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, func (id string) resources.Entity {
+			return &resources.Habit{}
+		})
+	})
+	tm.Execute()
+	verifyTransactionFlow(t, tm)
+}
+
+func TestGetHabit(t *testing.T) {
+	tm := &transactionMock{functionsCalled: []string{}}
+	tm.Add(func () error {
+		return tm.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("id"), &resources.Habit{})
+	})
+	tm.Execute()
+	verifyTransactionFlow(t, tm)
 }
 
 func verifyHabitState(expectedName, expectedRepetition, expectedDeadline, expectedId string, expectedActive, expectedDone bool,
@@ -104,7 +124,7 @@ func verifyHabitState(expectedName, expectedRepetition, expectedDeadline, expect
 	if expectedDeadline == "" {
 		test.ExpectBool(true, h.Deadline == nil, t)
 	} else {
-		test.ExpectString(expectedDeadline, h.Deadline.Format(resources.DEADLINE_FORMAT), t)
+		test.ExpectString(expectedDeadline, h.Deadline.Format(resources.DATE_FORMAT), t)
 	}
 	test.ExpectInt(expectedTries, h.Tries, t)
 	test.ExpectInt(expectedSuccesses, h.Successes, t)

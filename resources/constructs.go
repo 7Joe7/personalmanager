@@ -4,9 +4,9 @@ import (
 	"github.com/7joe7/personalmanager/checks"
 )
 
-func NewTask(name string, project *Project) *Task {
+func NewTask(name string) *Task {
 	checks.VerifyTask(name)
-	return &Task{Name:name, Project: project}
+	return &Task{Name:name, BasePoints: 1}
 }
 
 func NewProject(name string) *Project {
