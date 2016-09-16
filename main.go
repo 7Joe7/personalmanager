@@ -52,12 +52,13 @@ func main() {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalf("Panicked. %v %s", r, string(debug.Stack()))
+			os.Exit(3)
 		}
 	}()
 	flag.Parse()
 	switch *action {
 	case resources.ACT_CREATE_TASK:
-		operations.AddTask(*name, *projectId, *deadline, *estimate, *activeFlag)
+		operations.AddTask(*name, *projectId, *deadline, *estimate, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"))
 	case resources.ACT_CREATE_PROJECT:
 		operations.AddProject(*name)
@@ -72,7 +73,7 @@ func main() {
 		operations.AddHabit(*name, *repetition, *deadline, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetTasks(), *noneAllowed})
+		alfred.PrintEntities(resources.Tasks{operations.GetTasks(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_PROJECTS:
 		alfred.PrintEntities(resources.Projects{operations.GetProjects(), *noneAllowed})
 	case resources.ACT_PRINT_TAGS:
@@ -125,4 +126,5 @@ func main() {
 	default:
 		flag.Usage()
 	}
+	resources.WaitGroup.Wait()
 }

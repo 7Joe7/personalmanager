@@ -24,8 +24,8 @@ func EnsureValues(t resources.Transaction) {
 	ensureValues(t)
 }
 
-func AddTask(name, projectId, deadline, estimate string, active bool) {
-	addTask(name, projectId, deadline, estimate, active)
+func AddTask(name, projectId, deadline, estimate string, active bool, basePoints int) {
+	addTask(name, projectId, deadline, estimate, active, basePoints)
 }
 
 func DeleteTask(taskId string) {

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/7joe7/personalmanager/utils"
+	"strconv"
 )
 
 type Task struct {
@@ -54,6 +55,8 @@ func (t *Task) MarshalJSON() ([]byte, error) {
 func (t *Task) getItem(id string) *AlfredItem {
 	var subtitle string
 	var comma bool
+	var order int
+
 	if t.Deadline != nil {
 		subtitle = t.Deadline.Format(DATE_FORMAT)
 		comma = true
@@ -67,13 +70,14 @@ func (t *Task) getItem(id string) *AlfredItem {
 		subtitle = t.Project.Name
 	}
 
+	if comma {
+		subtitle += "; "
+	}
+	subtitle += strconv.Itoa(t.BasePoints)
+
 	var todayTagPresent bool
 	if len(t.Tags) > 0 {
-		if comma {
-			subtitle += "; "
-		}
-		comma = true
-		subtitle += "Tags: "
+		subtitle += "; Tags: "
 	}
 	for i := 0; i < len(t.Tags); i++ {
 		if i > 0 {
@@ -85,15 +89,20 @@ func (t *Task) getItem(id string) *AlfredItem {
 		}
 	}
 
-	if comma {
-		subtitle += "; "
-	}
-	subtitle += "Spent: "
+	subtitle += "; Spent: "
 
 	if t.TimeSpent == nil {
-		subtitle += "?/"
+		if t.InProgress {
+			subtitle += utils.DurationToHMFormat(utils.GetDurationPointer(time.Now().Sub(*t.InProgressSince))) + "/"
+		} else {
+			subtitle += "0h0m/"
+		}
 	} else {
-		subtitle += utils.DurationToHMFormat(t.TimeSpent) + "/"
+		if t.InProgress {
+			subtitle += utils.MinutesToHMFormat(t.TimeSpent.Minutes()+time.Now().Sub(*t.InProgressSince).Minutes()) + "/"
+		} else {
+			subtitle += utils.DurationToHMFormat(t.TimeSpent) + "/"
+		}
 	}
 	if t.TimeEstimate == nil {
 		subtitle += "?"
@@ -103,15 +112,20 @@ func (t *Task) getItem(id string) *AlfredItem {
 
 	var icoPath string
 	if t.InProgress {
+		order = 1
 		icoPath = ICO_BLUE
 	} else if t.Done {
+		order = 2000 - t.BasePoints
 		icoPath = ICO_GREEN
 	} else if t.Deadline != nil && t.Deadline.Before(time.Now()) {
+		order = 250 - t.BasePoints
 		icoPath = ICO_RED
 	} else if todayTagPresent {
+		order = 500 - t.BasePoints
 		icoPath = ICO_ORANGE
 	} else {
-		icoPath = ICO_BLACK
+		order = 1000 - t.BasePoints
+		icoPath = ICO_CYAN
 	}
 
 	return &AlfredItem{
@@ -119,5 +133,6 @@ func (t *Task) getItem(id string) *AlfredItem {
 		Arg:      id,
 		Subtitle: subtitle,
 		Icon:     NewAlfredIcon(icoPath),
-		Valid:    true}
+		Valid:    true,
+		order:    order}
 }

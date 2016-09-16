@@ -11,6 +11,7 @@ type Items struct {
 type Tasks struct {
 	Tasks       map[string]*Task
 	NoneAllowed bool
+	Status      *Status
 }
 
 type Projects struct {
@@ -115,33 +116,6 @@ func (g *Goal) GetId() string {
 }
 
 func (g *Goal) Load(tr Transaction) error {
-	return nil
-}
-
-type Habit struct {
-	Name          string
-	Active        bool
-	Done          bool
-	Deadline      *time.Time
-	Tries         int
-	Successes     int
-	ActualStreak  int
-	LastStreak    int
-	LastStreakEnd *time.Time
-	Repetition    string
-	BasePoints    int
-	Id            string
-}
-
-func (h *Habit) SetId(id string) {
-	h.Id = id
-}
-
-func (h *Habit) GetId() string {
-	return h.Id
-}
-
-func (h *Habit) Load(tr Transaction) error {
 	return nil
 }
 

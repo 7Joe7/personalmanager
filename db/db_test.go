@@ -44,6 +44,29 @@ func TestTransaction_SetValue(t *testing.T) {
 	removeDb(t)
 }
 
+func TestTransaction_ModifyValue(t *testing.T) {
+	testOpen(t)
+	testBucketInitialization(t, resources.DB_DEFAULT_BASIC_BUCKET_NAME)
+	tr := newTransaction()
+	tr.Add(func () error {
+		return tr.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, []byte("9"))
+	})
+	test.ExpectSuccess(t, tr.execute())
+	testGetValue("9", resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, t)
+	tr = newTransaction()
+	tr.Add(func () error {
+		return tr.ModifyValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, func (value []byte) []byte {
+			if string(value) == "9" {
+				return []byte("11")
+			}
+			return []byte("Something is wrong")
+		})
+	})
+	test.ExpectSuccess(t, tr.execute())
+	testGetValue("11", resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, t)
+	removeDb(t)
+}
+
 func TestTransaction_EnsureEntity(t *testing.T) {
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_BASIC_BUCKET_NAME)
@@ -348,7 +371,7 @@ func testBucketInitialization(t *testing.T, bucketName []byte) {
 func testGetValue(expectedValue string, bucketName, lastIdKey []byte, t *testing.T) {
 	tr := newTransaction()
 	tr.Add(func () error {
-		value := tr.GetValue(resources.DB_DEFAULT_TASKS_BUCKET_NAME, lastIdKey)
+		value := tr.GetValue(bucketName, lastIdKey)
 		if string(value) != expectedValue {
 			t.Errorf("Expected last id key equal to '%s', got '%s'.", expectedValue, string(value))
 		}

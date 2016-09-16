@@ -52,7 +52,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	getModifyHabitFunc(h, "", "", "", false, true, false, -1, changeStatus)()
 	verifyHabitState("testHabit5", resources.HBT_REPETITION_MONTHLY, tomorrowDeadlineStr, "testHabit5", true, false,
-		2, 1, -1, 1, 12, -12, -12, h, changeStatus, t)
+		2, 0, -1, 1, 12, -12, -12, h, changeStatus, t)
 	test.ExpectString(h.Deadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT), t)
 
 	// set habit done previous period

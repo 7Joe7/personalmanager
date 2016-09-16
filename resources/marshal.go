@@ -40,47 +40,27 @@ func (g *Goal) getItem(id string) *AlfredItem {
 		Valid:    true}
 }
 
-func (h *Habit) getItem(id string) *AlfredItem {
-	var subtitle string
-	var icon *AlfredIcon
-	var order int
-	if h.Active {
-		if h.Done {
-			icon = NewAlfredIcon(ICO_GREEN)
-			order = HBT_DONE_BASE_ORDER
-		} else {
-			icon = NewAlfredIcon(ICO_RED)
-			order = HBT_BASE_ORDER
-		}
-		subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT, h.Repetition, h.Successes, h.Tries, h.ActualStreak,
-			h.Deadline.Format(DATE_FORMAT), h.BasePoints)
-	} else {
-		icon = NewAlfredIcon(ICO_BLACK)
-		order = HBT_BASE_ORDER
-		subtitle = fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT, h.Successes, h.Tries)
-	}
-	order -= h.BasePoints
-	return &AlfredItem{
-		Name:     h.Name,
-		Arg:      id,
-		Subtitle: subtitle,
-		Icon:     icon,
-		Valid:    true,
-		order:    order}
-}
-
 func (s *Status) getItem() *AlfredItem {
-	return &AlfredItem{Name: fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today), Icon:NewAlfredIcon(ICO_BLACK)}
+	return &AlfredItem{
+		Name: fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today),
+		Icon: NewAlfredIcon(ICO_HABIT),
+		Mods:getEmptyMods()}
 }
 
 func (ts Tasks) MarshalJSON() ([]byte, error) {
-	items := []*AlfredItem{}
-	for id, t := range ts.Tasks {
-		items = append(items, t.getItem(id))
+	items := items{}
+	var zeroCount int
+	if ts.Status != nil {
+		items = append(items, ts.Status.getItem())
+		zeroCount = 1
 	}
-	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == 0, "tasks"); zeroItem != nil {
+	for id, h := range ts.Tasks {
+		items = append(items, h.getItem(id))
+	}
+	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == zeroCount, "task"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
+	sort.Sort(items)
 	return marshalItems(items)
 }
 
@@ -89,7 +69,7 @@ func (ps Projects) MarshalJSON() ([]byte, error) {
 	for id, p := range ps.Projects {
 		items = append(items, p.getItem(id))
 	}
-	if zeroItem := getZeroItem(ps.NoneAllowed, len(items) == 0, "projects"); zeroItem != nil {
+	if zeroItem := getZeroItem(ps.NoneAllowed, len(items) == 0, "project"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
 	return marshalItems(items)
@@ -100,7 +80,7 @@ func (ts Tags) MarshalJSON() ([]byte, error) {
 	for id, t := range ts.Tags {
 		items = append(items, t.getItem(id))
 	}
-	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == 0, "tags"); zeroItem != nil {
+	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == 0, "tag"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
 	return marshalItems(items)
@@ -111,7 +91,7 @@ func (gs Goals) MarshalJSON() ([]byte, error) {
 	for id, g := range gs.Goals {
 		items = append(items, g.getItem(id))
 	}
-	if zeroItem := getZeroItem(gs.NoneAllowed, len(items) == 0, "goals"); zeroItem != nil {
+	if zeroItem := getZeroItem(gs.NoneAllowed, len(items) == 0, "goal"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
 	return marshalItems(items)
@@ -128,7 +108,7 @@ func (hs Habits) MarshalJSON() ([]byte, error) {
 		items = append(items, h.getItem(id))
 	}
 	sort.Sort(items)
-	if zeroItem := getZeroItem(hs.NoneAllowed, len(items) == zeroCount, "habits"); zeroItem != nil {
+	if zeroItem := getZeroItem(hs.NoneAllowed, len(items) == zeroCount, "habit"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
 	return marshalItems(items)
@@ -146,10 +126,12 @@ func (ho items) Less(i, j int) bool {
 func getZeroItem(noneAllowed, empty bool, elementType string) *AlfredItem {
 	if noneAllowed {
 		return &AlfredItem{
-			Name:  "None",
+			Name:  "No " + elementType,
 			Arg:   "",
 			Icon:  NewAlfredIcon(ICO_BLACK),
-			Valid: true}
+			Valid: true,
+			Mods:  getEmptyMods(),
+			order: 10000}
 	} else if empty {
 		return &AlfredItem{
 			Name:  fmt.Sprintf(NAME_FORMAT_EMPTY, elementType),

@@ -24,6 +24,11 @@ func (t *transaction) SetValue(bucketName, key, value []byte) error {
 	return t.tx.Bucket(bucketName).Put(key, value)
 }
 
+func (t *transaction) ModifyValue(bucketName, key []byte, modify func ([]byte) []byte) error {
+	b := t.tx.Bucket(bucketName)
+	return b.Put(key, modify(b.Get(key)))
+}
+
 func (t *transaction) EnsureEntity(bucketName, key []byte, entity resources.Entity) error {
 	b := t.tx.Bucket(bucketName)
 	if b.Get(key) == nil {

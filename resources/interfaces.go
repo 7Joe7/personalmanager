@@ -3,6 +3,7 @@ package resources
 type Transaction interface {
 	GetValue(bucketName, key []byte) []byte
 	SetValue(bucketName, key, value []byte) error
+	ModifyValue(bucketName, key []byte, modify func ([]byte) []byte) error
 	EnsureEntity(bucketName, key []byte, entity Entity) error
 	AddEntity(bucketName []byte, entity Entity) error
 	DeleteEntity(bucketName, id []byte) error

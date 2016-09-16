@@ -28,11 +28,18 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 				if h.Done {
 					h.Done = false
 					failHabit(h)
+					h.Successes -= 1
 				} else {
 					h.Done = true
 					succeedHabit(h, h.LastStreakEnd)
 				}
 				change := h.ActualStreak * h.BasePoints
+				switch h.Repetition {
+				case resources.HBT_REPETITION_WEEKLY:
+					change *= 2
+				case resources.HBT_REPETITION_MONTHLY:
+					change *= 3
+				}
 				status.Score += change
 				status.Today += change
 			}
@@ -86,7 +93,7 @@ func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status) func (
 		}
 
 		if h.Deadline.Before(time.Now()) {
-			if !h.Done {
+			if !h.Done && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
 				failHabit(h)
 				changeStatus.Score = h.ActualStreak * h.BasePoints
 			}
@@ -98,7 +105,7 @@ func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status) func (
 }
 
 func failHabit(h *resources.Habit) {
-	h.LastStreakEnd = utils.GetTimePointer(*h.Deadline)
+	*h.LastStreakEnd = *h.Deadline
 	h.LastStreak = h.ActualStreak
 	if h.ActualStreak > 0 {
 		h.ActualStreak = 0
@@ -144,7 +151,7 @@ func addHabit(name, repetition, deadline string, activeFlag bool, basePoints int
 }
 
 func deleteHabit(habitId string) {
-	db.DeleteEntity([]byte(habitId), resources.DB_DEFAULT_HABITS_BUCKET_NAME)
+	db.DeleteEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId))
 }
 
 func modifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
@@ -190,6 +197,12 @@ func filterHabits(filter func(*resources.Habit) bool) map[string]*resources.Habi
 	copyFunc := func () {
 		c := &resources.Habit{}
 		*c = *h
+		if h.LastStreakEnd != nil {
+			c.LastStreakEnd = utils.GetTimePointer(*h.LastStreakEnd)
+		}
+		if h.Deadline != nil {
+			c.Deadline = utils.GetTimePointer(*h.Deadline)
+		}
 		habits[h.Id] = c
 	}
 	db.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h, func () bool { return filter(h) }, copyFunc)

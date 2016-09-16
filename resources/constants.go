@@ -28,21 +28,42 @@ const (
 	ICO_WHITE_ALT    = "./icons/white_alt@2x.png"
 	ICO_YELLOW       = "./icons/yellow@2x.png"
 	ICO_SPECIAL      = "./icons/special.png"
+	ICO_HABIT        = "./icons/habit.jpeg"
+
+	ANY_CMD_QUIT = "quit"
+	ANY_CMD_BLACK_ALT = "black_alt"
+	ANY_CMD_BLACK = "black"
+	ANY_CMD_BLUE = "blue"
+	ANY_CMD_CYAN = "cyan"
+	ANY_CMD_EXCLAMATION = "exclamation"
+	ANY_CMD_GREEN = "green"
+	ANY_CMD_ORANGE = "orange"
+	ANY_CMD_PURPLE = "purple"
+	ANY_CMD_QUESTION = "question"
+	ANY_CMD_QUESTION_ALT = "question_alt"
+	ANY_CMD_RED = "red"
+	ANY_CMD_WHITE = "white"
+	ANY_CMD_WHITE_ALT = "white_alt"
+	ANY_CMD_YELLOW = "yellow"
+
+	ANY_PORT_ACTIVE_HABIT = 2800
 
 	DEADLINE_FORMAT = "2.1.2006 15:04"
 	DATE_FORMAT     = "2.1.2006"
 
-	SUB_FORMAT_ACTIVE_HABIT     = "%s, %d/%d, actual %d, %v, base points %d"
+	SUB_FORMAT_ACTIVE_HABIT     = "%d/%d, actual %d, %v, base points %d"
 	SUB_FORMAT_NON_ACTIVE_HABIT = "%d/%d"
 	SUB_FORMAT_TASK             = "%s %s"
 	SUB_FORMAT_PROJECT          = "%s"
 	SUB_FORMAT_TAG              = ""
 	SUB_FORMAT_GOAL             = ""
 	NAME_FORMAT_STATUS          = "Total %d, today %d."
-	NAME_FORMAT_EMPTY           = "There are no %s."
+	NAME_FORMAT_EMPTY           = "There are no %ss."
 
-	HBT_DONE_BASE_ORDER = 200
-	HBT_BASE_ORDER      = 100
+	HBT_DONE_BASE_ORDER    = 2000
+	HBT_BASE_ORDER_DAILY   = 1000
+	HBT_BASE_ORDER_WEEKLY  = 1250
+	HBT_BASE_ORDER_MONTHLY = 1500
 
 	ACT_CREATE_TASK    = "create-task"
 	ACT_PRINT_TASKS    = "print-tasks"
@@ -85,10 +106,11 @@ var (
 		DB_DEFAULT_GOALS_BUCKET_NAME,
 		DB_DEFAULT_HABITS_BUCKET_NAME}
 
-	DB_LAST_ID_KEY         = []byte("last.id")
-	DB_LAST_SYNC_KEY       = []byte("last.sync")
-	DB_ACTUAL_STATUS_KEY   = []byte("actual.status")
-	DB_REVIEW_SETTINGS_KEY = []byte("review.settings")
+	DB_LAST_ID_KEY            = []byte("last.id")
+	DB_LAST_SYNC_KEY          = []byte("last.sync")
+	DB_ACTUAL_STATUS_KEY      = []byte("actual.status")
+	DB_REVIEW_SETTINGS_KEY    = []byte("review.settings")
+	DB_ACTUAL_ACTIVE_TASK_KEY = []byte("actual.active.task")
 
 	ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,
