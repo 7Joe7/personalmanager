@@ -32,34 +32,36 @@ func (h *Habit) Load(tr Transaction) error {
 	return nil
 }
 
-func (h *Habit) getItem(id string) *AlfredItem {
-	var subtitle string
-	var icon *AlfredIcon
-	var order int
+func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 	if h.Active {
 		if h.Done {
-			icon = NewAlfredIcon(ICO_GREEN)
-			order = HBT_DONE_BASE_ORDER
+			return ICO_GREEN, "green", HBT_DONE_BASE_ORDER
 		} else {
 			switch h.Repetition {
 			case HBT_REPETITION_DAILY:
-				icon = NewAlfredIcon(ICO_RED)
-				order = HBT_BASE_ORDER_DAILY
+				return ICO_RED, "red", HBT_BASE_ORDER_DAILY
 			case HBT_REPETITION_WEEKLY:
-				icon = NewAlfredIcon(ICO_ORANGE)
-				order = HBT_BASE_ORDER_WEEKLY
+				return ICO_ORANGE, "orange", HBT_BASE_ORDER_WEEKLY
 			case HBT_REPETITION_MONTHLY:
-				icon = NewAlfredIcon(ICO_YELLOW)
-				order = HBT_BASE_ORDER_MONTHLY
+				return ICO_YELLOW, "yellow", HBT_BASE_ORDER_MONTHLY
 			}
 		}
+	} else {
+		return ICO_BLACK, "black", HBT_BASE_ORDER_DAILY
+	}
+	return "", "", 0
+}
+
+func (h *Habit) getItem(id string) *AlfredItem {
+	var subtitle string
+	if h.Active {
 		subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT, h.Successes, h.Tries, h.ActualStreak,
 			h.Deadline.Format(DATE_FORMAT), h.BasePoints)
 	} else {
-		icon = NewAlfredIcon(ICO_BLACK)
-		order = HBT_BASE_ORDER_DAILY
 		subtitle = fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT, h.Successes, h.Tries)
 	}
+	iconPath, _, order := h.GetIconColourAndOrder()
+	icon := NewAlfredIcon(iconPath)
 	order -= h.BasePoints
 	return &AlfredItem{
 		Name:     h.Name,

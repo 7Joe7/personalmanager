@@ -134,6 +134,18 @@ func (s *Status) Load(tr Transaction) error {
 	return nil
 }
 
+type ActivePorts []*ActivePort
+
+func (ap ActivePorts) Len() int { return len(ap) }
+func (ap ActivePorts) Swap(i, j int) { ap[i], ap[j] = ap[j], ap[i] }
+func (ap ActivePorts) Less(i, j int) bool { return ap[i].Port < ap[j].Port }
+
+type ActivePort struct {
+	Port       int
+	BucketName []byte
+	Id         []byte
+}
+
 type Review struct {
 	Deadline   *time.Time
 	Repetition string

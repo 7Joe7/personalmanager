@@ -6,9 +6,10 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
 	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/anybar"
 )
 
-func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int, status *resources.Status) func () {
+func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int, status *resources.Status, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			h.Name = name
@@ -18,6 +19,8 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 				deactivateHabit(h)
 			} else {
 				activateHabit(h, repetition)
+				_, colour, _ := h.GetIconColourAndOrder()
+				anybar.StartNewPort(h.Name, colour, []byte(h.Id), tr)
 			}
 		}
 		if h.Active {
@@ -157,10 +160,10 @@ func deleteHabit(habitId string) {
 func modifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
 	habit := &resources.Habit{}
 	habitStatus := &resources.Status{}
-	modifyHabit := getModifyHabitFunc(habit, name, repetition, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints, habitStatus)
 	status := &resources.Status{}
 	t := db.NewTransaction()
 	t.Add(func () error {
+		modifyHabit := getModifyHabitFunc(habit, name, repetition, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints, habitStatus, t)
 		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), habit, modifyHabit); err != nil {
 			return err
 		}

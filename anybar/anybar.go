@@ -4,10 +4,34 @@ import (
 	"os/exec"
 	"fmt"
 	"net"
+	"time"
+	"sort"
+	"encoding/json"
 
 	"github.com/7joe7/personalmanager/resources"
-	"time"
 )
+
+func StartNewPort(title, icon string, id []byte, t resources.Transaction) {
+	var activePorts resources.ActivePorts
+	activePortsB := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ANYBAR_ACTIVE_HABITS_PORTS)
+	err := json.Unmarshal(activePortsB, activePorts)
+	if err != nil {
+		panic(err)
+	}
+
+	port := GetNewPort(activePorts)
+	activePorts = append(activePorts, &resources.ActivePort{Port:port,BucketName:resources.DB_DEFAULT_HABITS_BUCKET_NAME,Id:id})
+	sort.Sort(activePorts)
+
+	activePortsB, err = json.Marshal(activePorts)
+	if err != nil {
+		panic(err)
+	}
+	err = t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ANYBAR_ACTIVE_HABITS_PORTS, activePortsB)
+	if err != nil {
+		panic(err)
+	}
+}
 
 func StartWithIcon(port int, title, icon string) {
 	_, err := start(port, title)
@@ -33,6 +57,15 @@ func ChangeIcon(port int, colour string) {
 		panic(err)
 	}
 	resources.WaitGroup.Done()
+}
+
+func GetNewPort(activePorts []*resources.ActivePort) int {
+	for i := 0; i < len(activePorts); i++ {
+		if activePorts[i].Port != resources.ANY_PORTS_RANGE_BASE + i {
+			return resources.ANY_PORTS_RANGE_BASE + i
+		}
+	}
+	return len(activePorts) + resources.ANY_PORTS_RANGE_BASE
 }
 
 func Quit(port int) {

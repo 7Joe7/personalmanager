@@ -30,23 +30,24 @@ const (
 	ICO_SPECIAL      = "./icons/special.png"
 	ICO_HABIT        = "./icons/habit.jpeg"
 
-	ANY_CMD_QUIT = "quit"
-	ANY_CMD_BLACK_ALT = "black_alt"
-	ANY_CMD_BLACK = "black"
-	ANY_CMD_BLUE = "blue"
-	ANY_CMD_CYAN = "cyan"
-	ANY_CMD_EXCLAMATION = "exclamation"
-	ANY_CMD_GREEN = "green"
-	ANY_CMD_ORANGE = "orange"
-	ANY_CMD_PURPLE = "purple"
-	ANY_CMD_QUESTION = "question"
+	ANY_CMD_QUIT         = "quit"
+	ANY_CMD_BLACK_ALT    = "black_alt"
+	ANY_CMD_BLACK        = "black"
+	ANY_CMD_BLUE         = "blue"
+	ANY_CMD_CYAN         = "cyan"
+	ANY_CMD_EXCLAMATION  = "exclamation"
+	ANY_CMD_GREEN        = "green"
+	ANY_CMD_ORANGE       = "orange"
+	ANY_CMD_PURPLE       = "purple"
+	ANY_CMD_QUESTION     = "question"
 	ANY_CMD_QUESTION_ALT = "question_alt"
-	ANY_CMD_RED = "red"
-	ANY_CMD_WHITE = "white"
-	ANY_CMD_WHITE_ALT = "white_alt"
-	ANY_CMD_YELLOW = "yellow"
+	ANY_CMD_RED          = "red"
+	ANY_CMD_WHITE        = "white"
+	ANY_CMD_WHITE_ALT    = "white_alt"
+	ANY_CMD_YELLOW       = "yellow"
 
 	ANY_PORT_ACTIVE_HABIT = 2800
+	ANY_PORTS_RANGE_BASE  = 2100
 
 	DEADLINE_FORMAT = "2.1.2006 15:04"
 	DATE_FORMAT     = "2.1.2006"
@@ -106,11 +107,12 @@ var (
 		DB_DEFAULT_GOALS_BUCKET_NAME,
 		DB_DEFAULT_HABITS_BUCKET_NAME}
 
-	DB_LAST_ID_KEY            = []byte("last.id")
-	DB_LAST_SYNC_KEY          = []byte("last.sync")
-	DB_ACTUAL_STATUS_KEY      = []byte("actual.status")
-	DB_REVIEW_SETTINGS_KEY    = []byte("review.settings")
-	DB_ACTUAL_ACTIVE_TASK_KEY = []byte("actual.active.task")
+	DB_LAST_ID_KEY                = []byte("last.id")
+	DB_LAST_SYNC_KEY              = []byte("last.sync")
+	DB_ACTUAL_STATUS_KEY          = []byte("actual.status")
+	DB_REVIEW_SETTINGS_KEY        = []byte("review.settings")
+	DB_ACTUAL_ACTIVE_TASK_KEY     = []byte("actual.active.task")
+	DB_ANYBAR_ACTIVE_HABITS_PORTS = []byte("anybar.active.habits")
 
 	ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,
