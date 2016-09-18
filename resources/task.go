@@ -17,6 +17,7 @@ type Task struct {
 	Done            bool   `json:",omitempty"`
 	Tags            []*Tag `json:",omitempty"`
 	Scheduled       string `json:",omitempty"`
+	Type            string `json:",omitempty"`
 	InProgressSince *time.Time
 	DoneTime        *time.Time
 	Deadline        *time.Time

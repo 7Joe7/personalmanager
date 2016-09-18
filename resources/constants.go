@@ -47,7 +47,7 @@ const (
 	ANY_CMD_YELLOW       = "yellow"
 
 	ANY_PORT_ACTIVE_TASK = 2800
-	ANY_PORTS_RANGE_BASE  = 2100
+	ANY_PORTS_RANGE_BASE = 2100
 
 	DEADLINE_FORMAT = "2.1.2006 15:04"
 	DATE_FORMAT     = "2.1.2006"
@@ -66,35 +66,40 @@ const (
 	HBT_BASE_ORDER_WEEKLY  = 1250
 	HBT_BASE_ORDER_MONTHLY = 1500
 
-	ACT_CREATE_TASK             = "create-task"
-	ACT_PRINT_TASKS             = "print-tasks"
-	ACT_PRINT_NEXT_TASKS        = "print-next-tasks"
-	ACT_PRINT_UNSCHEDULED_TASKS = "print-unscheduled-tasks"
-	ACT_DELETE_TASK             = "delete-task"
-	ACT_MODIFY_TASK             = "modify-task"
-	ACT_CREATE_PROJECT          = "create-project"
-	ACT_PRINT_PROJECTS          = "print-projects"
-	ACT_DELETE_PROJECT          = "delete-project"
-	ACT_MODIFY_PROJECT          = "modify-project"
-	ACT_CREATE_TAG              = "create-tag"
-	ACT_PRINT_TAGS              = "print-tags"
-	ACT_DELETE_TAG              = "delete-tag"
-	ACT_MODIFY_TAG              = "modify-tag"
-	ACT_CREATE_GOAL             = "create-goal"
-	ACT_PRINT_GOALS             = "print-goals"
-	ACT_DELETE_GOAL             = "delete-goal"
-	ACT_MODIFY_GOAL             = "modify-goal"
-	ACT_CREATE_HABIT            = "create-habit"
-	ACT_PRINT_HABITS            = "print-habits"
-	ACT_DELETE_HABIT            = "delete-habit"
-	ACT_MODIFY_HABIT            = "modify-habit"
-	ACT_PRINT_REVIEW            = "print-review"
-	ACT_MODIFY_REVIEW           = "modify-review"
-	ACT_DEBUG_DATABASE          = "debug-database"
-	ACT_CUSTOM                  = "custom"
+	ACT_CREATE_TASK                      = "create-task"
+	ACT_PRINT_TASKS                      = "print-tasks"
+	ACT_PRINT_PERSONAL_NEXT_TASKS        = "print-next-tasks"
+	ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS = "print-unscheduled-tasks"
+	ACT_PRINT_WORK_NEXT_TASKS            = "print-work-next-tasks"
+	ACT_PRINT_WORK_UNSCHEDULED_TASKS     = "print-work-unscheduled-tasks"
+	ACT_DELETE_TASK                      = "delete-task"
+	ACT_MODIFY_TASK                      = "modify-task"
+	ACT_CREATE_PROJECT                   = "create-project"
+	ACT_PRINT_PROJECTS                   = "print-projects"
+	ACT_DELETE_PROJECT                   = "delete-project"
+	ACT_MODIFY_PROJECT                   = "modify-project"
+	ACT_CREATE_TAG                       = "create-tag"
+	ACT_PRINT_TAGS                       = "print-tags"
+	ACT_DELETE_TAG                       = "delete-tag"
+	ACT_MODIFY_TAG                       = "modify-tag"
+	ACT_CREATE_GOAL                      = "create-goal"
+	ACT_PRINT_GOALS                      = "print-goals"
+	ACT_DELETE_GOAL                      = "delete-goal"
+	ACT_MODIFY_GOAL                      = "modify-goal"
+	ACT_CREATE_HABIT                     = "create-habit"
+	ACT_PRINT_HABITS                     = "print-habits"
+	ACT_DELETE_HABIT                     = "delete-habit"
+	ACT_MODIFY_HABIT                     = "modify-habit"
+	ACT_PRINT_REVIEW                     = "print-review"
+	ACT_MODIFY_REVIEW                    = "modify-review"
+	ACT_DEBUG_DATABASE                   = "debug-database"
+	ACT_CUSTOM                           = "custom"
 
 	TASK_SCHEDULED_NEXT = "NEXT"
-	TASK_NOT_SCHEDULED = "NONE"
+	TASK_NOT_SCHEDULED  = "NONE"
+
+	TASK_TYPE_PERSONAL = "PERSONAL"
+	TASK_TYPE_WORK     = "WORK"
 )
 
 var (
@@ -121,7 +126,7 @@ var (
 	DB_ANYBAR_ACTIVE_PORTS    = []byte("anybar.active.habits")
 
 	ACTIONS = []string{
-		ACT_CREATE_TASK, ACT_PRINT_NEXT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,
+		ACT_CREATE_TASK, ACT_PRINT_PERSONAL_NEXT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,
 		ACT_CREATE_PROJECT, ACT_PRINT_PROJECTS, ACT_DELETE_PROJECT, ACT_MODIFY_PROJECT,
 		ACT_CREATE_TAG, ACT_PRINT_TAGS, ACT_DELETE_TAG, ACT_MODIFY_TAG, ACT_CREATE_GOAL,
 		ACT_PRINT_GOALS, ACT_DELETE_GOAL, ACT_MODIFY_GOAL, ACT_CREATE_HABIT, ACT_PRINT_HABITS,

@@ -24,16 +24,16 @@ func EnsureValues(t resources.Transaction) {
 	ensureValues(t)
 }
 
-func AddTask(name, projectId, deadline, estimate string, active bool, basePoints int) {
-	addTask(name, projectId, deadline, estimate, active, basePoints)
+func AddTask(name, projectId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) {
+	addTask(name, projectId, deadline, estimate, scheduled, taskType, active, basePoints)
 }
 
 func DeleteTask(taskId string) {
 	deleteTask(taskId)
 }
 
-func ModifyTask(taskId, name, projectId, deadline, estimate, scheduled string, basePoints int, activeFlag, doneFlag bool) {
-	modifyTask(taskId, name, projectId, deadline, estimate, scheduled, basePoints, activeFlag, doneFlag)
+func ModifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType string, basePoints int, activeFlag, doneFlag bool) {
+	modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, basePoints, activeFlag, doneFlag)
 }
 
 func GetTask(taskId string) *resources.Task {
@@ -54,6 +54,14 @@ func GetNextTasks() map[string]*resources.Task {
 
 func GetUnscheduledTasks() map[string]*resources.Task {
 	return getUnscheduledTasks()
+}
+
+func GetWorkNextTasks() map[string]*resources.Task {
+	return getWorkNextTasks()
+}
+
+func GetWorkUnscheduledTasks() map[string]*resources.Task {
+	return getWorkUnscheduledTasks()
 }
 
 func AddHabit(name, repetition, deadline string, activeFlag bool, basePoints int) {

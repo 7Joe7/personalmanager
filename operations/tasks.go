@@ -9,7 +9,7 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 )
 
-func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, scheduled string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
+func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, scheduled, taskType string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
 	return func() {
 		if name != "" {
 			t.Name = name
@@ -32,6 +32,9 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, s
 		}
 		if scheduled != "" {
 			t.Scheduled = scheduled
+		}
+		if taskType != "" {
+			t.Type = taskType
 		}
 		if activeFlag {
 			if t.InProgress {
@@ -86,7 +89,7 @@ func startProgress(t *resources.Task) {
 	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, t.Name, resources.ANY_CMD_BLUE)
 }
 
-func createTask(name, projectId, deadline, estimate string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
+func createTask(name, projectId, deadline, estimate, scheduled, taskType string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
 	task := resources.NewTask(name)
 	if projectId != "" {
 		task.Project = &resources.Project{Id: projectId}
@@ -101,6 +104,12 @@ func createTask(name, projectId, deadline, estimate string, active bool, basePoi
 		}
 		task.TimeEstimate = &dur
 	}
+	if scheduled != "" {
+		task.Scheduled = scheduled
+	}
+	if taskType != "" {
+		task.Type = taskType
+	}
 	if basePoints != -1 {
 		task.BasePoints = basePoints
 	}
@@ -114,11 +123,11 @@ func createTask(name, projectId, deadline, estimate string, active bool, basePoi
 	return task, nil
 }
 
-func addTask(name, projectId, deadline, estimate string, active bool, basePoints int) string {
+func addTask(name, projectId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) string {
 	var id string
 	t := db.NewTransaction()
 	t.Add(func() error {
-		task, err := createTask(name, projectId, deadline, estimate, active, basePoints, t)
+		task, err := createTask(name, projectId, deadline, estimate, scheduled, taskType, active, basePoints, t)
 		if err != nil {
 			return err
 		}
@@ -163,7 +172,7 @@ func deleteTask(taskId string) {
 	t.Execute()
 }
 
-func modifyTask(taskId, name, projectId, deadline, estimate, scheduled string, basePoints int, activeFlag, doneFlag bool) {
+func modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType string, basePoints int, activeFlag, doneFlag bool) {
 	task := &resources.Task{}
 	changeStatus := &resources.Status{}
 	status := &resources.Status{}
@@ -175,7 +184,7 @@ func modifyTask(taskId, name, projectId, deadline, estimate, scheduled string, b
 				return err
 			}
 		}
-		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, basePoints, activeFlag, doneFlag, changeStatus))
+		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, taskType, basePoints, activeFlag, doneFlag, changeStatus))
 		if err != nil {
 			return err
 		}
@@ -220,9 +229,17 @@ func filterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
 }
 
 func getNextTasks() map[string]*resources.Task {
-	return FilterTasks(func(t *resources.Task) bool { return t.Scheduled == resources.TASK_SCHEDULED_NEXT })
+	return FilterTasks(func (t *resources.Task) bool { return t.Scheduled == resources.TASK_SCHEDULED_NEXT && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
 }
 
 func getUnscheduledTasks() map[string]*resources.Task {
-	return filterTasks(func(t *resources.Task) bool { return t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED })
+	return FilterTasks(func (t *resources.Task) bool { return (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
+}
+
+func getWorkNextTasks() map[string]*resources.Task {
+	return FilterTasks(func (t *resources.Task) bool { return t.Scheduled == resources.TASK_SCHEDULED_NEXT && t.Type == resources.TASK_TYPE_WORK })
+}
+
+func getWorkUnscheduledTasks() map[string]*resources.Task {
+	return FilterTasks(func (t *resources.Task) bool { return (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && t.Type == resources.TASK_TYPE_WORK })
 }
