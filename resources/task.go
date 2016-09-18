@@ -3,9 +3,9 @@ package resources
 import (
 	"encoding/json"
 	"time"
+	"strconv"
 
 	"github.com/7joe7/personalmanager/utils"
-	"strconv"
 )
 
 type Task struct {
@@ -16,6 +16,7 @@ type Task struct {
 	InProgress      bool   `json:",omitempty"`
 	Done            bool   `json:",omitempty"`
 	Tags            []*Tag `json:",omitempty"`
+	Scheduled       string `json:",omitempty"`
 	InProgressSince *time.Time
 	DoneTime        *time.Time
 	Deadline        *time.Time
@@ -92,14 +93,14 @@ func (t *Task) getItem(id string) *AlfredItem {
 	subtitle += "; Spent: "
 
 	if t.TimeSpent == nil {
-		if t.InProgress {
+		if t.InProgress && t.InProgressSince != nil {
 			subtitle += utils.DurationToHMFormat(utils.GetDurationPointer(time.Now().Sub(*t.InProgressSince))) + "/"
 		} else {
 			subtitle += "0h0m/"
 		}
 	} else {
 		if t.InProgress {
-			subtitle += utils.MinutesToHMFormat(t.TimeSpent.Minutes()+time.Now().Sub(*t.InProgressSince).Minutes()) + "/"
+			subtitle += utils.MinutesToHMFormat(t.TimeSpent.Minutes() + time.Now().Sub(*t.InProgressSince).Minutes()) + "/"
 		} else {
 			subtitle += utils.DurationToHMFormat(t.TimeSpent) + "/"
 		}

@@ -3,14 +3,14 @@ package operations
 import (
 	"time"
 
-	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/db"
-	"github.com/7joe7/personalmanager/utils"
 	"github.com/7joe7/personalmanager/anybar"
+	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/utils"
 )
 
-func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func () {
-	return func () {
+func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, scheduled string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
+	return func() {
 		if name != "" {
 			t.Name = name
 		}
@@ -29,6 +29,9 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate st
 				panic(err)
 			}
 			t.TimeEstimate = &dur
+		}
+		if scheduled != "" {
+			t.Scheduled = scheduled
 		}
 		if activeFlag {
 			if t.InProgress {
@@ -73,20 +76,20 @@ func stopProgress(t *resources.Task) {
 	}
 	t.TimeSpent = &d
 	resources.WaitGroup.Add(1)
-	go anybar.Quit(resources.ANY_PORT_ACTIVE_HABIT)
+	go anybar.Quit(resources.ANY_PORT_ACTIVE_TASK)
 }
 
 func startProgress(t *resources.Task) {
 	t.InProgress = true
 	t.InProgressSince = utils.GetTimePointer(time.Now())
 	resources.WaitGroup.Add(1)
-	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_HABIT, t.Name, resources.ANY_CMD_BLUE)
+	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, t.Name, resources.ANY_CMD_BLUE)
 }
 
 func createTask(name, projectId, deadline, estimate string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
 	task := resources.NewTask(name)
 	if projectId != "" {
-		task.Project = &resources.Project{Id:projectId}
+		task.Project = &resources.Project{Id: projectId}
 	}
 	if deadline != "" {
 		task.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
@@ -114,7 +117,7 @@ func createTask(name, projectId, deadline, estimate string, active bool, basePoi
 func addTask(name, projectId, deadline, estimate string, active bool, basePoints int) string {
 	var id string
 	t := db.NewTransaction()
-	t.Add(func () error {
+	t.Add(func() error {
 		task, err := createTask(name, projectId, deadline, estimate, active, basePoints, t)
 		if err != nil {
 			return err
@@ -135,7 +138,7 @@ func moveActiveTask(t resources.Transaction, toggledTaskId string) error {
 		actualActiveTask = []byte(toggledTaskId)
 		if valueStr != "" {
 			task := &resources.Task{}
-			t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, value, task, func () {
+			t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, value, task, func() {
 				stopProgress(task)
 			})
 		}
@@ -145,7 +148,7 @@ func moveActiveTask(t resources.Transaction, toggledTaskId string) error {
 
 func deleteTask(taskId string) {
 	t := db.NewTransaction()
-	t.Add(func () error {
+	t.Add(func() error {
 		task := &resources.Task{}
 		if err := t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task); err != nil {
 			return err
@@ -160,19 +163,19 @@ func deleteTask(taskId string) {
 	t.Execute()
 }
 
-func modifyTask(taskId, name, projectId, deadline, estimate string, basePoints int, activeFlag, doneFlag bool) {
+func modifyTask(taskId, name, projectId, deadline, estimate, scheduled string, basePoints int, activeFlag, doneFlag bool) {
 	task := &resources.Task{}
 	changeStatus := &resources.Status{}
 	status := &resources.Status{}
 	t := db.NewTransaction()
-	t.Add(func () error {
+	t.Add(func() error {
 		if activeFlag {
 			err := moveActiveTask(t, taskId)
 			if err != nil {
 				return err
 			}
 		}
-		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, getModifyTaskFunc(task, name, projectId, deadline, estimate, basePoints, activeFlag, doneFlag, changeStatus))
+		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, basePoints, activeFlag, doneFlag, changeStatus))
 		if err != nil {
 			return err
 		}
@@ -184,7 +187,7 @@ func modifyTask(taskId, name, projectId, deadline, estimate string, basePoints i
 func getTask(taskId string) *resources.Task {
 	task := &resources.Task{}
 	t := db.NewTransaction()
-	t.Add(func () error {
+	t.Add(func() error {
 		return t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task)
 	})
 	t.Execute()
@@ -194,12 +197,32 @@ func getTask(taskId string) *resources.Task {
 func getTasks() map[string]*resources.Task {
 	tasks := map[string]*resources.Task{}
 	t := db.NewTransaction()
-	t.Add(func () error {
-		return t.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, func (id string) resources.Entity {
+	t.Add(func() error {
+		return t.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, func(id string) resources.Entity {
 			tasks[id] = &resources.Task{}
 			return tasks[id]
 		})
 	})
 	t.Execute()
 	return tasks
+}
+
+func filterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
+	tasks := map[string]*resources.Task{}
+	var task *resources.Task
+	getNewEntity := func () resources.Entity {
+		task = &resources.Task{}
+		return task
+	}
+	addEntity := func () { tasks[task.Id] = task }
+	db.FilterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, addEntity, getNewEntity, func() bool { return filter(task) })
+	return tasks
+}
+
+func getNextTasks() map[string]*resources.Task {
+	return FilterTasks(func(t *resources.Task) bool { return t.Scheduled == resources.TASK_SCHEDULED_NEXT })
+}
+
+func getUnscheduledTasks() map[string]*resources.Task {
+	return filterTasks(func(t *resources.Task) bool { return t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED })
 }

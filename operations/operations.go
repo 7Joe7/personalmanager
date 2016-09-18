@@ -32,8 +32,8 @@ func DeleteTask(taskId string) {
 	deleteTask(taskId)
 }
 
-func ModifyTask(taskId, name, projectId, deadline, estimate string, basePoints int, activeFlag, doneFlag bool) {
-	modifyTask(taskId, name, projectId, deadline, estimate, basePoints, activeFlag, doneFlag)
+func ModifyTask(taskId, name, projectId, deadline, estimate, scheduled string, basePoints int, activeFlag, doneFlag bool) {
+	modifyTask(taskId, name, projectId, deadline, estimate, scheduled, basePoints, activeFlag, doneFlag)
 }
 
 func GetTask(taskId string) *resources.Task {
@@ -42,6 +42,18 @@ func GetTask(taskId string) *resources.Task {
 
 func GetTasks() map[string]*resources.Task {
 	return getTasks()
+}
+
+func FilterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
+	return filterTasks(filter)
+}
+
+func GetNextTasks() map[string]*resources.Task {
+	return getNextTasks()
+}
+
+func GetUnscheduledTasks() map[string]*resources.Task {
+	return getUnscheduledTasks()
 }
 
 func AddHabit(name, repetition, deadline string, activeFlag bool, basePoints int) {

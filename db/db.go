@@ -36,8 +36,8 @@ func MapEntities(entity resources.Entity, bucketName []byte, mapFunc func ()) {
 	}
 }
 
-func FilterEntities(bucketName []byte, entity resources.Entity, filterFunc func () bool, copyFunc func ()) {
-	if err := filterEntities(bucketName, entity, filterFunc, copyFunc); err != nil {
+func FilterEntities(bucketName []byte, addEntity func(), getNewEntity func () resources.Entity, filterFunc func () bool) {
+	if err := filterEntities(bucketName, addEntity, getNewEntity, filterFunc); err != nil {
 		panic(fmt.Errorf("Unable to retrieve entities from bucket '%s'. %v", bucketName, err))
 	}
 }

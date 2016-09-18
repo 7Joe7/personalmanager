@@ -104,17 +104,23 @@ func (t *transaction) MapEntities(bucketName []byte, entity resources.Entity, ma
 	})
 }
 
-func (t *transaction) FilterEntities(bucketName []byte, entity resources.Entity, filterFunc func () bool, copyFunc func ()) error {
+func (t *transaction) FilterEntities(bucketName []byte, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
 	return t.tx.Bucket(bucketName).ForEach(func (k, v []byte) error {
 		key := string(k)
 		if key == string(resources.DB_LAST_ID_KEY) {
 			return nil
 		}
-		if err := json.Unmarshal(v, entity); err != nil {
+		entity := getNewEntity()
+		err := json.Unmarshal(v, entity)
+		if err != nil {
 			return err
 		}
 		if filterFunc() {
-			copyFunc()
+			addEntity()
+			err = entity.Load(t)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})

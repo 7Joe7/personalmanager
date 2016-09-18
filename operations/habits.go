@@ -17,10 +17,11 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 		if toggleActive {
 			if h.Active {
 				deactivateHabit(h)
+				anybar.RemoveAndQuit(h.Id, tr)
 			} else {
 				activateHabit(h, repetition)
 				_, colour, _ := h.GetIconColourAndOrder()
-				anybar.StartNewPort(h.Name, colour, []byte(h.Id), tr)
+				anybar.AddToActivePorts(h.Name, colour, h.Id, tr)
 			}
 		}
 		if h.Active {
@@ -32,9 +33,12 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 					h.Done = false
 					failHabit(h)
 					h.Successes -= 1
+					_, colour, _ := h.GetIconColourAndOrder()
+					anybar.AddToActivePorts(h.Name, colour, h.Id, tr)
 				} else {
 					h.Done = true
 					succeedHabit(h, h.LastStreakEnd)
+					anybar.RemoveAndQuit(h.Id, tr)
 				}
 				change := h.ActualStreak * h.BasePoints
 				switch h.Repetition {
@@ -89,7 +93,7 @@ func addPeriod(repetition string, deadline *time.Time) *time.Time {
 	return nil
 }
 
-func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status) func () {
+func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status, tr resources.Transaction) func () {
 	return func () {
 		if !h.Active {
 			return
@@ -103,12 +107,14 @@ func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status) func (
 			h.Deadline = addPeriod(h.Repetition, h.Deadline)
 			h.Done = false
 			h.Tries += 1
+			_, colour, _ := h.GetIconColourAndOrder()
+			anybar.AddToActivePorts(h.Name, colour, h.Id, tr)
 		}
 	}
 }
 
 func failHabit(h *resources.Habit) {
-	*h.LastStreakEnd = *h.Deadline
+	h.LastStreakEnd = utils.GetTimePointer(*h.Deadline)
 	h.LastStreak = h.ActualStreak
 	if h.ActualStreak > 0 {
 		h.ActualStreak = 0
@@ -141,20 +147,42 @@ func addHabit(name, repetition, deadline string, activeFlag bool, basePoints int
 	h := resources.NewHabit(name)
 	if activeFlag {
 		activateHabit(h, repetition)
-		h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+		if repetition != resources.HBT_REPETITION_DAILY {
+			h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+		}
 		if basePoints != -1 {
 			h.BasePoints = basePoints
 		}
 	}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
-		return tr.AddEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h)
+		err := tr.AddEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h)
+		if err != nil {
+			return err
+		}
+		if activeFlag {
+			_, colour, _ := h.GetIconColourAndOrder()
+			anybar.AddToActivePorts(h.Name, colour, h.Id, tr)
+		}
+		return nil
 	})
 	tr.Execute()
 }
 
 func deleteHabit(habitId string) {
-	db.DeleteEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId))
+	t := db.NewTransaction()
+	t.Add(func () error {
+		h := &resources.Habit{}
+		err := t.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), h)
+		if err != nil {
+			return err
+		}
+		if h.Active {
+			anybar.RemoveAndQuit(habitId, t)
+		}
+		return t.DeleteEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId))
+	})
+	t.Execute()
 }
 
 func modifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
@@ -196,19 +224,13 @@ func getHabits() map[string]*resources.Habit {
 
 func filterHabits(filter func(*resources.Habit) bool) map[string]*resources.Habit {
 	habits := map[string]*resources.Habit{}
-	h := &resources.Habit{}
-	copyFunc := func () {
-		c := &resources.Habit{}
-		*c = *h
-		if h.LastStreakEnd != nil {
-			c.LastStreakEnd = utils.GetTimePointer(*h.LastStreakEnd)
-		}
-		if h.Deadline != nil {
-			c.Deadline = utils.GetTimePointer(*h.Deadline)
-		}
-		habits[h.Id] = c
+	var entity *resources.Habit
+	getNewEntity := func () resources.Entity {
+		entity = &resources.Habit{}
+		return entity
 	}
-	db.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h, func () bool { return filter(h) }, copyFunc)
+	addEntity := func () { habits[entity.Id] = entity }
+	db.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, addEntity, getNewEntity, func () bool { return filter(entity) })
 	return habits
 }
 

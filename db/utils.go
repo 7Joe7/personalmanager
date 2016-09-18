@@ -42,9 +42,9 @@ func mapEntities(entity resources.Entity, bucketName []byte, mapFunc func ()) er
 	return tr.execute()
 }
 
-func filterEntities(bucketName []byte, entity resources.Entity, filterFunc func () bool, copyFunc func ()) error {
+func filterEntities(bucketName []byte, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.FilterEntities(bucketName, entity, filterFunc, copyFunc)})
+	tr.Add(func () error { return tr.FilterEntities(bucketName, addEntity, getNewEntity, filterFunc)})
 	return tr.view()
 }
 

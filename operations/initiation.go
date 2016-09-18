@@ -2,11 +2,11 @@ package operations
 
 import (
 	"time"
+	"encoding/json"
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
-	"github.com/7joe7/personalmanager/anybar"
-	"encoding/json"
+	//"github.com/7joe7/personalmanager/anybar"
 )
 
 func synchronize(t resources.Transaction) {
@@ -15,7 +15,7 @@ func synchronize(t resources.Transaction) {
 		if lastSync == "" || isTimeForSync(lastSync) {
 			habit := &resources.Habit{}
 			habitStatus := &resources.Status{}
-			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, habit, getSyncHabitFunc(habit, habitStatus))
+			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, habit, getSyncHabitFunc(habit, habitStatus, t))
 			if err != nil {
 				return err
 			}
@@ -28,18 +28,20 @@ func synchronize(t resources.Transaction) {
 			if err != nil {
 				return err
 			}
-			activeHabitId := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
-			if activeHabitId != nil && string(activeHabitId) != "" {
-				activeTask := &resources.Task{}
-				err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, activeHabitId, activeTask)
-				if err != nil {
-					return err
-				}
-				resources.WaitGroup.Add(1)
-				go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_HABIT, activeTask.Name, resources.ANY_CMD_BLUE)
-			}
-			// todo ensure active habits anybar
+			//activeTaskId := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
+			//if activeTaskId != nil && string(activeTaskId) != "" {
+			//	activeTask := &resources.Task{}
+			//	err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, activeTaskId, activeTask)
+			//	if err != nil {
+			//		return err
+			//	}
+			//	resources.WaitGroup.Add(1)
+			//	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_HABIT, activeTask.Name, resources.ANY_CMD_BLUE)
+			//} TODO after having ping in anybar
 		}
+		//activePorts := anybar.GetActivePorts(t)
+		//resources.WaitGroup.Add(1)
+		//go anybar.EnsureActivePorts(activePorts)
 		return nil
 	})
 }
@@ -65,7 +67,7 @@ func ensureValues(t resources.Transaction) {
 		if err != nil {
 			return err
 		}
-		err = t.EnsureValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ANYBAR_ACTIVE_HABITS_PORTS, v)
+		err = t.EnsureValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ANYBAR_ACTIVE_PORTS, v)
 		if err != nil {
 			return err
 		}

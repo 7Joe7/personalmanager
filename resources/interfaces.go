@@ -13,7 +13,7 @@ type Transaction interface {
 	ModifyEntity(bucketName, key []byte, entity Entity, modifyFunc func ()) error
 	MapEntities(bucketName []byte, entity Entity, mapFunc func ()) error
 	InitializeBucket(bucketName []byte) error
-	FilterEntities(bucketName []byte, entity Entity, filterFunc func () bool, copyFunc func ()) error
+	FilterEntities(bucketName []byte, addEntity func (), getNewEntity func () Entity, filterFunc func () bool) error
 	Execute()
 	View()
 	Add(exec func () error)

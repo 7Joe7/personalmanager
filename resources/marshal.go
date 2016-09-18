@@ -44,7 +44,7 @@ func (s *Status) getItem() *AlfredItem {
 	return &AlfredItem{
 		Name: fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today),
 		Icon: NewAlfredIcon(ICO_HABIT),
-		Mods:getEmptyMods()}
+		Mods: getEmptyMods()}
 }
 
 func (ts Tasks) MarshalJSON() ([]byte, error) {
@@ -65,35 +65,53 @@ func (ts Tasks) MarshalJSON() ([]byte, error) {
 }
 
 func (ps Projects) MarshalJSON() ([]byte, error) {
-	items := []*AlfredItem{}
+	items := items{}
+	var zeroCount int
+	if ps.Status != nil {
+		items = append(items, ps.Status.getItem())
+		zeroCount = 1
+	}
 	for id, p := range ps.Projects {
 		items = append(items, p.getItem(id))
 	}
-	if zeroItem := getZeroItem(ps.NoneAllowed, len(items) == 0, "project"); zeroItem != nil {
+	if zeroItem := getZeroItem(ps.NoneAllowed, len(items) == zeroCount, "project"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
+	sort.Sort(items)
 	return marshalItems(items)
 }
 
 func (ts Tags) MarshalJSON() ([]byte, error) {
-	items := []*AlfredItem{}
+	items := items{}
+	var zeroCount int
+	if ts.Status != nil {
+		items = append(items, ts.Status.getItem())
+		zeroCount = 1
+	}
 	for id, t := range ts.Tags {
 		items = append(items, t.getItem(id))
 	}
-	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == 0, "tag"); zeroItem != nil {
+	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == zeroCount, "tag"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
+	sort.Sort(items)
 	return marshalItems(items)
 }
 
 func (gs Goals) MarshalJSON() ([]byte, error) {
-	items := []*AlfredItem{}
+	items := items{}
+	var zeroCount int
+	if gs.Status != nil {
+		items = append(items, gs.Status.getItem())
+		zeroCount = 1
+	}
 	for id, g := range gs.Goals {
 		items = append(items, g.getItem(id))
 	}
-	if zeroItem := getZeroItem(gs.NoneAllowed, len(items) == 0, "goal"); zeroItem != nil {
+	if zeroItem := getZeroItem(gs.NoneAllowed, len(items) == zeroCount, "goal"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
+	sort.Sort(items)
 	return marshalItems(items)
 }
 
@@ -107,10 +125,10 @@ func (hs Habits) MarshalJSON() ([]byte, error) {
 	for id, h := range hs.Habits {
 		items = append(items, h.getItem(id))
 	}
-	sort.Sort(items)
 	if zeroItem := getZeroItem(hs.NoneAllowed, len(items) == zeroCount, "habit"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
+	sort.Sort(items)
 	return marshalItems(items)
 }
 
@@ -137,7 +155,8 @@ func getZeroItem(noneAllowed, empty bool, elementType string) *AlfredItem {
 			Name:  fmt.Sprintf(NAME_FORMAT_EMPTY, elementType),
 			Valid: false,
 			Icon:  NewAlfredIcon(ICO_BLACK),
-			Mods:  getEmptyMods()}
+			Mods:  getEmptyMods(),
+			order: 10000}
 	}
 	return nil
 }

@@ -17,16 +17,19 @@ type Tasks struct {
 type Projects struct {
 	Projects    map[string]*Project
 	NoneAllowed bool
+	Status      *Status
 }
 
 type Tags struct {
 	Tags        map[string]*Tag
 	NoneAllowed bool
+	Status      *Status
 }
 
 type Goals struct {
 	Goals       map[string]*Goal
 	NoneAllowed bool
+	Status      *Status
 }
 
 type Habits struct {
@@ -142,8 +145,10 @@ func (ap ActivePorts) Less(i, j int) bool { return ap[i].Port < ap[j].Port }
 
 type ActivePort struct {
 	Port       int
+	Name       string
+	Colour     string
 	BucketName []byte
-	Id         []byte
+	Id         string
 }
 
 type Review struct {
