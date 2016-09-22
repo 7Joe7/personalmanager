@@ -19,6 +19,19 @@ type Transaction interface {
 	Add(exec func () error)
 }
 
+type AnybarManager interface {
+	RemoveAndQuit(id string, t Transaction)
+	AddToActivePorts(title, icon string, id string, t Transaction)
+	EnsureActivePorts(activePorts ActivePorts)
+	StartWithIcon(port int, title, icon string)
+	StartNew(port int, title string)
+	ChangeIcon(port int, colour string)
+	GetNewPort(activePorts []*ActivePort) int
+	Quit(port int)
+	GetActivePorts(t Transaction) ActivePorts
+	Ping(port int) bool
+}
+
 type Entity interface {
 	SetId(string)
 	GetId() string

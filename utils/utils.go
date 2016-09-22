@@ -18,6 +18,18 @@ func GetFirstSaturday() *time.Time {
 	return GetTimePointer(now.Add(time.Duration(24 * (6 - int(now.Weekday()))) * time.Hour))
 }
 
+func GetDurationForRepetitionPeriod(repetition string) int {
+	switch repetition {
+	case "Daily":
+		return int(time.Duration(int64(86400000000000)).Hours())
+	case "Weekly":
+		return int(time.Duration(int64(604800000000000)).Hours())
+	case "Monthly": // approximation 1814400000000000
+		return int(time.Duration(int64(2592000000000000)).Hours())
+	}
+	return 0
+}
+
 func ParseTime(format, deadline string) *time.Time {
 	d, err := time.Parse(format, deadline)
 	if err != nil {

@@ -100,17 +100,29 @@ func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status, tr res
 		}
 
 		if h.Deadline.Before(time.Now()) {
-			if !h.Done && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
-				failHabit(h)
-				changeStatus.Score = h.ActualStreak * h.BasePoints
+			numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
+			for i := 0; i < numberOfMissedDeadlines; i++ {
+				if i == numberOfMissedDeadlines - 1 {
+					if !h.Done && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
+						failHabit(h)
+						changeStatus.Score += h.ActualStreak * h.BasePoints
+					}
+				} else {
+					failHabit(h)
+					changeStatus.Score += h.ActualStreak * h.BasePoints
+				}
+				h.Deadline = addPeriod(h.Repetition, h.Deadline)
 			}
-			h.Deadline = addPeriod(h.Repetition, h.Deadline)
 			h.Done = false
-			h.Tries += 1
+			h.Tries += numberOfMissedDeadlines
 			_, colour, _ := h.GetIconColourAndOrder()
 			anybar.AddToActivePorts(h.Name, colour, h.Id, tr)
 		}
 	}
+}
+
+func getNumberOfMissedDeadlines(h *resources.Habit) int {
+	return (int(time.Now().Sub(*(h.Deadline)).Hours()) / utils.GetDurationForRepetitionPeriod(h.Repetition)) + 1
 }
 
 func failHabit(h *resources.Habit) {

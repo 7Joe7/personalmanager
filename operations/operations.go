@@ -32,8 +32,8 @@ func DeleteTask(taskId string) {
 	deleteTask(taskId)
 }
 
-func ModifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType string, basePoints int, activeFlag, doneFlag bool) {
-	modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, basePoints, activeFlag, doneFlag)
+func ModifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool) {
+	modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag)
 }
 
 func GetTask(taskId string) *resources.Task {

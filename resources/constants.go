@@ -49,6 +49,8 @@ const (
 	ANY_PORT_ACTIVE_TASK = 2800
 	ANY_PORTS_RANGE_BASE = 2100
 
+	ANY_SLEEP_TIME = 500
+
 	DEADLINE_FORMAT = "2.1.2006 15:04"
 	DATE_FORMAT     = "2.1.2006"
 
@@ -72,6 +74,7 @@ const (
 	ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS = "print-unscheduled-tasks"
 	ACT_PRINT_WORK_NEXT_TASKS            = "print-work-next-tasks"
 	ACT_PRINT_WORK_UNSCHEDULED_TASKS     = "print-work-unscheduled-tasks"
+	ACT_PRINT_TASK_NOTE                  = "print-task-note"
 	ACT_DELETE_TASK                      = "delete-task"
 	ACT_MODIFY_TASK                      = "modify-task"
 	ACT_CREATE_PROJECT                   = "create-project"

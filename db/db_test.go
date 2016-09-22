@@ -198,12 +198,12 @@ func TestTransaction_FilterEntities(t *testing.T) {
 	testAddEntity("1", testTask2, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	task := &resources.Task{}
 	tasks := map[string]*resources.Task{}
-	copy := func () {
-		copy := &resources.Task{}
-		*copy = *task
-		tasks[task.Id] = copy
+	getNewEntity := func () resources.Entity {
+		task = &resources.Task{}
+		return task
 	}
-	test.ExpectSuccess(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, task, func () bool { return task.Project == nil }, copy))
+	addEntity := func () { tasks[task.Id] = task }
+	test.ExpectSuccess(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, addEntity, getNewEntity, func () bool { return task.Project == nil }))
 	if len(tasks) != 1 {
 		t.Errorf("Expected size of tasks to be 1, it is %d.", len(tasks))
 	}

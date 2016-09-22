@@ -9,7 +9,7 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 )
 
-func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, scheduled, taskType string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
+func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
 	return func() {
 		if name != "" {
 			t.Name = name
@@ -36,6 +36,9 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, s
 		if taskType != "" {
 			t.Type = taskType
 		}
+		if note != "" {
+			t.Note = note
+		}
 		if activeFlag {
 			if t.InProgress {
 				stopProgress(t)
@@ -51,7 +54,9 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, s
 				status.Today -= change
 			} else {
 				t.Done = true
-				stopProgress(t)
+				if t.InProgress {
+					stopProgress(t)
+				}
 				status.Score += change
 				status.Today += change
 			}
@@ -69,7 +74,10 @@ func countScoreChange(t *resources.Task) int {
 
 func stopProgress(t *resources.Task) {
 	t.InProgress = false
-	length := time.Now().Sub(*t.InProgressSince).Minutes()
+	var length float64
+	if t.InProgressSince != nil {
+		length = time.Now().Sub(*t.InProgressSince).Minutes()
+	}
 	if t.TimeSpent != nil {
 		length += t.TimeSpent.Minutes()
 	}
@@ -172,7 +180,7 @@ func deleteTask(taskId string) {
 	t.Execute()
 }
 
-func modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType string, basePoints int, activeFlag, doneFlag bool) {
+func modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool) {
 	task := &resources.Task{}
 	changeStatus := &resources.Status{}
 	status := &resources.Status{}
@@ -184,7 +192,7 @@ func modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType
 				return err
 			}
 		}
-		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, taskType, basePoints, activeFlag, doneFlag, changeStatus))
+		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
 		if err != nil {
 			return err
 		}

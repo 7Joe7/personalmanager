@@ -7,6 +7,7 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/utils"
+	"github.com/7joe7/personalmanager/anybar"
 )
 
 var (
@@ -14,25 +15,68 @@ var (
 	tomorrowDeadlineStr = tomorrowDeadline.Format(resources.DATE_FORMAT)
 )
 
+func TestGetNumberOfMissedDeadlines(t *testing.T) {
+	h := getActiveHabit("habit1", resources.HBT_REPETITION_DAILY, 7, 3, 3, 0, 7)
+	h.Deadline = utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
+	test.ExpectInt(1, getNumberOfMissedDeadlines(h), t)
+
+	h = getActiveHabit("habit2", resources.HBT_REPETITION_DAILY, 7, 3, 3, 0, 7)
+	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * time.Hour).Truncate(24 * time.Hour))
+	test.ExpectInt(2, getNumberOfMissedDeadlines(h), t)
+
+	h = getActiveHabit("habit3", resources.HBT_REPETITION_WEEKLY, 7, 3, 3, 0, 7)
+	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * time.Hour).Truncate(24 * time.Hour))
+	test.ExpectInt(1, getNumberOfMissedDeadlines(h), t)
+
+	h = getActiveHabit("habit3", resources.HBT_REPETITION_WEEKLY, 7, 3, 3, 0, 7)
+	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * 7 * time.Hour).Truncate(24 * time.Hour))
+	test.ExpectInt(2, getNumberOfMissedDeadlines(h), t)
+
+	h = getActiveHabit("habit3", resources.HBT_REPETITION_MONTHLY, 7, 3, 3, 0, 7)
+	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * time.Hour).Truncate(24 * time.Hour))
+	test.ExpectInt(1, getNumberOfMissedDeadlines(h), t)
+
+	h = getActiveHabit("habit3", resources.HBT_REPETITION_MONTHLY, 7, 3, 3, 0, 7)
+	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * 30 * time.Hour).Truncate(24 * time.Hour))
+	test.ExpectInt(2, getNumberOfMissedDeadlines(h), t)
+}
+
 func TestGetModifyHabitFunc(t *testing.T) {
+	anybar.Start(anybar.NewAnybarManagerMock())
 	// change habit name
 	h := getInactiveHabit("testHabit1", 2, 1)
 	changeStatus := &resources.Status{}
-	getModifyHabitFunc(h, "testHabit", "", "", false, false, false, -1, changeStatus)()
+	tr := &transactionMock{}
+	tr.Add(func () error {
+		getModifyHabitFunc(h, "testHabit", "", "", false, false, false, -1, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
+
 	verifyHabitState("testHabit", "", "", "testHabit1", false, false, 2, 1, 0, 0, 0, 0, 0, h, changeStatus, t)
 	test.ExpectBool(true, h.LastStreakEnd == nil, t)
 
 	// deactivate habit
 	h = getActiveHabit("testHabit2", resources.HBT_REPETITION_DAILY, 3, 2, 1, 1, 7)
 	changeStatus = &resources.Status{}
-	getModifyHabitFunc(h, "", "", "", true, false, false, -1, changeStatus)()
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getModifyHabitFunc(h, "", "", "", true, false, false, -1, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit2", "", "", "testHabit2", false, false, 3, 2, 0, 0, 0, 0, 0, h, changeStatus, t)
 	test.ExpectBool(true, h.LastStreakEnd == nil, t)
 
 	// activate habit
 	h = getInactiveHabit("testHabit3", 8, 5)
 	changeStatus = &resources.Status{}
-	getModifyHabitFunc(h, "", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, true, false, false, 5, changeStatus)()
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getModifyHabitFunc(h, "", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, true, false, false, 5, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit3", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit3", true, false,
 		9, 5, 0, 0, 5, 0, 0, h, changeStatus, t)
 
@@ -41,25 +85,40 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	previousDeadline := utils.GetTimePointer(h.Deadline.Add(-24 * 7 * time.Hour))
 	h.LastStreakEnd = previousDeadline
 	changeStatus = &resources.Status{}
-	getModifyHabitFunc(h, "", "", "", false, true, false, -1, changeStatus)()
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getModifyHabitFunc(h, "", "", "", false, true, false, -1, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit4", resources.HBT_REPETITION_WEEKLY, tomorrowDeadlineStr, "testHabit4", true, true,
-		32, 15, 1, 4, 9, 9, 9, h, changeStatus, t)
+		32, 15, 1, 4, 9, 18, 18, h, changeStatus, t)
 	test.ExpectBool(true, h.LastStreakEnd == previousDeadline, t)
 
 	// fail done habit
 	h = getActiveHabit("testHabit5", resources.HBT_REPETITION_MONTHLY, 2, 1, 1, 0, 12)
 	h.Done = true
 	changeStatus = &resources.Status{}
-	getModifyHabitFunc(h, "", "", "", false, true, false, -1, changeStatus)()
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getModifyHabitFunc(h, "", "", "", false, true, false, -1, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit5", resources.HBT_REPETITION_MONTHLY, tomorrowDeadlineStr, "testHabit5", true, false,
-		2, 0, -1, 1, 12, -12, -12, h, changeStatus, t)
+		2, 0, -1, 1, 12, -36, -36, h, changeStatus, t)
 	test.ExpectString(h.Deadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT), t)
 
 	// set habit done previous period
 	h = getActiveHabit("testHabit6", resources.HBT_REPETITION_WEEKLY, 8, 6, -1, 6, 3)
 	h.LastStreakEnd = utils.GetTimePointer(h.Deadline.Add(-24 * 7 * time.Hour))
 	changeStatus = &resources.Status{}
-	getModifyHabitFunc(h, "", "", "", false, false, true, -1, changeStatus)()
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getModifyHabitFunc(h, "", "", "", false, false, true, -1, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit6", resources.HBT_REPETITION_WEEKLY, tomorrowDeadlineStr, "testHabit6", true, false,
 		8, 7, 7, 6, 3, 24, 0, h, changeStatus, t)
 
@@ -68,7 +127,12 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h.LastStreakEnd = utils.GetTimePointer(h.Deadline.Add(-24 * time.Hour))
 	h.Done = true
 	changeStatus = &resources.Status{}
-	getModifyHabitFunc(h, "", "", "", false, false, true, -1, changeStatus)()
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getModifyHabitFunc(h, "", "", "", false, false, true, -1, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit7", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit7", true, true,
 		26, 21, 7, 5, 9, 117, 54, h, changeStatus, t)
 }
@@ -79,7 +143,12 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	changeStatus := &resources.Status{}
 	h.Done = true
 	h.Deadline = utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
-	getSyncHabitFunc(h, changeStatus)()
+	tr := &transactionMock{}
+	tr.Add(func () error {
+		getSyncHabitFunc(h, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit8", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit8", true, false,
 		14, 7, 1, 3, 9, 0, 0, h, changeStatus, t)
 
@@ -88,10 +157,39 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	todayDeadline := utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
 	h.Deadline = todayDeadline
-	getSyncHabitFunc(h, changeStatus)()
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getSyncHabitFunc(h, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
 	verifyHabitState("testHabit9", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit9", true, false,
 		20, 12, -1, 3, 8, -8, 0, h, changeStatus, t)
 	test.ExpectString(todayDeadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT), t)
+
+	h = getActiveHabit("testHabit10", resources.HBT_REPETITION_DAILY, 21, 13, 2, 4, 6)
+	changeStatus = &resources.Status{}
+	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400)).Truncate(-24 * time.Hour))
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getSyncHabitFunc(h, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
+	verifyHabitState("testHabit10", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit10", true, false,
+		23, 13, -2, -1, 6, -18, 0, h, changeStatus, t)
+
+	h = getActiveHabit("testHabit11", resources.HBT_REPETITION_DAILY, 21, 13, 2, 4, 6)
+	changeStatus = &resources.Status{}
+	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400 * 7)).Truncate(-24 * time.Hour))
+	tr = &transactionMock{}
+	tr.Add(func () error {
+		getSyncHabitFunc(h, changeStatus, tr)()
+		return nil
+	})
+	tr.Execute()
+	verifyHabitState("testHabit11", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit11", true, false,
+		29, 13, -8, -7, 6, -216, 0, h, changeStatus, t)
 }
 
 func TestGetHabits(t *testing.T) {

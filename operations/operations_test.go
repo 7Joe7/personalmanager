@@ -13,6 +13,7 @@ import (
 const (
 	GET_VALUE_CALLED_FORMAT         = "GetValue%s%s"
 	SET_VALUE_CALLED_FORMAT         = "SetValue%s%s%s"
+	ENSURE_VALUE_CALLED_FORMAT      = "EnsureValue%s%s%v"
 	MODIFY_VALUE_CALLED_FORMAT      = "ModifyValue%s%s%v"
 	ENSURE_ENTITY_CALLED_FORMAT     = "EnsureEntity%s%s%v"
 	ADD_ENTITY_CALLED_FORMAT        = "AddEntity%s%v"
@@ -40,6 +41,11 @@ func (tm *transactionMock) GetValue(bucketName, key []byte) []byte {
 
 func (tm *transactionMock) SetValue(bucketName, key, value []byte) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(SET_VALUE_CALLED_FORMAT, string(bucketName), string(key), string(value)))
+	return nil
+}
+
+func (tm *transactionMock) EnsureValue(bucketName, key, defaultValue []byte) error {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(ENSURE_VALUE_CALLED_FORMAT, string(bucketName), string(key), string(defaultValue)))
 	return nil
 }
 
@@ -88,8 +94,8 @@ func (tm *transactionMock) RetrieveEntities(bucketName []byte, getObject func(st
 	return nil
 }
 
-func (tm *transactionMock) FilterEntities(bucketName []byte, entity resources.Entity, filterFunc func () bool, copyFunc func ()) error {
-	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(FILTER_ENTITIES_CALLED_FORMAT, string(bucketName), entity, filterFunc, copyFunc))
+func (tm *transactionMock) FilterEntities(bucketName []byte, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(FILTER_ENTITIES_CALLED_FORMAT, string(bucketName), addEntity, getNewEntity, filterFunc))
 	return nil
 }
 
@@ -128,8 +134,10 @@ func TestEnsureValues(t *testing.T) {
 
 	expected := fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_REVIEW_SETTINGS_KEY), &resources.Review{Repetition:resources.HBT_REPETITION_WEEKLY, Deadline:utils.GetFirstSaturday()})
 	test.ExpectString(expected, tm.functionsCalled[2], t)
-	expected = fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ACTUAL_STATUS_KEY), &resources.Status{})
+	expected = fmt.Sprintf(ENSURE_VALUE_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ANYBAR_ACTIVE_PORTS), []byte{})
 	test.ExpectString(expected, tm.functionsCalled[3], t)
+	expected = fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ACTUAL_STATUS_KEY), &resources.Status{})
+	test.ExpectString(expected, tm.functionsCalled[4], t)
 }
 
 func TestSynchronize(t *testing.T) {
@@ -142,7 +150,7 @@ func TestSynchronize(t *testing.T) {
 	test.ExpectString(expected, tm.functionsCalled[2], t)
 	habit := &resources.Habit{}
 	changeStatus := &resources.Status{}
-	expected = fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(resources.DB_DEFAULT_HABITS_BUCKET_NAME), habit, getSyncHabitFunc(habit, changeStatus))
+	expected = fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(resources.DB_DEFAULT_HABITS_BUCKET_NAME), habit, getSyncHabitFunc(habit, changeStatus, &transactionMock{}))
 	test.ExpectString(expected, tm.functionsCalled[3], t)
 	status := &resources.Status{}
 	expected = fmt.Sprintf(MODIFY_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), resources.DB_ACTUAL_STATUS_KEY, status, getSyncStatusFunc(status, changeStatus))

@@ -12,12 +12,13 @@ import (
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/anybar"
 )
 
 var (
-	action, id, name, projectId, repetition, deadline, estimate, scheduled, taskType *string
-	noneAllowed, activeFlag, doneFlag, donePrevious                                  *bool
-	basePoints                                                                       *int
+	action, id, name, projectId, repetition, deadline, estimate, scheduled, taskType, note *string
+	noneAllowed, activeFlag, doneFlag, donePrevious                                        *bool
+	basePoints                                                                             *int
 )
 
 func init() {
@@ -35,6 +36,9 @@ func init() {
 	noneAllowed = flag.Bool("noneAllowed", false, "Provide information whether list should be retrieved with none value allowed.")
 	scheduled = flag.String("scheduled", "", "Provide schedule period. (NEXT|NONE)")
 	taskType = flag.String("taskType", "", "Provide task type. (PERSONAL|WORK)")
+	note = flag.String("note", "", "Provide note.")
+
+	anybar.Start(anybar.NewAnybarManager())
 
 	db.Open(resources.DB_PATH)
 	t := db.NewTransaction()
@@ -84,6 +88,8 @@ func main() {
 		alfred.PrintEntities(resources.Tasks{operations.GetWorkNextTasks(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_UNSCHEDULED_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetWorkUnscheduledTasks(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_TASK_NOTE:
+		alfred.PrintResult(operations.GetTask(*id).Note)
 	case resources.ACT_PRINT_PROJECTS:
 		alfred.PrintEntities(resources.Projects{operations.GetProjects(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_TAGS:
@@ -92,10 +98,10 @@ func main() {
 		alfred.PrintEntities(resources.Goals{operations.GetGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_HABITS:
 		if *activeFlag {
-			alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
-		} else {
-			alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
-		}
+		alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
+	} else {
+		alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
+	}
 	case resources.ACT_PRINT_REVIEW:
 		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_DELETE_TASK:
@@ -114,7 +120,7 @@ func main() {
 		operations.DeleteHabit(*id)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_TASK:
-		operations.ModifyTask(*id, *name, *projectId, *deadline, *estimate, *scheduled, *taskType, *basePoints, *activeFlag, *doneFlag)
+		operations.ModifyTask(*id, *name, *projectId, *deadline, *estimate, *scheduled, *taskType, *note, *basePoints, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "task"))
 	case resources.ACT_MODIFY_PROJECT:
 		operations.ModifyProject(*id, *name)
