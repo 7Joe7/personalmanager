@@ -24,6 +24,7 @@ type Task struct {
 	TimeEstimate    *time.Duration
 	TimeSpent       *time.Duration
 	Project         *Project
+	Goal            *Goal
 }
 
 func (t *Task) SetId(id string) {
@@ -36,10 +37,13 @@ func (t *Task) GetId() string {
 
 func (t *Task) Load(tr Transaction) error {
 	if t.Project != nil {
-		return tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(t.Project.Id), t.Project)
+		return tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(t.Project.Id), t.Project, true)
+	}
+	if t.Goal != nil {
+		return tr.RetrieveEntity(DB_DEFAULT_GOALS_BUCKET_NAME, []byte(t.Goal.Id), t.Goal, true)
 	}
 	for i := 0; i < len(t.Tags); i++ {
-		if err := tr.RetrieveEntity(DB_DEFAULT_TAGS_BUCKET_NAME, []byte(t.Tags[i].Id), t.Tags[i]); err != nil {
+		if err := tr.RetrieveEntity(DB_DEFAULT_TAGS_BUCKET_NAME, []byte(t.Tags[i].Id), t.Tags[i], true); err != nil {
 			return err
 		}
 	}
@@ -50,6 +54,9 @@ func (t *Task) MarshalJSON() ([]byte, error) {
 	type mTask Task
 	if t.Project != nil {
 		t.Project = &Project{Id: t.Project.Id}
+	}
+	if t.Goal != nil {
+		t.Goal = &Goal{Id: t.Goal.Id}
 	}
 	return json.Marshal(mTask(*t))
 }
@@ -62,6 +69,14 @@ func (t *Task) getItem(id string) *AlfredItem {
 	if t.Deadline != nil {
 		subtitle = t.Deadline.Format(DATE_FORMAT)
 		comma = true
+	}
+
+	if t.Goal != nil {
+		if comma {
+			subtitle += "; "
+		}
+		comma = true
+		subtitle = t.Goal.Name
 	}
 
 	if t.Project != nil {
@@ -119,12 +134,15 @@ func (t *Task) getItem(id string) *AlfredItem {
 	} else if t.Done {
 		order = 2000 - t.BasePoints
 		icoPath = ICO_GREEN
-	} else if t.Deadline != nil && t.Deadline.Before(time.Now()) {
+	} else if t.Deadline != nil && t.Deadline.Before(time.Now().Add(time.Hour * 24)) {
 		order = 250 - t.BasePoints
 		icoPath = ICO_RED
 	} else if todayTagPresent {
 		order = 500 - t.BasePoints
 		icoPath = ICO_ORANGE
+	} else if t.Goal != nil && t.Goal.Active {
+		order = 750 - t.BasePoints
+		icoPath = ICO_YELLOW
 	} else {
 		order = 1000 - t.BasePoints
 		icoPath = ICO_CYAN

@@ -24,8 +24,8 @@ func EnsureValues(t resources.Transaction) {
 	ensureValues(t)
 }
 
-func AddTask(name, projectId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) {
-	addTask(name, projectId, deadline, estimate, scheduled, taskType, active, basePoints)
+func AddTask(name, projectId, goalId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) {
+	addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, active, basePoints)
 }
 
 func DeleteTask(taskId string) {
@@ -44,8 +44,16 @@ func GetTasks() map[string]*resources.Task {
 	return getTasks()
 }
 
+func GetPersonalTasks() map[string] *resources.Task {
+	return getPersonalTasks()
+}
+
 func FilterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
-	return filterTasks(filter)
+	return filterTasks(false, filter)
+}
+
+func FilterTasksSlice(filter func(*resources.Task) bool) []*resources.Task {
+	return filterTasksSlice(false, filter)
 }
 
 func GetNextTasks() map[string]*resources.Task {
@@ -54,6 +62,10 @@ func GetNextTasks() map[string]*resources.Task {
 
 func GetUnscheduledTasks() map[string]*resources.Task {
 	return getUnscheduledTasks()
+}
+
+func GetShoppingTasks() map[string]*resources.Task {
+	return getShoppingTasks()
 }
 
 func GetWorkNextTasks() map[string]*resources.Task {
@@ -85,7 +97,7 @@ func GetHabits() map[string]*resources.Habit {
 }
 
 func FilterHabits(filter func(*resources.Habit) bool) map[string]*resources.Habit {
-	return filterHabits(filter)
+	return filterHabits(false, filter)
 }
 
 func GetActiveHabits() map[string]*resources.Habit {
@@ -94,4 +106,16 @@ func GetActiveHabits() map[string]*resources.Habit {
 
 func GetNonActiveHabits() map[string]*resources.Habit {
 	return getNonActiveHabits()
+}
+
+func FilterGoals(filter func(*resources.Goal) bool) map[string]*resources.Goal {
+	return filterGoals(false, filter)
+}
+
+func GetActiveGoals() map[string]*resources.Goal {
+	return getActiveGoals()
+}
+
+func GetNonActiveGoals() map[string]*resources.Goal {
+	return getNonActiveGoals()
 }

@@ -23,7 +23,7 @@ func GetStatus() *resources.Status {
 	status := &resources.Status{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
-		return tr.RetrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status)
+		return tr.RetrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status, false)
 	})
 	tr.Execute()
 	return status

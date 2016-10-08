@@ -31,7 +31,15 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, s
 			t.TimeEstimate = &dur
 		}
 		if scheduled != "" {
-			t.Scheduled = scheduled
+			switch scheduled {
+			case resources.TASK_SCHEDULED_NEXT:
+				t.Scheduled = resources.TASK_SCHEDULED_NEXT
+			case resources.TASK_NOT_SCHEDULED:
+				t.Scheduled = resources.TASK_NOT_SCHEDULED
+				if t.InProgress {
+					stopProgress(t)
+				}
+			}
 		}
 		if taskType != "" {
 			t.Type = taskType
@@ -66,8 +74,8 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, s
 
 func countScoreChange(t *resources.Task) int {
 	change := t.BasePoints * 10
-	if t.TimeSpent != nil {
-		change += int(t.TimeSpent.Minutes()) * t.BasePoints
+	if t.TimeEstimate != nil {
+		change += int(t.TimeEstimate.Minutes()) * t.BasePoints
 	}
 	return change
 }
@@ -97,10 +105,13 @@ func startProgress(t *resources.Task) {
 	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, t.Name, resources.ANY_CMD_BLUE)
 }
 
-func createTask(name, projectId, deadline, estimate, scheduled, taskType string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
+func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
 	task := resources.NewTask(name)
 	if projectId != "" {
 		task.Project = &resources.Project{Id: projectId}
+	}
+	if goalId != "" {
+		task.Goal = &resources.Goal{Id: goalId}
 	}
 	if deadline != "" {
 		task.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
@@ -131,15 +142,24 @@ func createTask(name, projectId, deadline, estimate, scheduled, taskType string,
 	return task, nil
 }
 
-func addTask(name, projectId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) string {
+func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) string {
 	var id string
 	t := db.NewTransaction()
 	t.Add(func() error {
-		task, err := createTask(name, projectId, deadline, estimate, scheduled, taskType, active, basePoints, t)
+		task, err := createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, active, basePoints, t)
 		if err != nil {
 			return err
 		}
-		return t.AddEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, task)
+		err = t.AddEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, task)
+		if err != nil {
+			return err
+		}
+		if task.Goal != nil {
+			return t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func () {
+				task.Goal.Tasks = append(task.Goal.Tasks, task)
+			})
+		}
+		return nil
 	})
 	t.Execute()
 	return id
@@ -155,7 +175,7 @@ func moveActiveTask(t resources.Transaction, toggledTaskId string) error {
 		actualActiveTask = []byte(toggledTaskId)
 		if valueStr != "" {
 			task := &resources.Task{}
-			t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, value, task, func() {
+			t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, value, true, task, func() {
 				stopProgress(task)
 			})
 		}
@@ -167,8 +187,22 @@ func deleteTask(taskId string) {
 	t := db.NewTransaction()
 	t.Add(func() error {
 		task := &resources.Task{}
-		if err := t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task); err != nil {
+		err := t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, true)
+		if err != nil {
 			return err
+		}
+		if task.Goal != nil {
+			goal := &resources.Goal{}
+			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(task.Goal.Id), true, goal, func() {
+				for i := 0; i < len(goal.Tasks); i++ {
+					if goal.Tasks[i].Id == task.Goal.Id {
+						goal.Tasks = append(goal.Tasks[:i], goal.Tasks[i+1:]...)
+					}
+				}
+			})
+			if err != nil {
+				return err
+			}
 		}
 		if task.InProgress {
 			if err := t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, []byte{}); err != nil {
@@ -192,11 +226,11 @@ func modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType
 				return err
 			}
 		}
-		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
+		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), false, task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
 		if err != nil {
 			return err
 		}
-		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status, getAddScoreFunc(status, changeStatus))
+		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getAddScoreFunc(status, changeStatus))
 	})
 	t.Execute()
 }
@@ -205,7 +239,7 @@ func getTask(taskId string) *resources.Task {
 	task := &resources.Task{}
 	t := db.NewTransaction()
 	t.Add(func() error {
-		return t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task)
+		return t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, false)
 	})
 	t.Execute()
 	return task
@@ -215,7 +249,7 @@ func getTasks() map[string]*resources.Task {
 	tasks := map[string]*resources.Task{}
 	t := db.NewTransaction()
 	t.Add(func() error {
-		return t.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, func(id string) resources.Entity {
+		return t.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, func(id string) resources.Entity {
 			tasks[id] = &resources.Task{}
 			return tasks[id]
 		})
@@ -224,7 +258,7 @@ func getTasks() map[string]*resources.Task {
 	return tasks
 }
 
-func filterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
+func filterTasks(shallow bool, filter func(*resources.Task) bool) map[string]*resources.Task {
 	tasks := map[string]*resources.Task{}
 	var task *resources.Task
 	getNewEntity := func () resources.Entity {
@@ -232,16 +266,40 @@ func filterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
 		return task
 	}
 	addEntity := func () { tasks[task.Id] = task }
-	db.FilterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, addEntity, getNewEntity, func() bool { return filter(task) })
+	db.FilterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, shallow, addEntity, getNewEntity, func() bool { return filter(task) })
 	return tasks
+}
+
+func filterTasksSlice(shallow bool, filter func(*resources.Task) bool) []*resources.Task {
+	tasks := []*resources.Task{}
+	var task *resources.Task
+	getNewEntity := func () resources.Entity {
+		task = &resources.Task{}
+		return task
+	}
+	addEntity := func () { tasks = append(tasks, task) }
+	db.FilterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, shallow, addEntity, getNewEntity, func() bool { return filter(task) })
+	return tasks
+}
+
+func getTasksByGoal(goalId string) []*resources.Task {
+	return filterTasksSlice(true, func (t *resources.Task) bool { return t.Goal.Id == goalId })
 }
 
 func getNextTasks() map[string]*resources.Task {
 	return FilterTasks(func (t *resources.Task) bool { return t.Scheduled == resources.TASK_SCHEDULED_NEXT && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
 }
 
+func getPersonalTasks() map[string]*resources.Task {
+	return FilterTasks(func (t *resources.Task) bool { return t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL })
+}
+
 func getUnscheduledTasks() map[string]*resources.Task {
 	return FilterTasks(func (t *resources.Task) bool { return (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
+}
+
+func getShoppingTasks() map[string]*resources.Task {
+	return FilterTasks(func (t *resources.Task) bool { return (t.Type == resources.TASK_TYPE_SHOPPING )})
 }
 
 func getWorkNextTasks() map[string]*resources.Task {

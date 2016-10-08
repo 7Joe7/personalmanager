@@ -104,24 +104,6 @@ func (p *Project) Load(tr Transaction) error {
 	return nil
 }
 
-type Goal struct {
-	Name     string
-	Deadline *time.Time
-	Id       string
-}
-
-func (g *Goal) SetId(id string) {
-	g.Id = id
-}
-
-func (g *Goal) GetId() string {
-	return g.Id
-}
-
-func (g *Goal) Load(tr Transaction) error {
-	return nil
-}
-
 type Status struct {
 	Score int
 	Today int

@@ -10,7 +10,7 @@ func modifyReview(repetition, deadline string) {
 	r := &resources.Review{}
 	t := db.NewTransaction()
 	t.Add(func () error {
-		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, r, getModifyReviewFunc(r, repetition, deadline))
+		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, false, r, getModifyReviewFunc(r, repetition, deadline))
 	})
 	t.Execute()
 }
@@ -30,7 +30,7 @@ func getReview() *resources.Review {
 	r := &resources.Review{}
 	t := db.NewTransaction()
 	t.Add(func () error {
-		return t.RetrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, r)
+		return t.RetrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, r, false)
 	})
 	t.Execute()
 	return r

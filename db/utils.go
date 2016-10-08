@@ -5,7 +5,6 @@ import (
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/boltdb/bolt"
-	"encoding/json"
 )
 
 var (
@@ -18,33 +17,33 @@ func deleteEntity(bucketName, id []byte) error {
 	return tr.execute()
 }
 
-func retrieveEntity(bucketName, id []byte, entity resources.Entity) error {
+func retrieveEntity(bucketName, id []byte, entity resources.Entity, shallow bool) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.RetrieveEntity(bucketName, id, entity)})
+	tr.Add(func () error { return tr.RetrieveEntity(bucketName, id, entity, shallow)})
 	return tr.execute()
 }
 
-func modifyEntity(bucketName []byte, id []byte, entity resources.Entity, modify func ()) error {
+func modifyEntity(bucketName, id []byte, shallow bool, entity resources.Entity, modify func ()) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.ModifyEntity(bucketName, id, entity, modify)})
+	tr.Add(func () error { return tr.ModifyEntity(bucketName, id, shallow, entity, modify)})
 	return tr.execute()
 }
 
-func retrieveEntities(bucketName []byte, getObject func (string) resources.Entity) error {
+func retrieveEntities(bucketName []byte, shallow bool, getObject func (string) resources.Entity) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.RetrieveEntities(bucketName, getObject) })
+	tr.Add(func () error { return tr.RetrieveEntities(bucketName, shallow, getObject) })
 	return tr.execute()
 }
 
-func mapEntities(entity resources.Entity, bucketName []byte, mapFunc func ()) error {
+func mapEntities(entity resources.Entity, bucketName []byte, shallow bool, mapFunc func ()) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.MapEntities(bucketName, entity, mapFunc) })
+	tr.Add(func () error { return tr.MapEntities(bucketName, shallow, entity, mapFunc) })
 	return tr.execute()
 }
 
-func filterEntities(bucketName []byte, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
+func filterEntities(bucketName []byte, shallow bool, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.FilterEntities(bucketName, addEntity, getNewEntity, filterFunc)})
+	tr.Add(func () error { return tr.FilterEntities(bucketName, shallow, addEntity, getNewEntity, filterFunc)})
 	return tr.view()
 }
 
@@ -62,16 +61,4 @@ func open(path string) error {
 		return err
 	}
 	return nil
-}
-
-func modifyEntityInner(bucket *bolt.Bucket, key, value []byte, entity interface{}, modify func ()) error {
-	if err := json.Unmarshal(value, entity); err != nil {
-		return err
-	}
-	modify()
-	resultValue, err := json.Marshal(entity)
-	if err != nil {
-		return err
-	}
-	return bucket.Put(key, resultValue)
 }

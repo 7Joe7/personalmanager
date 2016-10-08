@@ -34,8 +34,10 @@ func (h *Habit) Load(tr Transaction) error {
 
 func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 	if h.Active {
-		if h.Done {
+		if h.Done || h.ActualStreak > 49 {
 			return ICO_GREEN, "green", HBT_DONE_BASE_ORDER
+		} else if h.ActualStreak > 21 {
+			return ICO_BLUE, "blue", HBT_CONQUERED_BASE_ORDER
 		} else {
 			switch h.Repetition {
 			case HBT_REPETITION_DAILY:

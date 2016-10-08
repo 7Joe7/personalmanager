@@ -15,12 +15,12 @@ func synchronize(t resources.Transaction) {
 		if lastSync == "" || isTimeForSync(lastSync) {
 			habit := &resources.Habit{}
 			habitStatus := &resources.Status{}
-			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, habit, getSyncHabitFunc(habit, habitStatus, t))
+			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, habit, getSyncHabitFunc(habit, habitStatus, t))
 			if err != nil {
 				return err
 			}
 			status := &resources.Status{}
-			err = t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status, getSyncStatusFunc(status, habitStatus))
+			err = t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getSyncStatusFunc(status, habitStatus))
 			if err != nil {
 				return err
 			}
@@ -28,20 +28,21 @@ func synchronize(t resources.Transaction) {
 			if err != nil {
 				return err
 			}
+			// TODO enable after cleaning db and
 			//activeTaskId := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
-			//if activeTaskId != nil && string(activeTaskId) != "" {
+			//if !anybar.Ping(resources.ANY_PORT_ACTIVE_TASK) && activeTaskId != nil && string(activeTaskId) != "" {
 			//	activeTask := &resources.Task{}
 			//	err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, activeTaskId, activeTask)
 			//	if err != nil {
 			//		return err
 			//	}
 			//	resources.WaitGroup.Add(1)
-			//	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_HABIT, activeTask.Name, resources.ANY_CMD_BLUE)
-			//} TODO after having ping in anybar
+			//	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, activeTask.Name, resources.ANY_CMD_BLUE)
+			//}
+			//activePorts := anybar.GetActivePorts(t)
+			//resources.WaitGroup.Add(1)
+			//go anybar.EnsureActivePorts(activePorts)
 		}
-		//activePorts := anybar.GetActivePorts(t)
-		//resources.WaitGroup.Add(1)
-		//go anybar.EnsureActivePorts(activePorts)
 		return nil
 	})
 }

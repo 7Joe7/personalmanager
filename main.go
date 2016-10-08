@@ -9,22 +9,24 @@ import (
 	"runtime/debug"
 
 	"github.com/7joe7/personalmanager/alfred"
+	"github.com/7joe7/personalmanager/anybar"
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/anybar"
 )
 
 var (
-	action, id, name, projectId, repetition, deadline, estimate, scheduled, taskType, note *string
-	noneAllowed, activeFlag, doneFlag, donePrevious                                        *bool
-	basePoints                                                                             *int
+	action, id, name, projectId, goalId, taskId, repetition, deadline, estimate, scheduled, taskType, note *string
+	noneAllowed, activeFlag, doneFlag, donePrevious                                                        *bool
+	basePoints                                                                                             *int
 )
 
 func init() {
 	action = flag.String("action", "", fmt.Sprintf("Provide action to be taken from this list: %v.", resources.ACTIONS))
 	id = flag.String("id", "", fmt.Sprintf("Provide id of the entity you want to make the action for. Valid for these actions: ."))
-	projectId = flag.String("projectId", "", fmt.Sprintf("Provide project id for task assignment."))
+	projectId = flag.String("projectId", "", fmt.Sprintf("Provide project id for project assignment."))
+	goalId = flag.String("goalId", "", fmt.Sprintf("Provide goal id for goal assignment."))
+	taskId = flag.String("taskId", "", fmt.Sprintf("Provide task id for task assignment."))
 	name = flag.String("name", "", "Provide name.")
 	activeFlag = flag.Bool("active", false, "Toggle active/show active only.")
 	doneFlag = flag.Bool("done", false, "Toggle done.")
@@ -64,7 +66,7 @@ func main() {
 	flag.Parse()
 	switch *action {
 	case resources.ACT_CREATE_TASK:
-		operations.AddTask(*name, *projectId, *deadline, *estimate, *scheduled, *taskType, *activeFlag, *basePoints)
+		operations.AddTask(*name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"))
 	case resources.ACT_CREATE_PROJECT:
 		operations.AddProject(*name)
@@ -80,10 +82,14 @@ func main() {
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetTasks(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_PERSONAL_TASKS:
+		alfred.PrintEntities(resources.Tasks{operations.GetPersonalTasks(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_PERSONAL_NEXT_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetNextTasks(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetUnscheduledTasks(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_SHOPPING_TASKS:
+		alfred.PrintEntities(resources.Tasks{operations.GetShoppingTasks(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_NEXT_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetWorkNextTasks(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_UNSCHEDULED_TASKS:
@@ -95,13 +101,15 @@ func main() {
 	case resources.ACT_PRINT_TAGS:
 		alfred.PrintEntities(resources.Tags{operations.GetTags(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_GOALS:
-		alfred.PrintEntities(resources.Goals{operations.GetGoals(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Goals{operations.GetNonActiveGoals(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_ACTIVE_GOALS:
+		alfred.PrintEntities(resources.Goals{operations.GetActiveGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_HABITS:
 		if *activeFlag {
-		alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
-	} else {
-		alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
-	}
+			alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
+		} else {
+			alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
+		}
 	case resources.ACT_PRINT_REVIEW:
 		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_DELETE_TASK:
@@ -129,7 +137,7 @@ func main() {
 		operations.ModifyTag(*id, *name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
 	case resources.ACT_MODIFY_GOAL:
-		operations.ModifyGoal(*id, *name, *deadline)
+		operations.ModifyGoal(*id, *name, *taskId, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
 		operations.ModifyHabit(*id, *name, *repetition, *deadline, *activeFlag, *doneFlag, *donePrevious, *basePoints)

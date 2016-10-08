@@ -14,11 +14,11 @@ type anybarManagerMock struct{
 	NewPortResult int
 }
 
-func (am *anybarManagerMock) RemoveAndQuit(id string, t resources.Transaction) {
+func (am *anybarManagerMock) RemoveAndQuit(bucketName []byte, id string, t resources.Transaction) {
 
 }
 
-func (am *anybarManagerMock) AddToActivePorts(title, icon string, id string, t resources.Transaction) {
+func (am *anybarManagerMock) AddToActivePorts(title, icon string, bucketName []byte, id string, t resources.Transaction) {
 
 }
 

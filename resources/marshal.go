@@ -8,8 +8,8 @@ import (
 
 func (r *Review) GetItem() *AlfredItem {
 	return &AlfredItem{
-		Name: fmt.Sprintf("Review repeated %s, next: %s.", r.Repetition, r.Deadline.Format(DATE_FORMAT)),
-		Icon: NewAlfredIcon(ICO_BLACK),
+		Name:  fmt.Sprintf("Review repeated %s, next: %s.", r.Repetition, r.Deadline.Format(DATE_FORMAT)),
+		Icon:  NewAlfredIcon(ICO_BLACK),
 		Valid: true}
 }
 
@@ -31,20 +31,12 @@ func (t *Tag) getItem(id string) *AlfredItem {
 		Valid:    true}
 }
 
-func (g *Goal) getItem(id string) *AlfredItem {
-	return &AlfredItem{
-		Name:     g.Name,
-		Arg:      id,
-		Subtitle: "",
-		Icon:     NewAlfredIcon(""),
-		Valid:    true}
-}
-
 func (s *Status) getItem() *AlfredItem {
 	return &AlfredItem{
-		Name: fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today),
-		Icon: NewAlfredIcon(ICO_HABIT),
-		Mods: getEmptyMods()}
+		Name:  fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today),
+		Valid: false,
+		Icon:  NewAlfredIcon(ICO_HABIT),
+		Mods:  getEmptyMods()}
 }
 
 func (ts Tasks) MarshalJSON() ([]byte, error) {
@@ -132,7 +124,7 @@ func (hs Habits) MarshalJSON() ([]byte, error) {
 	return marshalItems(items)
 }
 
-func (ho items) Len() int { return len(ho) }
+func (ho items) Len() int      { return len(ho) }
 func (ho items) Swap(i, j int) { ho[i], ho[j] = ho[j], ho[i] }
 func (ho items) Less(i, j int) bool {
 	if ho[i].order == ho[j].order {

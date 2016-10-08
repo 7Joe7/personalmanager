@@ -27,14 +27,14 @@ func DeleteTag(tagId string) {
 
 func ModifyTag(tagId, name string) {
 	tag := &resources.Tag{}
-	db.ModifyEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(tagId), tag, getModifyTagFunc(tag, name))
+	db.ModifyEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(tagId), false, tag, getModifyTagFunc(tag, name))
 }
 
 func GetTag(tagId string) *resources.Tag {
 	tag := &resources.Tag{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
-		return tr.RetrieveEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(tagId), tag)
+		return tr.RetrieveEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(tagId), tag, false)
 	})
 	tr.Execute()
 	return tag
@@ -42,7 +42,7 @@ func GetTag(tagId string) *resources.Tag {
 
 func GetTags() map[string]*resources.Tag {
 	tags := map[string]*resources.Tag{}
-	db.RetrieveEntities(resources.DB_DEFAULT_TAGS_BUCKET_NAME, func (id string) resources.Entity {
+	db.RetrieveEntities(resources.DB_DEFAULT_TAGS_BUCKET_NAME, false, func (id string) resources.Entity {
 		tags[id] = &resources.Tag{}
 		return tags[id]
 	})

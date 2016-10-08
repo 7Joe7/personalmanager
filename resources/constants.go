@@ -49,7 +49,7 @@ const (
 	ANY_PORT_ACTIVE_TASK = 2800
 	ANY_PORTS_RANGE_BASE = 2100
 
-	ANY_SLEEP_TIME = 500
+	ANY_SLEEP_TIME = 100
 
 	DEADLINE_FORMAT = "2.1.2006 15:04"
 	DATE_FORMAT     = "2.1.2006"
@@ -63,15 +63,18 @@ const (
 	NAME_FORMAT_STATUS          = "Total %d, today %d."
 	NAME_FORMAT_EMPTY           = "There are no %ss."
 
-	HBT_DONE_BASE_ORDER    = 2000
-	HBT_BASE_ORDER_DAILY   = 1000
-	HBT_BASE_ORDER_WEEKLY  = 1250
-	HBT_BASE_ORDER_MONTHLY = 1500
+	HBT_CONQUERED_BASE_ORDER = 2500
+	HBT_DONE_BASE_ORDER      = 2000
+	HBT_BASE_ORDER_DAILY     = 1000
+	HBT_BASE_ORDER_WEEKLY    = 1250
+	HBT_BASE_ORDER_MONTHLY   = 1500
 
 	ACT_CREATE_TASK                      = "create-task"
 	ACT_PRINT_TASKS                      = "print-tasks"
+	ACT_PRINT_PERSONAL_TASKS             = "print-personal-tasks"
 	ACT_PRINT_PERSONAL_NEXT_TASKS        = "print-next-tasks"
 	ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS = "print-unscheduled-tasks"
+	ACT_PRINT_SHOPPING_TASKS             = "print-shopping-tasks"
 	ACT_PRINT_WORK_NEXT_TASKS            = "print-work-next-tasks"
 	ACT_PRINT_WORK_UNSCHEDULED_TASKS     = "print-work-unscheduled-tasks"
 	ACT_PRINT_TASK_NOTE                  = "print-task-note"
@@ -87,6 +90,7 @@ const (
 	ACT_MODIFY_TAG                       = "modify-tag"
 	ACT_CREATE_GOAL                      = "create-goal"
 	ACT_PRINT_GOALS                      = "print-goals"
+	ACT_PRINT_ACTIVE_GOALS               = "print-active-goals"
 	ACT_DELETE_GOAL                      = "delete-goal"
 	ACT_MODIFY_GOAL                      = "modify-goal"
 	ACT_CREATE_HABIT                     = "create-habit"
@@ -103,6 +107,7 @@ const (
 
 	TASK_TYPE_PERSONAL = "PERSONAL"
 	TASK_TYPE_WORK     = "WORK"
+	TASK_TYPE_SHOPPING = "SHOPPING"
 )
 
 var (

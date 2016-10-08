@@ -18,12 +18,12 @@ func Start(anybarManager resources.AnybarManager) {
 	am = anybarManager
 }
 
-func RemoveAndQuit(id string, t resources.Transaction) {
-	am.RemoveAndQuit(id, t)
+func RemoveAndQuit(bucketName []byte, id string, t resources.Transaction) {
+	am.RemoveAndQuit(bucketName, id, t)
 }
 
-func AddToActivePorts(title, icon string, id string, t resources.Transaction) {
-	am.AddToActivePorts(title, icon, id, t)
+func AddToActivePorts(title, icon string, bucketName []byte, id string, t resources.Transaction) {
+	am.AddToActivePorts(title, icon, bucketName, id, t)
 }
 
 func EnsureActivePorts(activePorts resources.ActivePorts) {

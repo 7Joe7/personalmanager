@@ -68,14 +68,17 @@ func (t *transaction) DeleteEntity(bucketName, id []byte) error {
 	return t.tx.Bucket(bucketName).Delete(id)
 }
 
-func (t *transaction) RetrieveEntity(bucketName, id []byte, entity resources.Entity) error {
+func (t *transaction) RetrieveEntity(bucketName, id []byte, entity resources.Entity, shallow bool) error {
 	if err := json.Unmarshal(t.tx.Bucket(bucketName).Get(id), entity); err != nil {
 		return err
+	}
+	if shallow {
+		return nil
 	}
 	return entity.Load(t)
 }
 
-func (t *transaction) RetrieveEntities(bucketName []byte, getObject func (string) resources.Entity) error {
+func (t *transaction) RetrieveEntities(bucketName []byte, shallow bool, getObject func (string) resources.Entity) error {
 	return t.tx.Bucket(bucketName).ForEach(func (k, v []byte) error {
 		key := string(k)
 		if key == string(resources.DB_LAST_ID_KEY) {
@@ -85,26 +88,44 @@ func (t *transaction) RetrieveEntities(bucketName []byte, getObject func (string
 		if err := json.Unmarshal(v, entity); err != nil {
 			return err
 		}
+		if shallow {
+			return nil
+		}
 		return entity.Load(t)
 	})
 }
 
-func (t *transaction) ModifyEntity(bucketName, key []byte, entity resources.Entity, modifyFunc func ()) error {
+func (t *transaction) ModifyEntity(bucketName, key []byte, shallow bool, entity resources.Entity, modifyFunc func ()) error {
 	b := t.tx.Bucket(bucketName)
-	return modifyEntityInner(b, key, b.Get(key), entity, modifyFunc)
+	return t.modifyEntityInner(b, key, b.Get(key), shallow, entity, modifyFunc)
 }
 
-func (t *transaction) MapEntities(bucketName []byte, entity resources.Entity, mapFunc func ()) error {
+func (t *transaction) MapEntities(bucketName []byte, shallow bool, entity resources.Entity, mapFunc func ()) error {
 	b := t.tx.Bucket(bucketName)
 	return b.ForEach(func (k, v []byte) error {
 		if string(k) != string(resources.DB_LAST_ID_KEY) {
-			return modifyEntityInner(b, k, v, entity, mapFunc)
+			return t.modifyEntityInner(b, k, v, shallow, entity, mapFunc)
 		}
 		return nil
 	})
 }
 
-func (t *transaction) FilterEntities(bucketName []byte, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
+func (t *transaction) modifyEntityInner(bucket *bolt.Bucket, key, value []byte, shallow bool, entity resources.Entity, modify func ()) error {
+	if err := json.Unmarshal(value, entity); err != nil {
+		return err
+	}
+	if !shallow {
+		entity.Load(t)
+	}
+	modify()
+	resultValue, err := json.Marshal(entity)
+	if err != nil {
+		return err
+	}
+	return bucket.Put(key, resultValue)
+}
+
+func (t *transaction) FilterEntities(bucketName []byte, shallow bool, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
 	return t.tx.Bucket(bucketName).ForEach(func (k, v []byte) error {
 		key := string(k)
 		if key == string(resources.DB_LAST_ID_KEY) {
@@ -117,6 +138,9 @@ func (t *transaction) FilterEntities(bucketName []byte, addEntity func (), getNe
 		}
 		if filterFunc() {
 			addEntity()
+			if shallow {
+				return nil
+			}
 			err = entity.Load(t)
 			if err != nil {
 				return err

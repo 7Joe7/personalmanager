@@ -1,16 +1,17 @@
 package anybar
 
 import (
-	"github.com/7joe7/personalmanager/resources"
 	"sort"
 	"encoding/json"
+
+	"github.com/7joe7/personalmanager/resources"
 )
 
-func (am *anybarManager) RemoveAndQuit(id string, t resources.Transaction) {
+func (am *anybarManager) RemoveAndQuit(bucketName []byte, id string, t resources.Transaction) {
 	var port int
 	activePorts := am.GetActivePorts(t)
 	for i := 0; i < len(activePorts); i++ {
-		if string(activePorts[i].Id) == id {
+		if string(bucketName) == string(activePorts[i].BucketName) && activePorts[i].Id == id {
 			port = activePorts[i].Port
 			activePorts = append(activePorts[:i], activePorts[i+1:]...)
 			break
@@ -21,14 +22,14 @@ func (am *anybarManager) RemoveAndQuit(id string, t resources.Transaction) {
 	go am.Quit(port)
 }
 
-func (am *anybarManager) AddToActivePorts(title, icon string, id string, t resources.Transaction) {
+func (am *anybarManager) AddToActivePorts(title, icon string, bucketName []byte, id string, t resources.Transaction) {
 	activePorts := am.GetActivePorts(t)
 	port := am.GetNewPort(activePorts)
 	activePorts = append(activePorts, &resources.ActivePort{
 		Port:       port,
 		Name:       title,
 		Colour:     icon,
-		BucketName: resources.DB_DEFAULT_HABITS_BUCKET_NAME,
+		BucketName: bucketName,
 		Id:         id})
 	sort.Sort(activePorts)
 	saveActivePorts(t, activePorts)
@@ -39,8 +40,10 @@ func (am *anybarManager) AddToActivePorts(title, icon string, id string, t resou
 func (am *anybarManager) EnsureActivePorts(activePorts resources.ActivePorts) {
 	defer resources.WaitGroup.Done()
 	for i := 0; i < len(activePorts); i++ {
-		resources.WaitGroup.Add(1)
-		am.StartWithIcon(activePorts[i].Port, activePorts[i].Name, activePorts[i].Colour)
+		if !am.Ping(activePorts[i].Port) {
+			resources.WaitGroup.Add(1)
+			am.StartWithIcon(activePorts[i].Port, activePorts[i].Name, activePorts[i].Colour)
+		}
 	}
 }
 
