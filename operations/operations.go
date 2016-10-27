@@ -76,16 +76,16 @@ func GetWorkUnscheduledTasks() map[string]*resources.Task {
 	return getWorkUnscheduledTasks()
 }
 
-func AddHabit(name, repetition, deadline string, activeFlag bool, basePoints int) {
-	addHabit(name, repetition, deadline, activeFlag, basePoints)
+func AddHabit(name, repetition, description, deadline string, activeFlag bool, basePoints int) {
+	addHabit(name, repetition, description, deadline, activeFlag, basePoints)
 }
 
 func DeleteHabit(habitId string) {
 	deleteHabit(habitId)
 }
 
-func ModifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
-	modifyHabit(habitId, name, repetition, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints)
+func ModifyHabit(habitId, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
+	modifyHabit(habitId, name, repetition, description, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints)
 }
 
 func GetHabit(habitId string) *resources.Habit {

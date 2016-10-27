@@ -78,7 +78,7 @@ func main() {
 		operations.AddGoal(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
-		operations.AddHabit(*name, *repetition, *deadline, *activeFlag, *basePoints)
+		operations.AddHabit(*name, *repetition, *note, *deadline, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
 		alfred.PrintEntities(resources.Tasks{operations.GetTasks(), *noneAllowed, operations.GetStatus()})
@@ -110,6 +110,8 @@ func main() {
 	} else {
 		alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
 	}
+	case resources.ACT_PRINT_HABIT_DESCRIPTION:
+		alfred.PrintResult(operations.GetHabit(*id).Description)
 	case resources.ACT_PRINT_REVIEW:
 		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_EXPORT_SHOPPING_TASKS:
@@ -142,7 +144,7 @@ func main() {
 		operations.ModifyGoal(*id, *name, *taskId, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
-		operations.ModifyHabit(*id, *name, *repetition, *deadline, *activeFlag, *doneFlag, *donePrevious, *basePoints)
+		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *activeFlag, *doneFlag, *donePrevious, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)

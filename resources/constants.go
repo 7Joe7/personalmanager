@@ -96,6 +96,7 @@ const (
 	ACT_MODIFY_GOAL                      = "modify-goal"
 	ACT_CREATE_HABIT                     = "create-habit"
 	ACT_PRINT_HABITS                     = "print-habits"
+	ACT_PRINT_HABIT_DESCRIPTION          = "print-habit-description"
 	ACT_DELETE_HABIT                     = "delete-habit"
 	ACT_MODIFY_HABIT                     = "modify-habit"
 	ACT_PRINT_REVIEW                     = "print-review"

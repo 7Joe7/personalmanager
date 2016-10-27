@@ -9,6 +9,7 @@ type Habit struct {
 	Name          string
 	Active        bool
 	Done          bool
+	Description   string
 	Deadline      *time.Time
 	Tries         int
 	Successes     int

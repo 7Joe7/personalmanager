@@ -9,10 +9,13 @@ import (
 	"github.com/7joe7/personalmanager/anybar"
 )
 
-func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int, status *resources.Status, tr resources.Transaction) func () {
+func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int, status *resources.Status, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			h.Name = name
+		}
+		if description != "" {
+			h.Description = description
 		}
 		if toggleActive {
 			if h.Active {
@@ -186,8 +189,11 @@ func deactivateHabit(h *resources.Habit) {
 	h.BasePoints = 0
 }
 
-func addHabit(name, repetition, deadline string, activeFlag bool, basePoints int) {
+func addHabit(name, repetition, description, deadline string, activeFlag bool, basePoints int) {
 	h := resources.NewHabit(name)
+	if description != "" {
+		h.Description = description
+	}
 	if activeFlag {
 		activateHabit(h, repetition)
 		if repetition != resources.HBT_REPETITION_DAILY {
@@ -232,13 +238,13 @@ func deleteHabit(habitId string) {
 	t.Execute()
 }
 
-func modifyHabit(habitId, name, repetition, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
+func modifyHabit(habitId, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
 	habit := &resources.Habit{}
 	habitStatus := &resources.Status{}
 	status := &resources.Status{}
 	t := db.NewTransaction()
 	t.Add(func () error {
-		modifyHabit := getModifyHabitFunc(habit, name, repetition, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints, habitStatus, t)
+		modifyHabit := getModifyHabitFunc(habit, name, repetition, description, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints, habitStatus, t)
 		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), false, habit, modifyHabit); err != nil {
 			return err
 		}
