@@ -26,8 +26,8 @@ var (
 
 	testTasks = Tasks{Tasks:map[string]*Task{"testTask":testTask}}
 	expectedEmptyTasksJson = `{"items":[{"title":"There are no tasks.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
-	expectedTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project; 0; Spent: 0h0m/?","valid":true,"icon":{"path":"./icons/cyan@2x.png"}}]}`
-	expectedNoneTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project; 0; Spent: 0h0m/?","valid":true,"icon":{"path":"./icons/cyan@2x.png"}},{"title":"No task","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
+	expectedTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project; 0; Spent: 0h0m/?","valid":true,"icon":{"path":"./icons/yellow@2x.png"}}]}`
+	expectedNoneTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project; 0; Spent: 0h0m/?","valid":true,"icon":{"path":"./icons/yellow@2x.png"}},{"title":"No task","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	testProjects = Projects{Projects:map[string]*Project{"testProject":testProject}}
 	expectedEmptyProjectsJson = `{"items":[{"title":"There are no projects.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	expectedProjectJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"testing project note","valid":true,"icon":{"path":""}}]}`
@@ -38,8 +38,8 @@ var (
 	expectedNoneTagsJson = `{"items":[{"title":"testing tag","arg":"testTag","valid":true,"icon":{"path":""}},{"title":"No tag","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	testGoals = Goals{Goals:map[string]*Goal{"testGoal":testGoal}}
 	expectedEmptyGoalsJson = `{"items":[{"title":"There are no goals.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
-	expectedGoalsJson = `{"items":[{"title":"testing goal","arg":"testGoal","valid":true,"icon":{"path":""}}]}`
-	expectedNoneGoalsJson = `{"items":[{"title":"testing goal","arg":"testGoal","valid":true,"icon":{"path":""}},{"title":"No goal","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
+	expectedGoalsJson = `{"items":[{"title":"testing goal","arg":"testGoal","subtitle":"0/0","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedNoneGoalsJson = `{"items":[{"title":"testing goal","arg":"testGoal","subtitle":"0/0","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"No goal","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 
 	testHabits = Habits{Habits:map[string]*Habit{"testHabitActive":testHabitActive, "testHabitDone":testHabitDone, "testHabitNonActive":testHabitNonActive}}
 	expectedEmptyHabitsJson = `{"items":[{"title":"There are no habits.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
@@ -95,7 +95,7 @@ func TestMarshalTasks(t *testing.T) {
 
 func TestGetTaskItem(t *testing.T) {
 	ai := testTask.getItem(testId)
-	testCommonAttr(ai, true, testId, testTask.Name, fmt.Sprintf("%s; 0; Spent: 0h0m/?", testTask.Project.Name), "./icons/cyan@2x.png", t)
+	testCommonAttr(ai, true, testId, testTask.Name, fmt.Sprintf("%s; 0; Spent: 0h0m/?", testTask.Project.Name), "./icons/yellow@2x.png", t)
 }
 
 func TestGetProjectItem(t *testing.T) {
@@ -110,7 +110,13 @@ func TestGetTagItem(t *testing.T) {
 
 func TestGetGoalItem(t *testing.T) {
 	ai := testGoal.getItem(testId)
-	testCommonAttr(ai, true, testId, testGoal.Name, fmt.Sprintf(SUB_FORMAT_GOAL), "", t)
+	var doneTasksNumber int
+	for i := 0; i < len(testGoal.Tasks); i++ {
+		if testGoal.Tasks[i].Done {
+			doneTasksNumber++
+		}
+	}
+	testCommonAttr(ai, true, testId, testGoal.Name, fmt.Sprintf(SUB_FORMAT_GOAL, doneTasksNumber, len(testGoal.Tasks)), "./icons/black@2x.png", t)
 }
 
 func TestGetHabitNonActiveItem(t *testing.T) {

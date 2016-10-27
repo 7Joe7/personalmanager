@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/7joe7/personalmanager/utils"
+	"fmt"
 )
 
 type Task struct {
@@ -59,6 +60,24 @@ func (t *Task) MarshalJSON() ([]byte, error) {
 		t.Goal = &Goal{Id: t.Goal.Id}
 	}
 	return json.Marshal(mTask(*t))
+}
+
+func (t *Task) Export() string {
+	if t.Done {
+		return ""
+	}
+	result := t.Name
+	if t.Note != "" {
+		result += "\nNote: " + t.Note
+	}
+	if t.Deadline != nil {
+		result += fmt.Sprintf("\nDeadline: %v", t.Deadline)
+	}
+	if t.Goal != nil {
+		result += "\nGoal: " + t.Goal.Name
+	}
+	result += "\n"
+	return result
 }
 
 func (t *Task) getItem(id string) *AlfredItem {
@@ -142,10 +161,10 @@ func (t *Task) getItem(id string) *AlfredItem {
 		icoPath = ICO_ORANGE
 	} else if t.Goal != nil && t.Goal.Active {
 		order = 750 - t.BasePoints
-		icoPath = ICO_YELLOW
+		icoPath = ICO_CYAN
 	} else {
 		order = 1000 - t.BasePoints
-		icoPath = ICO_CYAN
+		icoPath = ICO_YELLOW
 	}
 
 	return &AlfredItem{

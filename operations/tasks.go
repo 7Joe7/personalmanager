@@ -105,7 +105,7 @@ func startProgress(t *resources.Task) {
 	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, t.Name, resources.ANY_CMD_BLUE)
 }
 
-func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
+func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
 	task := resources.NewTask(name)
 	if projectId != "" {
 		task.Project = &resources.Project{Id: projectId}
@@ -129,6 +129,9 @@ func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType
 	if taskType != "" {
 		task.Type = taskType
 	}
+	if note != "" {
+		task.Note = note
+	}
 	if basePoints != -1 {
 		task.BasePoints = basePoints
 	}
@@ -142,11 +145,11 @@ func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType
 	return task, nil
 }
 
-func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) string {
+func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int) string {
 	var id string
 	t := db.NewTransaction()
 	t.Add(func() error {
-		task, err := createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, active, basePoints, t)
+		task, err := createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note, active, basePoints, t)
 		if err != nil {
 			return err
 		}

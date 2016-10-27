@@ -22,7 +22,7 @@ func AddProject(name string) {
 }
 
 func DeleteProject(projectId string) {
-	db.DeleteEntity([]byte(projectId), resources.DB_DEFAULT_PROJECTS_BUCKET_NAME)
+	db.DeleteEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId))
 }
 
 func ModifyProject(projectId, name string) {

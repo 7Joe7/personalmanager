@@ -59,11 +59,18 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 			}
 			if toggleDonePrevious {
-				succeedHabit(h, addPeriod(h.Repetition, h.LastStreakEnd))
+				previousActualStreak := h.ActualStreak
+				succeedHabit(h, removePeriod(h.Repetition, h.Deadline))
 				if h.Done {
+					if previousActualStreak == 1 {
+						status.Score += h.BasePoints
+						status.Today += h.ActualStreak * h.ActualStreak * h.BasePoints - h.BasePoints
+					}
 					status.Score += h.ActualStreak * h.ActualStreak * h.BasePoints + (h.ActualStreak - 1) * (h.ActualStreak - 1) * h.BasePoints
-					status.Today += (h.ActualStreak - 1) * (h.ActualStreak - 1) * h.BasePoints
 				} else {
+					if previousActualStreak < 0 {
+						status.Score += previousActualStreak * previousActualStreak * h.BasePoints
+					}
 					status.Score += (h.ActualStreak + 1) * (h.ActualStreak + 1) * h.BasePoints
 				}
 			}
@@ -71,11 +78,11 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, deadline string, t
 	}
 }
 
-func succeedHabit(h *resources.Habit, lastStreakEndPlusOne *time.Time) {
+func succeedHabit(h *resources.Habit, deadline *time.Time) {
 	if h.ActualStreak < 0 {
 		h.ActualStreak = 0
 	}
-	if lastStreakEndPlusOne != nil && h.Deadline.Equal(*lastStreakEndPlusOne) {
+	if deadline != nil && h.LastStreakEnd != nil && deadline.Equal(*h.LastStreakEnd) && h.LastStreak > 0 {
 		h.ActualStreak += h.LastStreak
 	}
 	h.Successes += 1
@@ -97,6 +104,21 @@ func addPeriod(repetition string, deadline *time.Time) *time.Time {
 	return nil
 }
 
+func removePeriod(repetition string, deadline *time.Time) *time.Time {
+	if deadline == nil {
+		return nil
+	}
+	switch repetition {
+	case resources.HBT_REPETITION_DAILY:
+		return utils.GetTimePointer(deadline.Add(-24 * time.Hour))
+	case resources.HBT_REPETITION_WEEKLY:
+		return utils.GetTimePointer(deadline.Add(-7 * 24 * time.Hour))
+	case resources.HBT_REPETITION_MONTHLY:
+		return utils.GetTimePointer(deadline.AddDate(0, -1, 0))
+	}
+	return nil
+}
+
 func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status, tr resources.Transaction) func () {
 	return func () {
 		if !h.Active {
@@ -110,7 +132,9 @@ func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status, tr res
 			} else {
 				numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
 				for i := 0; i < numberOfMissedDeadlines; i++ {
+					// if the last period
 					if i == numberOfMissedDeadlines - 1 {
+						// not done or not already failed
 						if !h.Done && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
 							failHabit(h)
 							changeStatus.Score -= h.ActualStreak * h.ActualStreak * h.BasePoints
@@ -167,7 +191,11 @@ func addHabit(name, repetition, deadline string, activeFlag bool, basePoints int
 	if activeFlag {
 		activateHabit(h, repetition)
 		if repetition != resources.HBT_REPETITION_DAILY {
-			h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+			if deadline == "" {
+				h.Deadline = utils.GetFirstSaturday()
+			} else {
+				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+			}
 		}
 		if basePoints != -1 {
 			h.BasePoints = basePoints

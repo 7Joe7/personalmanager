@@ -77,13 +77,13 @@ func TestTransaction_EnsureEntity(t *testing.T) {
 	})
 	test.ExpectSuccess(t, tr.execute())
 	statusToVerify := &resources.Status{}
-	test.ExpectSuccess(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, statusToVerify))
+	test.ExpectSuccess(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, statusToVerify, false))
 	testRetrieveStatus(statusToVerify, status, t)
 	status.Score = 24
 	status.Today = 1
 	test.ExpectSuccess(t, tr.execute())
 	status2ToVerify := &resources.Status{}
-	test.ExpectSuccess(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status2ToVerify))
+	test.ExpectSuccess(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status2ToVerify, false))
 	testRetrieveStatus(status2ToVerify, statusToVerify, t)
 	removeDb(t)
 }
@@ -103,7 +103,7 @@ func TestTransaction_AddEntity(t *testing.T) {
 	taskToVerify := &resources.Task{}
 	tr = newTransaction()
 	tr.Add(func () error {
-		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify)
+		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
 	test.ExpectSuccess(t, tr.execute())
 	testRetrieveTask(testProject1, testTask1, taskToVerify, nil, t)
@@ -121,7 +121,7 @@ func TestTransaction_RetrieveEntity(t *testing.T) {
 	taskToVerify := &resources.Task{}
 	tr := newTransaction()
 	tr.Add(func () error {
-		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify)
+		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
 	test.ExpectSuccess(t, tr.execute())
 	testRetrieveTask(testProject1, testTask1, taskToVerify, nil, t)
@@ -139,7 +139,7 @@ func TestTransaction_ModifyEntity(t *testing.T) {
 	taskToModify := &resources.Task{}
 	tr := newTransaction()
 	tr.Add(func () error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToModify, func () {
+		return tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), false, taskToModify, func () {
 			taskToModify.Name = "name modified by transaction"
 			taskToModify.Note = "note modified by transaction"
 			taskToModify.Project.Name = "modified through task by transaction which is invalid"
@@ -149,7 +149,7 @@ func TestTransaction_ModifyEntity(t *testing.T) {
 	taskToVerify := &resources.Task{}
 	tr = newTransaction()
 	tr.Add(func () error {
-		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify)
+		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
 	test.ExpectSuccess(t, tr.execute())
 	testRetrieveTask(testProject1, taskToModify, taskToVerify, nil, t)
@@ -169,7 +169,7 @@ func TestTransaction_MapEntities(t *testing.T) {
 	task := &resources.Task{}
 	tr := newTransaction()
 	tr.Add(func () error {
-		return tr.MapEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, task, func () {
+		return tr.MapEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, task, func () {
 			task.Name += " name mapped by transaction"
 			task.Note += " note mapped by transaction"
 			task.Project = testProject1
@@ -177,7 +177,7 @@ func TestTransaction_MapEntities(t *testing.T) {
 	})
 	test.ExpectSuccess(t, tr.execute())
 	taskToVerify := &resources.Task{}
-	testRetrieveTask(testProject1, task, taskToVerify, retrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask2.Id), taskToVerify), t)
+	testRetrieveTask(testProject1, task, taskToVerify, retrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask2.Id), taskToVerify, false), t)
 	removeDb(t)
 }
 
@@ -203,7 +203,7 @@ func TestTransaction_FilterEntities(t *testing.T) {
 		return task
 	}
 	addEntity := func () { tasks[task.Id] = task }
-	test.ExpectSuccess(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, addEntity, getNewEntity, func () bool { return task.Project == nil }))
+	test.ExpectSuccess(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, addEntity, getNewEntity, func () bool { return task.Project == nil }))
 	if len(tasks) != 1 {
 		t.Errorf("Expected size of tasks to be 1, it is %d.", len(tasks))
 	}
@@ -226,7 +226,7 @@ func TestTransaction_DeleteEntity(t *testing.T) {
 		return tr.DeleteEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id))
 	})
 	test.ExpectSuccess(t, tr.execute())
-	if err := retrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), &resources.Task{}); err == nil {
+	if err := retrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), &resources.Task{}, false); err == nil {
 		t.Errorf("Expected error, got nil.")
 	}
 	removeDb(t)
@@ -245,7 +245,7 @@ func TestTransaction_RetrieveEntities(t *testing.T) {
 	tasks := map[string]*resources.Task{}
 	tr := newTransaction()
 	tr.Add(func () error {
-		return tr.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, func (id string) resources.Entity {
+		return tr.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, func (id string) resources.Entity {
 			tasks[id] = &resources.Task{}
 			return tasks[id]
 		})

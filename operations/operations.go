@@ -24,8 +24,8 @@ func EnsureValues(t resources.Transaction) {
 	ensureValues(t)
 }
 
-func AddTask(name, projectId, goalId, deadline, estimate, scheduled, taskType string, active bool, basePoints int) {
-	addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, active, basePoints)
+func AddTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int) {
+	addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note, active, basePoints)
 }
 
 func DeleteTask(taskId string) {
@@ -118,4 +118,12 @@ func GetActiveGoals() map[string]*resources.Goal {
 
 func GetNonActiveGoals() map[string]*resources.Goal {
 	return getNonActiveGoals()
+}
+
+func SyncWithJira() {
+	syncWithJira()
+}
+
+func ExportShoppingTasks(shoppingTasks map[string]*resources.Task) {
+	exportTasks(shoppingTasks)
 }

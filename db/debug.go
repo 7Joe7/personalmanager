@@ -10,7 +10,7 @@ func PrintoutDbContents(path string) {
 		return tx.ForEach(func (bucketName []byte, b *bolt.Bucket) error {
 			fmt.Printf("%s contains:\n", string(bucketName))
 			return b.ForEach(func (k, v []byte) error {
-				fmt.Printf("'%s': '%s'", string(k), string(v))
+				fmt.Printf("'%s': '%s'\n", string(k), string(v))
 				return nil
 			})
 		})

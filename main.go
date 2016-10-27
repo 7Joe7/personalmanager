@@ -66,7 +66,7 @@ func main() {
 	flag.Parse()
 	switch *action {
 	case resources.ACT_CREATE_TASK:
-		operations.AddTask(*name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *activeFlag, *basePoints)
+		operations.AddTask(*name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *note, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"))
 	case resources.ACT_CREATE_PROJECT:
 		operations.AddProject(*name)
@@ -106,12 +106,14 @@ func main() {
 		alfred.PrintEntities(resources.Goals{operations.GetActiveGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_HABITS:
 		if *activeFlag {
-			alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
-		} else {
-			alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
-		}
+		alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
+	} else {
+		alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
+	}
 	case resources.ACT_PRINT_REVIEW:
 		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
+	case resources.ACT_EXPORT_SHOPPING_TASKS:
+		operations.ExportShoppingTasks(operations.GetShoppingTasks())
 	case resources.ACT_DELETE_TASK:
 		operations.DeleteTask(*id)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "task"))
@@ -147,8 +149,29 @@ func main() {
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "review"))
 	case resources.ACT_DEBUG_DATABASE:
 		db.PrintoutDbContents(*id)
+	case resources.ACT_SYNC_WITH_JIRA:
+		operations.SyncWithJira()
 	case resources.ACT_CUSTOM:
-
+		t := db.NewTransaction()
+		t.Add(func () error {
+			habit := &resources.Habit{}
+			modify := func () {
+				habit.ActualStreak = 1
+				habit.Successes = 20
+			}
+			if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("7"), false, habit, modify); err != nil {
+				return err
+			}
+			habit = &resources.Habit{}
+			modify = func () {
+				habit.ActualStreak = 2
+			}
+			if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("9"), false, habit, modify); err != nil {
+				return err
+			}
+			return nil
+		})
+		t.Execute()
 	default:
 		flag.Usage()
 	}

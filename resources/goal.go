@@ -56,7 +56,7 @@ func (g *Goal) getItem(id string) *AlfredItem {
 		iconPath = ICO_GREEN
 	case g.Active:
 		order = 100
-		iconPath = ICO_YELLOW
+		iconPath = ICO_CYAN
 	default:
 		order = 5000
 		iconPath = ICO_BLACK

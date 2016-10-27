@@ -59,7 +59,7 @@ const (
 	SUB_FORMAT_TASK             = "%s %s"
 	SUB_FORMAT_PROJECT          = "%s"
 	SUB_FORMAT_TAG              = ""
-	SUB_FORMAT_GOAL             = ""
+	SUB_FORMAT_GOAL             = "%d/%d"
 	NAME_FORMAT_STATUS          = "Total %d, today %d."
 	NAME_FORMAT_EMPTY           = "There are no %ss."
 
@@ -78,6 +78,7 @@ const (
 	ACT_PRINT_WORK_NEXT_TASKS            = "print-work-next-tasks"
 	ACT_PRINT_WORK_UNSCHEDULED_TASKS     = "print-work-unscheduled-tasks"
 	ACT_PRINT_TASK_NOTE                  = "print-task-note"
+	ACT_EXPORT_SHOPPING_TASKS            = "export-shopping-tasks"
 	ACT_DELETE_TASK                      = "delete-task"
 	ACT_MODIFY_TASK                      = "modify-task"
 	ACT_CREATE_PROJECT                   = "create-project"
@@ -100,6 +101,7 @@ const (
 	ACT_PRINT_REVIEW                     = "print-review"
 	ACT_MODIFY_REVIEW                    = "modify-review"
 	ACT_DEBUG_DATABASE                   = "debug-database"
+	ACT_SYNC_WITH_JIRA                   = "sync-with-jira"
 	ACT_CUSTOM                           = "custom"
 
 	TASK_SCHEDULED_NEXT = "NEXT"

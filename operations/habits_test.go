@@ -120,7 +120,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	})
 	tr.Execute()
 	verifyHabitState("testHabit6", resources.HBT_REPETITION_WEEKLY, tomorrowDeadlineStr, "testHabit6", true, false,
-		8, 7, 7, 6, 3, 24, 0, h, changeStatus, t)
+		8, 7, 7, 6, 3, 195, 0, h, changeStatus, t)
 
 	// set done habit done also for previous period
 	h = getActiveHabit("testHabit7", resources.HBT_REPETITION_DAILY, 26, 20, 1, 5, 9)
@@ -134,7 +134,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	})
 	tr.Execute()
 	verifyHabitState("testHabit7", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit7", true, true,
-		26, 21, 7, 5, 9, 117, 54, h, changeStatus, t)
+		26, 21, 7, 5, 9, 774, 432, h, changeStatus, t)
 }
 
 func TestGetSyncHabitFunc(t *testing.T) {
@@ -169,7 +169,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 
 	h = getActiveHabit("testHabit10", resources.HBT_REPETITION_DAILY, 21, 13, 2, 4, 6)
 	changeStatus = &resources.Status{}
-	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400)).Truncate(-24 * time.Hour))
+	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400)).Truncate(24 * time.Hour))
 	tr = &transactionMock{}
 	tr.Add(func () error {
 		getSyncHabitFunc(h, changeStatus, tr)()
@@ -177,11 +177,11 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	})
 	tr.Execute()
 	verifyHabitState("testHabit10", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit10", true, false,
-		23, 13, -2, -1, 6, -18, 0, h, changeStatus, t)
+		23, 13, -2, -1, 6, -30, 0, h, changeStatus, t)
 
 	h = getActiveHabit("testHabit11", resources.HBT_REPETITION_DAILY, 21, 13, 2, 4, 6)
 	changeStatus = &resources.Status{}
-	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400 * 7)).Truncate(-24 * time.Hour))
+	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400 * 7)).Truncate(24 * time.Hour))
 	tr = &transactionMock{}
 	tr.Add(func () error {
 		getSyncHabitFunc(h, changeStatus, tr)()
@@ -189,13 +189,13 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	})
 	tr.Execute()
 	verifyHabitState("testHabit11", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit11", true, false,
-		29, 13, -8, -7, 6, -216, 0, h, changeStatus, t)
+		29, 13, -8, -7, 6, -1224, 0, h, changeStatus, t)
 }
 
 func TestGetHabits(t *testing.T) {
 	tm := &transactionMock{functionsCalled: []string{}}
 	tm.Add(func () error {
-		return tm.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, func (id string) resources.Entity {
+		return tm.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, false, func (id string) resources.Entity {
 			return &resources.Habit{}
 		})
 	})
@@ -206,7 +206,7 @@ func TestGetHabits(t *testing.T) {
 func TestGetHabit(t *testing.T) {
 	tm := &transactionMock{functionsCalled: []string{}}
 	tm.Add(func () error {
-		return tm.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("id"), &resources.Habit{})
+		return tm.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("id"), &resources.Habit{}, false)
 	})
 	tm.Execute()
 	verifyTransactionFlow(t, tm)

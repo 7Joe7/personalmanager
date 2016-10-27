@@ -15,7 +15,9 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId string, activeFlag, doneF
 			task := &resources.Task{}
 			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), true, task, func() {
 				task.Goal = g
-				task.Scheduled = resources.TASK_SCHEDULED_NEXT
+				if g.Active {
+					task.Scheduled = resources.TASK_SCHEDULED_NEXT
+				}
 			})
 			if err != nil {
 				panic(err)
@@ -24,9 +26,11 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId string, activeFlag, doneF
 		}
 		if activeFlag {
 			if g.Active {
+				toggleSubTasksScheduling(resources.TASK_SCHEDULED_NEXT, resources.TASK_NOT_SCHEDULED, g, tr)
 				g.Active = false
 				anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
 			} else {
+				toggleSubTasksScheduling(resources.TASK_NOT_SCHEDULED, resources.TASK_SCHEDULED_NEXT, g, tr)
 				g.Active = true
 				anybar.AddToActivePorts(g.Name, resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
 			}
@@ -54,6 +58,20 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId string, activeFlag, doneF
 			err := tr.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, func () {
 				status.Score += scoreChange
 				status.Today += scoreChange
+			})
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+}
+
+func toggleSubTasksScheduling(scheduledCriteria, scheduledSet string, g *resources.Goal, tr resources.Transaction) {
+	for i := 0; i < len(g.Tasks); i++ {
+		if g.Tasks[i].Scheduled == scheduledCriteria && !g.Tasks[i].Done {
+			task := &resources.Task{}
+			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(g.Tasks[i].Id), true, task, func () {
+				task.Scheduled = scheduledSet
 			})
 			if err != nil {
 				panic(err)
