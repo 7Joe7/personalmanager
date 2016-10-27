@@ -124,8 +124,8 @@ func SyncWithJira() {
 	syncWithJira()
 }
 
-func ExportShoppingTasks(shoppingTasks map[string]*resources.Task) {
-	exportTasks(shoppingTasks)
+func ExportShoppingTasks() {
+	exportTasks()
 }
 
 func SetEmail(email string) {

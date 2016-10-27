@@ -115,7 +115,8 @@ func main() {
 	case resources.ACT_PRINT_REVIEW:
 		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_EXPORT_SHOPPING_TASKS:
-		operations.ExportShoppingTasks(operations.GetShoppingTasks())
+		operations.ExportShoppingTasks()
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"))
 	case resources.ACT_DELETE_TASK:
 		operations.DeleteTask(*id)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "task"))
@@ -155,6 +156,7 @@ func main() {
 		operations.SyncWithJira()
 	case resources.ACT_SET_EMAIL:
 		operations.SetEmail(*name)
+		alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
 		t.Add(func () error {

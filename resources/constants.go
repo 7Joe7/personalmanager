@@ -6,6 +6,8 @@ const (
 	MSG_CREATE_SUCCESS = "Successfully created %s."
 	MSG_DELETE_SUCCESS = "Successfully deleted %s."
 	MSG_MODIFY_SUCCESS = "Successfully modified %s."
+	MSG_SET_SUCCESS = "Successfully set %s to %s."
+	MSG_EXPORT_SUCCESS = "Successfully exported %s."
 
 	LOG_FILE_PATH = "./personal-manager.log"
 
@@ -136,6 +138,7 @@ var (
 	DB_REVIEW_SETTINGS_KEY    = []byte("review.settings")
 	DB_ACTUAL_ACTIVE_TASK_KEY = []byte("actual.active.task")
 	DB_ANYBAR_ACTIVE_PORTS    = []byte("anybar.active.habits")
+	DB_DEFAULT_EMAIL          = []byte("default.email")
 
 	ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_PERSONAL_NEXT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,

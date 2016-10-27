@@ -263,14 +263,20 @@ func getTasks() map[string]*resources.Task {
 
 func filterTasks(shallow bool, filter func(*resources.Task) bool) map[string]*resources.Task {
 	tasks := map[string]*resources.Task{}
+	tr := db.NewTransaction()
+	tr.Add(func () error { return filterTasksModal(tr, shallow, tasks, filter) })
+	tr.Execute()
+	return tasks
+}
+
+func filterTasksModal(tr resources.Transaction, shallow bool, tasks map[string]*resources.Task, filter func (*resources.Task) bool) error {
 	var task *resources.Task
 	getNewEntity := func () resources.Entity {
 		task = &resources.Task{}
 		return task
 	}
 	addEntity := func () { tasks[task.Id] = task }
-	db.FilterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, shallow, addEntity, getNewEntity, func() bool { return filter(task) })
-	return tasks
+	return tr.FilterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, shallow, addEntity, getNewEntity, func() bool { return filter(task) })
 }
 
 func filterTasksSlice(shallow bool, filter func(*resources.Task) bool) []*resources.Task {
