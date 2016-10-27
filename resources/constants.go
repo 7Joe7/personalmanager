@@ -103,6 +103,7 @@ const (
 	ACT_MODIFY_REVIEW                    = "modify-review"
 	ACT_DEBUG_DATABASE                   = "debug-database"
 	ACT_SYNC_WITH_JIRA                   = "sync-with-jira"
+	ACT_SET_EMAIL                        = "set-email"
 	ACT_CUSTOM                           = "custom"
 
 	TASK_SCHEDULED_NEXT = "NEXT"

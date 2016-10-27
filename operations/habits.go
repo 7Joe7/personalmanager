@@ -275,7 +275,15 @@ func getHabits() map[string]*resources.Habit {
 	return habits
 }
 
-func filterHabits(t resources.Transaction, shallow bool, habits map[string]*resources.Habit, filter func (*resources.Habit) bool) error {
+func filterHabits(shallow bool, filter func (*resources.Habit) bool) map[string]*resources.Habit {
+	habits := map[string]*resources.Habit{}
+	tr := db.NewTransaction()
+	tr.Add(func () error { return filterHabitsModal(tr, shallow, habits, filter) })
+	tr.Execute()
+	return habits
+}
+
+func filterHabitsModal(t resources.Transaction, shallow bool, habits map[string]*resources.Habit, filter func (*resources.Habit) bool) error {
 	var entity *resources.Habit
 	getNewEntityFunc := func () resources.Entity {
 		entity = &resources.Habit{}

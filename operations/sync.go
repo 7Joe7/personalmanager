@@ -58,7 +58,7 @@ func synchronize(t resources.Transaction) {
 
 func addBonusIfAllHabitsDone(t resources.Transaction, repetition string, changeStatus *resources.Status) error {
 	habits := map[string]*resources.Habit{}
-	err := filterHabits(t, true, habits, func (h *resources.Habit) bool { return h.Active && h.Repetition == repetition })
+	err := filterHabitsModal(t, true, habits, func (h *resources.Habit) bool { return h.Active && h.Repetition == repetition })
 	if err != nil {
 		return err
 	}

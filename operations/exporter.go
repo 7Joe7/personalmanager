@@ -19,3 +19,7 @@ func exportTasks(shoppingTasks map[string]*resources.Task) {
 		panic(err)
 	}
 }
+
+func setEmail(email string) {
+
+}

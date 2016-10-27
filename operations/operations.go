@@ -2,7 +2,6 @@ package operations
 
 import (
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/db"
 )
 
 func GetReview() *resources.Review {
@@ -98,11 +97,7 @@ func GetHabits() map[string]*resources.Habit {
 }
 
 func FilterHabits(filter func(*resources.Habit) bool) map[string]*resources.Habit {
-	habits := map[string]*resources.Habit{}
-	tr := db.NewTransaction()
-	tr.Add(func () error { return filterHabits(tr, false, habits, filter) })
-	tr.Execute()
-	return habits
+	return filterHabits(false, filter)
 }
 
 func GetActiveHabits() map[string]*resources.Habit {
@@ -131,4 +126,8 @@ func SyncWithJira() {
 
 func ExportShoppingTasks(shoppingTasks map[string]*resources.Task) {
 	exportTasks(shoppingTasks)
+}
+
+func SetEmail(email string) {
+	setEmail(email)
 }

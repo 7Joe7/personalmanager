@@ -153,6 +153,8 @@ func main() {
 		db.PrintoutDbContents(*id)
 	case resources.ACT_SYNC_WITH_JIRA:
 		operations.SyncWithJira()
+	case resources.ACT_SET_EMAIL:
+		operations.SetEmail(*name)
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
 		t.Add(func () error {
