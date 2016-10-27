@@ -275,16 +275,15 @@ func getHabits() map[string]*resources.Habit {
 	return habits
 }
 
-func filterHabits(shallow bool, filter func(*resources.Habit) bool) map[string]*resources.Habit {
-	habits := map[string]*resources.Habit{}
+func filterHabits(t resources.Transaction, shallow bool, habits map[string]*resources.Habit, filter func (*resources.Habit) bool) error {
 	var entity *resources.Habit
-	getNewEntity := func () resources.Entity {
+	getNewEntityFunc := func () resources.Entity {
 		entity = &resources.Habit{}
 		return entity
 	}
-	addEntity := func () { habits[entity.Id] = entity }
-	db.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, shallow, addEntity, getNewEntity, func () bool { return filter(entity) })
-	return habits
+	addEntityFunc := func () { habits[entity.Id] = entity }
+	entityFilter := func () bool { return filter(entity) }
+	return t.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, shallow, addEntityFunc, getNewEntityFunc, entityFilter)
 }
 
 func getActiveHabits() map[string]*resources.Habit {

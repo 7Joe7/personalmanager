@@ -2,6 +2,7 @@ package operations
 
 import (
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/db"
 )
 
 func GetReview() *resources.Review {
@@ -97,7 +98,11 @@ func GetHabits() map[string]*resources.Habit {
 }
 
 func FilterHabits(filter func(*resources.Habit) bool) map[string]*resources.Habit {
-	return filterHabits(false, filter)
+	habits := map[string]*resources.Habit{}
+	tr := db.NewTransaction()
+	tr.Add(func () error { return filterHabits(tr, false, habits, filter) })
+	tr.Execute()
+	return habits
 }
 
 func GetActiveHabits() map[string]*resources.Habit {
