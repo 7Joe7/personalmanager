@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 func (r *Review) GetItem() *AlfredItem {
@@ -44,10 +45,23 @@ func (ts Tasks) MarshalJSON() ([]byte, error) {
 	var zeroCount int
 	if ts.Status != nil {
 		items = append(items, ts.Status.getItem())
-		zeroCount = 1
+		zeroCount = -1
 	}
-	for id, h := range ts.Tasks {
-		items = append(items, h.getItem(id))
+	if ts.Sum {
+		var sum float64
+		for _, t := range ts.Tasks {
+			if !t.Done && t.TimeEstimate != nil {
+				sum += t.TimeEstimate.Minutes()
+			}
+		}
+		items = append(items, &AlfredItem{
+			Name: fmt.Sprintf("Total estimate: %s", utils.MinutesToHMFormat(sum)),
+			Valid: false,
+			Icon: NewAlfredIcon(ICO_BLACK),
+			Mods: getEmptyMods()})
+	}
+	for id, t := range ts.Tasks {
+		items = append(items, t.getItem(id))
 	}
 	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == zeroCount, "task"); zeroItem != nil {
 		items = append(items, zeroItem)

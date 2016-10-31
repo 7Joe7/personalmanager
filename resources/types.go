@@ -12,6 +12,7 @@ type Tasks struct {
 	Tasks       map[string]*Task
 	NoneAllowed bool
 	Status      *Status
+	Sum         bool
 }
 
 type Projects struct {

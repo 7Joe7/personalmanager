@@ -81,19 +81,19 @@ func main() {
 		operations.AddHabit(*name, *repetition, *note, *deadline, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetTasks(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_PERSONAL_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetPersonalTasks(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetPersonalTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_PERSONAL_NEXT_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetNextTasks(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetUnscheduledTasks(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_SHOPPING_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetShoppingTasks(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetShoppingTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_NEXT_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetWorkNextTasks(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetWorkNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_UNSCHEDULED_TASKS:
-		alfred.PrintEntities(resources.Tasks{operations.GetWorkUnscheduledTasks(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetWorkUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_TASK_NOTE:
 		alfred.PrintResult(operations.GetTask(*id).Note)
 	case resources.ACT_PRINT_PROJECTS:
@@ -162,17 +162,10 @@ func main() {
 		t.Add(func () error {
 			habit := &resources.Habit{}
 			modify := func () {
-				habit.ActualStreak = 1
-				habit.Successes = 20
+				habit.ActualStreak = 26
+				habit.Successes = 41
 			}
-			if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("7"), false, habit, modify); err != nil {
-				return err
-			}
-			habit = &resources.Habit{}
-			modify = func () {
-				habit.ActualStreak = 2
-			}
-			if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("9"), false, habit, modify); err != nil {
+			if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("8"), false, habit, modify); err != nil {
 				return err
 			}
 			return nil
