@@ -14,15 +14,6 @@ func (r *Review) GetItem() *AlfredItem {
 		Valid: true}
 }
 
-func (p *Project) getItem(id string) *AlfredItem {
-	return &AlfredItem{
-		Name:     p.Name,
-		Arg:      id,
-		Subtitle: p.Note,
-		Icon:     NewAlfredIcon(""),
-		Valid:    true}
-}
-
 func (t *Tag) getItem(id string) *AlfredItem {
 	return &AlfredItem{
 		Name:     t.Name,

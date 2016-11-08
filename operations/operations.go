@@ -32,8 +32,8 @@ func DeleteTask(taskId string) {
 	deleteTask(taskId)
 }
 
-func ModifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool) {
-	modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag)
+func ModifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool) {
+	modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag)
 }
 
 func GetTask(taskId string) *resources.Task {
@@ -84,8 +84,8 @@ func DeleteHabit(habitId string) {
 	deleteHabit(habitId)
 }
 
-func ModifyHabit(habitId, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious bool, basePoints int) {
-	modifyHabit(habitId, name, repetition, description, deadline, toggleActive, toggleDone, toggleDonePrevious, basePoints)
+func ModifyHabit(habitId, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious bool, basePoints int) {
+	modifyHabit(habitId, name, repetition, description, deadline, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, basePoints)
 }
 
 func GetHabit(habitId string) *resources.Habit {
@@ -108,6 +108,26 @@ func GetNonActiveHabits() map[string]*resources.Habit {
 	return getNonActiveHabits()
 }
 
+func AddGoal(name string) string {
+	return addGoal(name)
+}
+
+func DeleteGoal(goalId string) {
+	deleteGoal(goalId)
+}
+
+func ModifyGoal(goalId, name, taskId string, activeFlag, doneFlag bool) {
+	modifyGoal(goalId, name, taskId, activeFlag, doneFlag)
+}
+
+func GetGoal(goalId string) *resources.Goal {
+	return getGoal(goalId)
+}
+
+func GetGoals() map[string]*resources.Goal {
+	return getGoals()
+}
+
 func FilterGoals(filter func(*resources.Goal) bool) map[string]*resources.Goal {
 	return filterGoals(false, filter)
 }
@@ -118,6 +138,38 @@ func GetActiveGoals() map[string]*resources.Goal {
 
 func GetNonActiveGoals() map[string]*resources.Goal {
 	return getNonActiveGoals()
+}
+
+func AddProject(name string) {
+	addProject(name)
+}
+
+func DeleteProject(projectId string) {
+	deleteProject(projectId)
+}
+
+func ModifyProject(projectId, name, taskId string, activeFlag, doneFlag bool) {
+	modifyProject(projectId, name, taskId, activeFlag, doneFlag)
+}
+
+func GetProject(projectId string) *resources.Project {
+	return getProject(projectId)
+}
+
+func GetProjects() map[string]*resources.Project {
+	return getProjects()
+}
+
+func FilterProjects(filter func(*resources.Project) bool) map[string]*resources.Project {
+	return filterProjects(false, filter)
+}
+
+func GetActiveProjects() map[string]*resources.Project {
+	return getActiveProjects()
+}
+
+func GetInactiveProjects() map[string]*resources.Project {
+	return getInactiveProjects()
 }
 
 func SyncWithJira() {

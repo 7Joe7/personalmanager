@@ -9,7 +9,7 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 )
 
-func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
+func getModifyTaskFunc(t *resources.Task, name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
 	return func() {
 		if name != "" {
 			t.Name = name
@@ -19,6 +19,9 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, deadline, estimate, s
 		}
 		if projectId != "" {
 			t.Project = &resources.Project{Id: projectId}
+		}
+		if goalId != "" {
+			t.Goal = &resources.Goal{Id: goalId}
 		}
 		if deadline != "" {
 			t.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
@@ -207,6 +210,19 @@ func deleteTask(taskId string) {
 				return err
 			}
 		}
+		if task.Project != nil {
+			project := &resources.Project{}
+			err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(task.Project.Id), true, project, func() {
+				for i := 0; i < len(project.Tasks); i++ {
+					if project.Tasks[i].Id == task.Goal.Id {
+						project.Tasks = append(project.Tasks[:i], project.Tasks[i+1:]...)
+					}
+				}
+			})
+			if err != nil {
+				return err
+			}
+		}
 		if task.InProgress {
 			if err := t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, []byte{}); err != nil {
 				return err
@@ -217,7 +233,7 @@ func deleteTask(taskId string) {
 	t.Execute()
 }
 
-func modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool) {
+func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool) {
 	task := &resources.Task{}
 	changeStatus := &resources.Status{}
 	status := &resources.Status{}
@@ -229,9 +245,19 @@ func modifyTask(taskId, name, projectId, deadline, estimate, scheduled, taskType
 				return err
 			}
 		}
-		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), false, task, getModifyTaskFunc(task, name, projectId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
+		err := t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), false, task, getModifyTaskFunc(task, name, projectId, goalId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
 		if err != nil {
 			return err
+		}
+		if projectId != "" {
+			return t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, task.Project, func () {
+				task.Project.Tasks = append(task.Project.Tasks, task)
+			})
+		}
+		if goalId != "" {
+			return t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func () {
+				task.Goal.Tasks = append(task.Goal.Tasks, task)
+			})
 		}
 		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getAddScoreFunc(status, changeStatus))
 	})

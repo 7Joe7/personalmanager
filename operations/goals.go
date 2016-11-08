@@ -80,7 +80,7 @@ func toggleSubTasksScheduling(scheduledCriteria, scheduledSet string, g *resourc
 	}
 }
 
-func AddGoal(name string) string {
+func addGoal(name string) string {
 	goal := resources.NewGoal(name)
 	tr := db.NewTransaction()
 	tr.Add(func () error {
@@ -90,7 +90,7 @@ func AddGoal(name string) string {
 	return goal.Id
 }
 
-func DeleteGoal(goalId string) {
+func deleteGoal(goalId string) {
 	tr := db.NewTransaction()
 	tr.Add(func () error {
 		goal := &resources.Goal{}
@@ -119,7 +119,7 @@ func DeleteGoal(goalId string) {
 	tr.Execute()
 }
 
-func ModifyGoal(goalId, name, taskId string, activeFlag, doneFlag bool) {
+func modifyGoal(goalId, name, taskId string, activeFlag, doneFlag bool) {
 	goal := &resources.Goal{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
@@ -128,7 +128,7 @@ func ModifyGoal(goalId, name, taskId string, activeFlag, doneFlag bool) {
 	tr.Execute()
 }
 
-func GetGoal(goalId string) *resources.Goal {
+func getGoal(goalId string) *resources.Goal {
 	goal := &resources.Goal{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
@@ -138,7 +138,7 @@ func GetGoal(goalId string) *resources.Goal {
 	return goal
 }
 
-func GetGoals() map[string]*resources.Goal {
+func getGoals() map[string]*resources.Goal {
 	goals := map[string]*resources.Goal{}
 	db.RetrieveEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, false, func (id string) resources.Entity {
 		goals[id] = &resources.Goal{}

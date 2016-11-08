@@ -30,8 +30,8 @@ var (
 	expectedNoneTasksJson = `{"items":[{"title":"testing task","arg":"testTask","subtitle":"testing project; 0; Spent: 0h0m/?","valid":true,"icon":{"path":"./icons/yellow@2x.png"}},{"title":"No task","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	testProjects = Projects{Projects:map[string]*Project{"testProject":testProject}}
 	expectedEmptyProjectsJson = `{"items":[{"title":"There are no projects.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
-	expectedProjectJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"testing project note","valid":true,"icon":{"path":""}}]}`
-	expectedNoneProjectsJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"testing project note","valid":true,"icon":{"path":""}},{"title":"No project","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
+	expectedProjectJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"0/0","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`
+	expectedNoneProjectsJson = `{"items":[{"title":"testing project","arg":"testProject","subtitle":"0/0","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"No project","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	testTags = Tags{Tags:map[string]*Tag{"testTag":testTag}}
 	expectedEmptyTagsJson = `{"items":[{"title":"There are no tags.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
 	expectedTagsJson = `{"items":[{"title":"testing tag","arg":"testTag","valid":true,"icon":{"path":""}}]}`
@@ -100,7 +100,7 @@ func TestGetTaskItem(t *testing.T) {
 
 func TestGetProjectItem(t *testing.T) {
 	ai := testProject.getItem(testId)
-	testCommonAttr(ai, true, testId, testProject.Name, fmt.Sprintf(SUB_FORMAT_PROJECT, testProject.Note), "", t)
+	testCommonAttr(ai, true, testId, testProject.Name, fmt.Sprintf(SUB_FORMAT_PROJECT, "0/0"), "./icons/black@2x.png", t)
 }
 
 func TestGetTagItem(t *testing.T) {

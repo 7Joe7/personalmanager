@@ -17,7 +17,7 @@ import (
 
 var (
 	action, id, name, projectId, goalId, taskId, repetition, deadline, estimate, scheduled, taskType, note *string
-	noneAllowed, activeFlag, doneFlag, donePrevious                                                        *bool
+	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious                                        *bool
 	basePoints                                                                                             *int
 )
 
@@ -31,6 +31,7 @@ func init() {
 	activeFlag = flag.Bool("active", false, "Toggle active/show active only.")
 	doneFlag = flag.Bool("done", false, "Toggle done.")
 	donePrevious = flag.Bool("donePrevious", false, "Set done for previous period.")
+	undonePrevious = flag.Bool("undonePrevious", false, "Set undone for previous period.")
 	repetition = flag.String("repetition", "", "Select repetition period.")
 	basePoints = flag.Int("basePoints", -1, "Set base points for success/failure.")
 	deadline = flag.String("deadline", "", "Specify deadine in format 'dd.MM.YYYY HH:mm'.")
@@ -98,12 +99,18 @@ func main() {
 		alfred.PrintResult(operations.GetTask(*id).Note)
 	case resources.ACT_PRINT_PROJECTS:
 		alfred.PrintEntities(resources.Projects{operations.GetProjects(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_ACTIVE_PROJECTS:
+		alfred.PrintEntities(resources.Projects{operations.GetActiveProjects(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_INACTIVE_PROJECTS:
+		alfred.PrintEntities(resources.Projects{operations.GetInactiveProjects(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_TAGS:
 		alfred.PrintEntities(resources.Tags{operations.GetTags(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_GOALS:
-		alfred.PrintEntities(resources.Goals{operations.GetNonActiveGoals(), *noneAllowed, operations.GetStatus()})
+		alfred.PrintEntities(resources.Goals{operations.GetGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_ACTIVE_GOALS:
 		alfred.PrintEntities(resources.Goals{operations.GetActiveGoals(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_NON_ACTIVE_GOALS:
+		alfred.PrintEntities(resources.Goals{operations.GetNonActiveGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_HABITS:
 		if *activeFlag {
 		alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
@@ -133,10 +140,10 @@ func main() {
 		operations.DeleteHabit(*id)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_TASK:
-		operations.ModifyTask(*id, *name, *projectId, *deadline, *estimate, *scheduled, *taskType, *note, *basePoints, *activeFlag, *doneFlag)
+		operations.ModifyTask(*id, *name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *note, *basePoints, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "task"))
 	case resources.ACT_MODIFY_PROJECT:
-		operations.ModifyProject(*id, *name)
+		operations.ModifyProject(*id, *name, *taskId, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "project"))
 	case resources.ACT_MODIFY_TAG:
 		operations.ModifyTag(*id, *name)
@@ -145,7 +152,7 @@ func main() {
 		operations.ModifyGoal(*id, *name, *taskId, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
-		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *activeFlag, *doneFlag, *donePrevious, *basePoints)
+		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)

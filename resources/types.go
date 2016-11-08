@@ -87,24 +87,6 @@ func (t *Tag) Load(tr Transaction) error {
 	return nil
 }
 
-type Project struct {
-	Name string `json:",omitempty"`
-	Note string `json:",omitempty"`
-	Id   string `json:",omitempty"`
-}
-
-func (p *Project) SetId(id string) {
-	p.Id = id
-}
-
-func (p *Project) GetId() string {
-	return p.Id
-}
-
-func (p *Project) Load(tr Transaction) error {
-	return nil
-}
-
 type Status struct {
 	Score int
 	Today int
