@@ -20,11 +20,11 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 		if toggleActive {
 			if h.Active {
 				deactivateHabit(h)
-				anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
+				//anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
 			} else {
 				activateHabit(h, repetition)
-				_, colour, _ := h.GetIconColourAndOrder()
-				anybar.AddToActivePorts(h.Name, colour, resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
+				//_, colour, _ := h.GetIconColourAndOrder()
+				//anybar.AddToActivePorts(h.Name, colour, resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
 			}
 		}
 		if h.Active {
@@ -36,12 +36,12 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 					h.Done = false
 					failHabit(h)
 					h.Successes -= 1
-					_, colour, _ := h.GetIconColourAndOrder()
-					anybar.AddToActivePorts(h.Name, colour, resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
+					//_, colour, _ := h.GetIconColourAndOrder()
+					//anybar.AddToActivePorts(h.Name, colour, resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
 				} else {
 					h.Done = true
 					succeedHabit(h, h.Deadline)
-					anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
+					//anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
 				}
 				change := h.ActualStreak * h.ActualStreak * h.BasePoints
 				switch h.Repetition {
@@ -226,10 +226,10 @@ func addHabit(name, repetition, description, deadline string, activeFlag bool, b
 		if err != nil {
 			return err
 		}
-		if activeFlag {
-			_, colour, _ := h.GetIconColourAndOrder()
-			anybar.AddToActivePorts(h.Name, colour, resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
-		}
+		//if activeFlag {
+		//	_, colour, _ := h.GetIconColourAndOrder()
+		//	anybar.AddToActivePorts(h.Name, colour, resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
+		//}
 		return nil
 	})
 	tr.Execute()

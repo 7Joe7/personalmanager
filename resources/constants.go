@@ -51,7 +51,7 @@ const (
 	ANY_PORT_ACTIVE_TASK = 2800
 	ANY_PORTS_RANGE_BASE = 2100
 
-	ANY_SLEEP_TIME = 100
+	ANY_SLEEP_TIME = 200
 
 	DEADLINE_FORMAT = "2.1.2006 15:04"
 	DATE_FORMAT     = "2.1.2006"
@@ -106,6 +106,7 @@ const (
 	ACT_MODIFY_HABIT                     = "modify-habit"
 	ACT_PRINT_REVIEW                     = "print-review"
 	ACT_MODIFY_REVIEW                    = "modify-review"
+	ACT_SYNC_ANYBAR_PORTS                = "synchronize-anybar-ports"
 	ACT_DEBUG_DATABASE                   = "debug-database"
 	ACT_SYNC_WITH_JIRA                   = "sync-with-jira"
 	ACT_SET_EMAIL                        = "set-email"
@@ -140,7 +141,7 @@ var (
 	DB_ACTUAL_STATUS_KEY      = []byte("actual.status")
 	DB_REVIEW_SETTINGS_KEY    = []byte("review.settings")
 	DB_ACTUAL_ACTIVE_TASK_KEY = []byte("actual.active.task")
-	DB_ANYBAR_ACTIVE_PORTS    = []byte("anybar.active.habits")
+	DB_ANYBAR_ACTIVE_PORTS    = []byte("anybar.active.ports")
 	DB_DEFAULT_EMAIL          = []byte("default.email")
 
 	ACTIONS = []string{

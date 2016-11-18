@@ -322,25 +322,25 @@ func getTasksByGoal(goalId string) []*resources.Task {
 }
 
 func getNextTasks() map[string]*resources.Task {
-	return FilterTasks(func (t *resources.Task) bool { return t.Scheduled == resources.TASK_SCHEDULED_NEXT && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
+	return FilterTasks(func (t *resources.Task) bool { return !t.Done && t.Scheduled == resources.TASK_SCHEDULED_NEXT && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
 }
 
 func getPersonalTasks() map[string]*resources.Task {
-	return FilterTasks(func (t *resources.Task) bool { return t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL })
+	return FilterTasks(func (t *resources.Task) bool { return t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL})
 }
 
 func getUnscheduledTasks() map[string]*resources.Task {
-	return FilterTasks(func (t *resources.Task) bool { return (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
+	return FilterTasks(func (t *resources.Task) bool { return !t.Done && (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL) })
 }
 
 func getShoppingTasks() map[string]*resources.Task {
-	return FilterTasks(func (t *resources.Task) bool { return (t.Type == resources.TASK_TYPE_SHOPPING )})
+	return FilterTasks(func (t *resources.Task) bool { return !t.Done && (t.Type == resources.TASK_TYPE_SHOPPING )})
 }
 
 func getWorkNextTasks() map[string]*resources.Task {
-	return FilterTasks(func (t *resources.Task) bool { return t.Scheduled == resources.TASK_SCHEDULED_NEXT && t.Type == resources.TASK_TYPE_WORK })
+	return FilterTasks(func (t *resources.Task) bool { return !t.Done && t.Scheduled == resources.TASK_SCHEDULED_NEXT && t.Type == resources.TASK_TYPE_WORK })
 }
 
 func getWorkUnscheduledTasks() map[string]*resources.Task {
-	return FilterTasks(func (t *resources.Task) bool { return (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && t.Type == resources.TASK_TYPE_WORK })
+	return FilterTasks(func (t *resources.Task) bool { return !t.Done && (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && t.Type == resources.TASK_TYPE_WORK })
 }

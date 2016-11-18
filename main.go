@@ -157,6 +157,10 @@ func main() {
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "review"))
+	case resources.ACT_SYNC_ANYBAR_PORTS:
+		t := db.NewTransaction()
+		operations.SynchronizeAnybarPorts(t)
+		t.Execute()
 	case resources.ACT_DEBUG_DATABASE:
 		db.PrintoutDbContents(*id)
 	case resources.ACT_SYNC_WITH_JIRA:
@@ -167,14 +171,35 @@ func main() {
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
 		t.Add(func () error {
-			habit := &resources.Habit{}
-			modify := func () {
-				habit.ActualStreak = 26
-				habit.Successes = 41
-			}
-			if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("8"), false, habit, modify); err != nil {
-				return err
-			}
+			//activePorts := anybar.GetActivePorts(t)
+			//resources.WaitGroup.Add(1)
+			//anybar.EnsureActivePorts(activePorts)
+			//anybar.AddToActivePorts("Create a video journal of personal development", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "25", t)
+			//anybar.AddToActivePorts("Get my nose straightened", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "27", t)
+			//anybar.AddToActivePorts("Solve personal problem", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "5", t)
+			//anybar.AddToActivePorts("Finish Introduction to Operating Systems course", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "18", t)
+			//anybar.AddToActivePorts("Full week of morning routine and 'only after'", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "16", t)
+			//anybar.AddToActivePorts("Solve situation with Tasya", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "11", t)
+			//anybar.AddToActivePorts("Make syncing of AnyBar ports work", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "2", t)
+			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "2", t)
+			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "5", t)
+			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "11", t)
+			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "16", t)
+			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "18", t)
+			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "25", t)
+			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "27", t)
+			//activePorts := anybar.GetActivePorts(t)
+			//resources.WaitGroup.Add(1)
+			//anybar.EnsureActivePorts(activePorts)
+			//activePorts := resources.ActivePorts{}
+			//activePortsB, err := json.Marshal(activePorts)
+			//if err != nil {
+			//	panic(err)
+			//}
+			//err = t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ANYBAR_ACTIVE_PORTS, activePortsB)
+			//if err != nil {
+			//	panic(err)
+			//}
 			return nil
 		})
 		t.Execute()

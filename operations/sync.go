@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/anybar"
 )
 
 func synchronize(t resources.Transaction) {
@@ -37,21 +38,27 @@ func synchronize(t resources.Transaction) {
 			if err != nil {
 				return err
 			}
-			// TODO enable after cleaning db and
-			//activeTaskId := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
-			//if !anybar.Ping(resources.ANY_PORT_ACTIVE_TASK) && activeTaskId != nil && string(activeTaskId) != "" {
-			//	activeTask := &resources.Task{}
-			//	err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, activeTaskId, activeTask)
-			//	if err != nil {
-			//		return err
-			//	}
-			//	resources.WaitGroup.Add(1)
-			//	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, activeTask.Name, resources.ANY_CMD_BLUE)
-			//}
-			//activePorts := anybar.GetActivePorts(t)
-			//resources.WaitGroup.Add(1)
-			//go anybar.EnsureActivePorts(activePorts)
 		}
+		return nil
+	})
+}
+
+func synchronizeAnybarPorts(t resources.Transaction) {
+	t.Add(func () error {
+		var err error
+		activeTaskId := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
+		if !anybar.Ping(resources.ANY_PORT_ACTIVE_TASK) && activeTaskId != nil && string(activeTaskId) != "" {
+			activeTask := &resources.Task{}
+			err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, activeTaskId, activeTask, true)
+			if err != nil {
+				return err
+			}
+			resources.WaitGroup.Add(1)
+			go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, activeTask.Name, resources.ANY_CMD_BLUE)
+		}
+		activePorts := anybar.GetActivePorts(t)
+		resources.WaitGroup.Add(1)
+		go anybar.EnsureActivePorts(activePorts)
 		return nil
 	})
 }

@@ -16,6 +16,10 @@ func Synchronize(t resources.Transaction) {
 	synchronize(t)
 }
 
+func SynchronizeAnybarPorts(t resources.Transaction) {
+	synchronizeAnybarPorts(t)
+}
+
 func InitializeBuckets(t resources.Transaction) {
 	initializeBuckets(t, resources.BUCKETS_TO_INTIALIZE)
 }
