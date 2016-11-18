@@ -32,7 +32,7 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId string, activeFlag, doneF
 			} else {
 				toggleSubTasksScheduling(resources.TASK_NOT_SCHEDULED, resources.TASK_SCHEDULED_NEXT, g, tr)
 				g.Active = true
-				anybar.AddToActivePorts(g.Name, resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
+				anybar.AddToActivePorts(g.Name, resources.ANY_CMD_CYAN, resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
 			}
 		}
 		if doneFlag {
@@ -46,7 +46,7 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId string, activeFlag, doneF
 				g.Done = false
 				scoreChange = -scoreChange
 				if g.Active {
-					anybar.AddToActivePorts(g.Name, resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
+					anybar.AddToActivePorts(g.Name, resources.ANY_CMD_CYAN, resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
 				}
 			} else {
 				g.Done = true
