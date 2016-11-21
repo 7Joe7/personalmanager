@@ -38,10 +38,16 @@ func (t *Task) GetId() string {
 
 func (t *Task) Load(tr Transaction) error {
 	if t.Project != nil {
-		return tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(t.Project.Id), t.Project, true)
+		err := tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(t.Project.Id), t.Project, true)
+		if err != nil {
+			return err
+		}
 	}
 	if t.Goal != nil {
-		return tr.RetrieveEntity(DB_DEFAULT_GOALS_BUCKET_NAME, []byte(t.Goal.Id), t.Goal, true)
+		err := tr.RetrieveEntity(DB_DEFAULT_GOALS_BUCKET_NAME, []byte(t.Goal.Id), t.Goal, true)
+		if err != nil {
+			return err
+		}
 	}
 	for i := 0; i < len(t.Tags); i++ {
 		if err := tr.RetrieveEntity(DB_DEFAULT_TAGS_BUCKET_NAME, []byte(t.Tags[i].Id), t.Tags[i], true); err != nil {
@@ -95,7 +101,7 @@ func (t *Task) getItem(id string) *AlfredItem {
 			subtitle += "; "
 		}
 		comma = true
-		subtitle = t.Goal.Name
+		subtitle += t.Goal.Name
 	}
 
 	if t.Project != nil {
@@ -103,7 +109,7 @@ func (t *Task) getItem(id string) *AlfredItem {
 			subtitle += "; "
 		}
 		comma = true
-		subtitle = t.Project.Name
+		subtitle += t.Project.Name
 	}
 
 	if comma {

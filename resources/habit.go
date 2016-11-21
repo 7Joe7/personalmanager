@@ -37,17 +37,23 @@ func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 	if h.Active {
 		if h.Done || h.ActualStreak > 49 {
 			return ICO_GREEN, "green", HBT_DONE_BASE_ORDER
-		} else if h.ActualStreak > 21 {
-			return ICO_BLUE, "blue", HBT_BASE_ORDER_DAILY
 		} else {
+			var order int
+			var ico, colour string
 			switch h.Repetition {
 			case HBT_REPETITION_DAILY:
-				return ICO_RED, "red", HBT_BASE_ORDER_DAILY
+				ico, colour, order = ICO_RED, "red", HBT_BASE_ORDER_DAILY
 			case HBT_REPETITION_WEEKLY:
-				return ICO_ORANGE, "orange", HBT_BASE_ORDER_WEEKLY
+				ico, colour, order = ICO_ORANGE, "orange", HBT_BASE_ORDER_WEEKLY
 			case HBT_REPETITION_MONTHLY:
-				return ICO_YELLOW, "yellow", HBT_BASE_ORDER_MONTHLY
+				ico, colour, order = ICO_YELLOW, "yellow", HBT_BASE_ORDER_MONTHLY
 			}
+			if h.ActualStreak > 21 {
+				ico = ICO_BLUE
+				colour = "blue"
+				order += 1000
+			}
+			return ico, colour, order
 		}
 	} else {
 		return ICO_BLACK, "black", HBT_BASE_ORDER_DAILY

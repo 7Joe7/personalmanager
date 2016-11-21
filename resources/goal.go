@@ -6,11 +6,11 @@ import (
 )
 
 type Goal struct {
-	Name     string
-	Id       string
-	Active   bool
+	Name     string  `json:",omitempty"`
+	Id       string  `json:",omitempty"`
+	Active   bool    `json:",omitempty"`
 	Tasks    []*Task
-	Done     bool
+	Done     bool    `json:",omitempty"`
 }
 
 func (g *Goal) SetId(id string) {
