@@ -96,20 +96,22 @@ func (t *Task) getItem(id string) *AlfredItem {
 		comma = true
 	}
 
-	if t.Goal != nil {
-		if comma {
-			subtitle += "; "
-		}
-		comma = true
-		subtitle += t.Goal.Name
-	}
-
 	if t.Project != nil {
 		if comma {
 			subtitle += "; "
 		}
 		comma = true
 		subtitle += t.Project.Name
+	}
+
+	if t.Goal != nil {
+		if t.Project != nil {
+			subtitle += ": "
+		} else if comma {
+			subtitle += "; "
+		}
+		comma = true
+		subtitle += t.Goal.Name
 	}
 
 	if comma {
