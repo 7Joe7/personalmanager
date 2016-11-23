@@ -13,6 +13,7 @@ import (
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 var (
@@ -43,14 +44,14 @@ func init() {
 
 	anybar.Start(anybar.NewAnybarManager())
 
-	db.Open(resources.DB_PATH)
+	db.Open(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.DB_NAME))
 	t := db.NewTransaction()
 	operations.InitializeBuckets(t)
 	operations.EnsureValues(t)
 	operations.Synchronize(t)
 	t.Execute()
 
-	f, err := os.OpenFile(resources.LOG_FILE_PATH, os.O_APPEND|os.O_CREATE, 777)
+	f, err := os.OpenFile(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.LOG_FILE_NAME), os.O_APPEND|os.O_CREATE, 777)
 	if err != nil {
 		panic(err)
 	}

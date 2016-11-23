@@ -3,6 +3,9 @@ package utils
 import (
 	"time"
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 )
 
 func GetTimePointer(t time.Time) *time.Time {
@@ -46,4 +49,12 @@ func MinutesToHMFormat(minutes float64) string {
 	t := int(minutes)
 	ms := t % 60
 	return fmt.Sprintf("%dh%dm", (t - ms) / 60, ms)
+}
+
+func GetRunningBinaryPath() string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return dir
 }

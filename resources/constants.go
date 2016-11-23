@@ -1,7 +1,7 @@
 package resources
 
 const (
-	DB_PATH = "./personal-manager.db"
+	DB_NAME = "personal-manager.db"
 
 	MSG_CREATE_SUCCESS = "Successfully created %s."
 	MSG_DELETE_SUCCESS = "Successfully deleted %s."
@@ -9,7 +9,7 @@ const (
 	MSG_SET_SUCCESS = "Successfully set %s to %s."
 	MSG_EXPORT_SUCCESS = "Successfully exported %s."
 
-	LOG_FILE_PATH = "./personal-manager.log"
+	LOG_FILE_NAME = "personal-manager.log"
 
 	HBT_REPETITION_DAILY   = "Daily"
 	HBT_REPETITION_WEEKLY  = "Weekly"

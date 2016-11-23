@@ -8,7 +8,7 @@ import (
 
 func Open(path string) {
 	if err := open(path); err != nil {
-		panic(fmt.Errorf("Unable to open database '%s'. %v", resources.DB_PATH, err))
+		panic(fmt.Errorf("Unable to open database '%s'. %v", path, err))
 	}
 }
 

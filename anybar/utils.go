@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 func startWithIcon(port int, title, icon string) error {
@@ -34,7 +35,7 @@ func saveActivePorts(t resources.Transaction, activePorts resources.ActivePorts)
 }
 
 func start(port int, title string) (string, error) {
-	cmd := exec.Command("open", "-n", "./AnyBar.app")
+	cmd := exec.Command("open", "-n", fmt.Sprintf("%s/AnyBar.app", utils.GetRunningBinaryPath()))
 	cmd.Env = []string{fmt.Sprintf("ANYBAR_PORT=%d", port), fmt.Sprintf("ANYBAR_TITLE=%s", title)}
 	out, err := cmd.CombinedOutput()
 	return string(out), err
