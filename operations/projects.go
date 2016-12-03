@@ -5,7 +5,7 @@ import (
 	"github.com/7joe7/personalmanager/db"
 )
 
-func getModifyProjectFunc(p *resources.Project, name, taskId string, activeFlag, doneFlag bool, tr resources.Transaction) func () {
+func getModifyProjectFunc(p *resources.Project, name, taskId, goalId string, activeFlag, doneFlag bool, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			p.Name = name
@@ -19,6 +19,16 @@ func getModifyProjectFunc(p *resources.Project, name, taskId string, activeFlag,
 				panic(err)
 			}
 			p.Tasks = append(p.Tasks, task)
+		}
+		if goalId != "" {
+			goal := &resources.Goal{}
+			err := tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, goal, func () {
+				goal.Project = p
+			})
+			if err != nil {
+				panic(err)
+			}
+			p.Goals = append(p.Goals, goal)
 		}
 		if activeFlag {
 			p.Active = !p.Active
@@ -54,6 +64,15 @@ func deleteProject(projectId string) {
 				return err
 			}
 		}
+		for i := 0; i < len(project.Goals); i++ {
+			goal := &resources.Goal{}
+			err = tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(project.Goals[i].Id), true, goal, func () {
+				goal.Project = nil
+			})
+			if err != nil {
+				return err
+			}
+		}
 		err = tr.DeleteEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId))
 		if err != nil {
 			return err
@@ -63,11 +82,11 @@ func deleteProject(projectId string) {
 	tr.Execute()
 }
 
-func modifyProject(projectId, name, taskId string, activeFlag, doneFlag bool) {
+func modifyProject(projectId, name, taskId, goalId string, activeFlag, doneFlag bool) {
 	project := &resources.Project{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), false, project, getModifyProjectFunc(project, name, taskId, activeFlag, doneFlag, tr))
+		return tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), false, project, getModifyProjectFunc(project, name, taskId, goalId, activeFlag, doneFlag, tr))
 	})
 	tr.Execute()
 }

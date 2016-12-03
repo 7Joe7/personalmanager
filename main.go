@@ -43,7 +43,6 @@ func init() {
 	note = flag.String("note", "", "Provide note.")
 
 	anybar.Start(anybar.NewAnybarManager())
-
 	db.Open(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.DB_NAME))
 	t := db.NewTransaction()
 	operations.InitializeBuckets(t)
@@ -77,7 +76,7 @@ func main() {
 		operations.AddTag(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"))
 	case resources.ACT_CREATE_GOAL:
-		operations.AddGoal(*name)
+		operations.AddGoal(*name, *projectId)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
 		operations.AddHabit(*name, *repetition, *note, *deadline, *activeFlag, *basePoints)
@@ -144,13 +143,13 @@ func main() {
 		operations.ModifyTask(*id, *name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *note, *basePoints, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "task"))
 	case resources.ACT_MODIFY_PROJECT:
-		operations.ModifyProject(*id, *name, *taskId, *activeFlag, *doneFlag)
+		operations.ModifyProject(*id, *name, *taskId, *goalId, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "project"))
 	case resources.ACT_MODIFY_TAG:
 		operations.ModifyTag(*id, *name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
 	case resources.ACT_MODIFY_GOAL:
-		operations.ModifyGoal(*id, *name, *taskId, *activeFlag, *doneFlag)
+		operations.ModifyGoal(*id, *name, *taskId, *projectId, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
 		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *basePoints)
@@ -172,6 +171,20 @@ func main() {
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
 		t.Add(func () error {
+			habit := &resources.Habit{}
+			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("102"), true, habit, func () {
+				habit.ActualStreak = 9
+			})
+			if err != nil {
+				return err
+			}
+			habit = &resources.Habit{}
+			err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("106"), true, habit, func () {
+				habit.ActualStreak = 2
+			})
+			if err != nil {
+				return err
+			}
 			//activePorts := anybar.GetActivePorts(t)
 			//resources.WaitGroup.Add(1)
 			//anybar.EnsureActivePorts(activePorts)

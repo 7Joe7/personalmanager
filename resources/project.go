@@ -12,6 +12,7 @@ type Project struct {
 	Active bool `json:",omitempty"`
 	Done   bool `json:",omitempty"`
 	Tasks []*Task
+	Goals []*Goal
 }
 
 func (p *Project) SetId(id string) {
@@ -23,6 +24,29 @@ func (p *Project) GetId() string {
 }
 
 func (p *Project) Load(tr Transaction) error {
+	tasks := []*Task{}
+	var task *Task
+	getNewEntity := func () Entity {
+		task = &Task{}
+		return task
+	}
+	addEntity := func () { tasks = append(tasks, task) }
+	err := tr.FilterEntities(DB_DEFAULT_TASKS_BUCKET_NAME, true, addEntity, getNewEntity, func () bool { return task.Project != nil && task.Project.Id == p.Id })
+	if err != nil {
+		return err
+	}
+	p.Tasks = tasks
+	goals := []*Goal{}
+	var goal *Goal
+	getNewEntity = func () Entity {
+		goal = &Goal{}
+		return goal
+	}
+	addEntity = func () { goals = append(goals, goal) }
+	err = tr.FilterEntities(DB_DEFAULT_GOALS_BUCKET_NAME, true, addEntity, getNewEntity, func () bool { return goal.Project != nil && goal.Project.Id == p.Id })
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -31,6 +55,11 @@ func (p *Project) MarshalJSON() ([]byte, error) {
 	if p.Tasks != nil && len(p.Tasks) != 0 {
 		for i := 0; i < len(p.Tasks); i++ {
 			p.Tasks[i] = &Task{Id: p.Tasks[i].Id}
+		}
+	}
+	if p.Goals != nil && len(p.Goals) != 0 {
+		for i := 0; i < len(p.Goals); i++ {
+			p.Goals[i] = &Goal{Id: p.Goals[i].Id}
 		}
 	}
 	return json.Marshal(mProject(*p))
@@ -56,7 +85,13 @@ func (p *Project) getItem(id string) *AlfredItem {
 			doneTasksNumber++
 		}
 	}
-	subtitle := fmt.Sprintf("%d/%d", doneTasksNumber, len(p.Tasks))
+	var doneGoalsNumber int
+	for i := 0; i < len(p.Goals); i++ {
+		if p.Goals[i].Done {
+			doneGoalsNumber++
+		}
+	}
+	subtitle := fmt.Sprintf("%d/%d tasks, %d/%d goals", doneTasksNumber, len(p.Tasks), doneGoalsNumber, len(p.Goals))
 	return &AlfredItem{
 		Name:     p.Name,
 		Arg:      id,

@@ -201,8 +201,9 @@ func deleteTask(taskId string) {
 			goal := &resources.Goal{}
 			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(task.Goal.Id), true, goal, func() {
 				for i := 0; i < len(goal.Tasks); i++ {
-					if goal.Tasks[i].Id == task.Goal.Id {
+					if goal.Tasks[i].Id == task.Id {
 						goal.Tasks = append(goal.Tasks[:i], goal.Tasks[i+1:]...)
+						break
 					}
 				}
 			})
@@ -214,8 +215,9 @@ func deleteTask(taskId string) {
 			project := &resources.Project{}
 			err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(task.Project.Id), true, project, func() {
 				for i := 0; i < len(project.Tasks); i++ {
-					if project.Tasks[i].Id == task.Goal.Id {
+					if project.Tasks[i].Id == task.Id {
 						project.Tasks = append(project.Tasks[:i], project.Tasks[i+1:]...)
+						break
 					}
 				}
 			})

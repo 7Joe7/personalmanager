@@ -112,16 +112,16 @@ func GetNonActiveHabits() map[string]*resources.Habit {
 	return getNonActiveHabits()
 }
 
-func AddGoal(name string) string {
-	return addGoal(name)
+func AddGoal(name, projectId string) string {
+	return addGoal(name, projectId)
 }
 
 func DeleteGoal(goalId string) {
 	deleteGoal(goalId)
 }
 
-func ModifyGoal(goalId, name, taskId string, activeFlag, doneFlag bool) {
-	modifyGoal(goalId, name, taskId, activeFlag, doneFlag)
+func ModifyGoal(goalId, name, taskId, projectId string, activeFlag, doneFlag bool) {
+	modifyGoal(goalId, name, taskId, projectId, activeFlag, doneFlag)
 }
 
 func GetGoal(goalId string) *resources.Goal {
@@ -152,8 +152,8 @@ func DeleteProject(projectId string) {
 	deleteProject(projectId)
 }
 
-func ModifyProject(projectId, name, taskId string, activeFlag, doneFlag bool) {
-	modifyProject(projectId, name, taskId, activeFlag, doneFlag)
+func ModifyProject(projectId, name, taskId, goalId string, activeFlag, doneFlag bool) {
+	modifyProject(projectId, name, taskId, goalId, activeFlag, doneFlag)
 }
 
 func GetProject(projectId string) *resources.Project {
