@@ -80,16 +80,16 @@ func GetWorkUnscheduledTasks() map[string]*resources.Task {
 	return getWorkUnscheduledTasks()
 }
 
-func AddHabit(name, repetition, description, deadline string, activeFlag bool, basePoints int) {
-	addHabit(name, repetition, description, deadline, activeFlag, basePoints)
+func AddHabit(name, repetition, description, deadline, goalId string, activeFlag bool, basePoints int) {
+	addHabit(name, repetition, description, deadline, goalId, activeFlag, basePoints)
 }
 
 func DeleteHabit(habitId string) {
 	deleteHabit(habitId)
 }
 
-func ModifyHabit(habitId, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious bool, basePoints int) {
-	modifyHabit(habitId, name, repetition, description, deadline, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, basePoints)
+func ModifyHabit(habitId, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious bool, basePoints int) {
+	modifyHabit(habitId, name, repetition, description, deadline, goalId, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, basePoints)
 }
 
 func GetHabit(habitId string) *resources.Habit {
@@ -112,16 +112,16 @@ func GetNonActiveHabits() map[string]*resources.Habit {
 	return getNonActiveHabits()
 }
 
-func AddGoal(name, projectId string) string {
-	return addGoal(name, projectId)
+func AddGoal(name, projectId, habitId string) string {
+	return addGoal(name, projectId, habitId)
 }
 
 func DeleteGoal(goalId string) {
 	deleteGoal(goalId)
 }
 
-func ModifyGoal(goalId, name, taskId, projectId string, activeFlag, doneFlag bool) {
-	modifyGoal(goalId, name, taskId, projectId, activeFlag, doneFlag)
+func ModifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool) {
+	modifyGoal(goalId, name, taskId, projectId, habitId, activeFlag, doneFlag)
 }
 
 func GetGoal(goalId string) *resources.Goal {

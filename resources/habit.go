@@ -19,6 +19,7 @@ type Habit struct {
 	Repetition    string
 	BasePoints    int
 	Id            string
+	Goal          *Goal
 }
 
 func (h *Habit) SetId(id string) {
@@ -30,6 +31,12 @@ func (h *Habit) GetId() string {
 }
 
 func (h *Habit) Load(tr Transaction) error {
+	if h.Goal != nil {
+		err := tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(h.Goal.Id), h.Goal, true)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

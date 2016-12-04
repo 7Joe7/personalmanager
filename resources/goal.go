@@ -6,12 +6,14 @@ import (
 )
 
 type Goal struct {
-	Name    string   `json:",omitempty"`
-	Id      string   `json:",omitempty"`
-	Active  bool     `json:",omitempty"`
-	Project *Project `json:",omitempty"`
-	Tasks   []*Task
-	Done    bool `json:",omitempty"`
+	Name                string   `json:",omitempty"`
+	Id                  string   `json:",omitempty"`
+	Active              bool     `json:",omitempty"`
+	Project             *Project `json:",omitempty"`
+	Tasks               []*Task
+	Habit               *Habit
+	HabitRepetitionGoal int  `json:",omitempty"`
+	Done                bool `json:",omitempty"`
 }
 
 func (g *Goal) SetId(id string) {
@@ -35,6 +37,12 @@ func (g *Goal) Load(tr Transaction) error {
 		return err
 	}
 	g.Tasks = tasks
+	if g.Habit != nil {
+		err = tr.RetrieveEntity(DB_DEFAULT_HABITS_BUCKET_NAME, []byte(g.Habit.Id), g.Habit, true)
+		if err != nil {
+			return err
+		}
+	}
 	if g.Project != nil {
 		err = tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(g.Project.Id), g.Project, true)
 		if err != nil {
@@ -54,6 +62,9 @@ func (g *Goal) MarshalJSON() ([]byte, error) {
 	if g.Project != nil {
 		g.Project = &Project{Id: g.Project.Id}
 	}
+	if g.Habit != nil {
+		g.Habit = &Habit{Id: g.Habit.Id}
+	}
 	return json.Marshal(mGoal(*g))
 }
 
@@ -71,13 +82,21 @@ func (g *Goal) getItem(id string) *AlfredItem {
 		order = 5000
 		iconPath = ICO_BLACK
 	}
-	var doneTasksNumber int
+	var doneNumber int
 	for i := 0; i < len(g.Tasks); i++ {
 		if g.Tasks[i].Done {
-			doneTasksNumber++
+			doneNumber++
 		}
 	}
-	subtitle := fmt.Sprintf("%d/%d", doneTasksNumber, len(g.Tasks))
+	if g.Habit != nil {
+		if g.Habit.ActualStreak > 0 {
+			doneNumber += g.Habit.ActualStreak
+		}
+	}
+	subtitle := fmt.Sprintf("%d/%d", doneNumber, len(g.Tasks) + g.HabitRepetitionGoal)
+	if g.Habit != nil {
+		subtitle = fmt.Sprintf("%s, %s", g.Habit.Name, subtitle)
+	}
 	if g.Project != nil {
 		subtitle = fmt.Sprintf("%s, %s", g.Project.Name, subtitle)
 	}

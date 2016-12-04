@@ -6,7 +6,7 @@ import (
 	"github.com/7joe7/personalmanager/anybar"
 )
 
-func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId string, activeFlag, doneFlag bool, tr resources.Transaction) func () {
+func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			g.Name = name
@@ -33,6 +33,16 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId string, active
 				panic(err)
 			}
 			g.Project = project
+		}
+		if habitId != "" {
+			habit := &resources.Habit{}
+			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func () {
+				habit.Goal = g
+			})
+			if err != nil {
+				panic(err)
+			}
+			g.Habit = habit
 		}
 		if activeFlag {
 			if g.Active {
@@ -90,7 +100,7 @@ func toggleSubTasksScheduling(scheduledCriteria, scheduledSet string, g *resourc
 	}
 }
 
-func addGoal(name, projectId string) string {
+func addGoal(name, projectId, habitId string) string {
 	goal := resources.NewGoal(name)
 	if projectId != "" {
 		goal.Project = &resources.Project{Id: projectId}
@@ -105,10 +115,16 @@ func addGoal(name, projectId string) string {
 			err := tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, project, func () {
 				project.Goals = append(project.Goals, goal)
 			})
-			if err != nil {
-				return err
-			}
-			return nil
+			return err
+		})
+	}
+	if habitId != "" {
+		tr.Add(func () error {
+			habit := &resources.Habit{}
+			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(projectId), true, habit, func () {
+				habit.Goal = goal
+			})
+			return err
 		})
 	}
 	tr.Execute()
@@ -146,6 +162,15 @@ func deleteGoal(goalId string) {
 				return err
 			}
 		}
+		if goal.Habit != nil {
+			habit := &resources.Habit{}
+			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(goal.Habit.Id), true, habit, func () {
+				habit.Goal = nil
+			})
+			if err != nil {
+				return err
+			}
+		}
 		if goal.Active {
 			anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, goalId, tr)
 		}
@@ -158,11 +183,11 @@ func deleteGoal(goalId string) {
 	tr.Execute()
 }
 
-func modifyGoal(goalId, name, taskId, projectId string, activeFlag, doneFlag bool) {
+func modifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool) {
 	goal := &resources.Goal{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), false, goal, getModifyGoalFunc(goal, name, taskId, projectId, activeFlag, doneFlag, tr))
+		return tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), false, goal, getModifyGoalFunc(goal, name, taskId, projectId, habitId, activeFlag, doneFlag, tr))
 	})
 	tr.Execute()
 }
@@ -187,7 +212,7 @@ func getGoals() map[string]*resources.Goal {
 }
 
 func getActiveGoals() map[string]*resources.Goal {
-	return FilterGoals(func (g *resources.Goal) bool { return g.Active })
+	return FilterGoals(func (g *resources.Goal) bool { return g.Active && !g.Done })
 }
 
 func getNonActiveGoals() map[string]*resources.Goal {

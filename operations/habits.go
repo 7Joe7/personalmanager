@@ -9,13 +9,16 @@ import (
 	"github.com/7joe7/personalmanager/anybar"
 )
 
-func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious bool, basePoints int, status *resources.Status, tr resources.Transaction) func () {
+func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious bool, basePoints int, status *resources.Status, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			h.Name = name
 		}
 		if description != "" {
 			h.Description = description
+		}
+		if goalId != "" {
+			h.Goal = &resources.Goal{Id: goalId}
 		}
 		if toggleActive {
 			if h.Active {
@@ -144,6 +147,7 @@ func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status, tr res
 		if h.Deadline.Before(time.Now()) {
 			if h.ActualStreak > 49 && *h.LastStreakEnd != *h.Deadline {
 				h.Done = true
+				h.Tries += 1
 				succeedHabit(h, h.Deadline)
 			} else {
 				numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
@@ -202,10 +206,13 @@ func deactivateHabit(h *resources.Habit) {
 	h.BasePoints = 0
 }
 
-func addHabit(name, repetition, description, deadline string, activeFlag bool, basePoints int) {
+func addHabit(name, repetition, description, deadline, goalId string, activeFlag bool, basePoints int) {
 	h := resources.NewHabit(name)
 	if description != "" {
 		h.Description = description
+	}
+	if goalId != "" {
+		h.Goal = &resources.Goal{Id: goalId}
 	}
 	if activeFlag {
 		activateHabit(h, repetition)
@@ -243,6 +250,15 @@ func deleteHabit(habitId string) {
 		if err != nil {
 			return err
 		}
+		if h.Goal != nil {
+			goal := &resources.Goal{}
+			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(h.Goal.Id), true, goal, func () {
+				goal.Habit = nil
+			})
+			if err != nil {
+				return err
+			}
+		}
 		if h.Active {
 			anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, habitId, t)
 		}
@@ -251,13 +267,13 @@ func deleteHabit(habitId string) {
 	t.Execute()
 }
 
-func modifyHabit(habitId, name, repetition, description, deadline string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious bool, basePoints int) {
+func modifyHabit(habitId, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious bool, basePoints int) {
 	habit := &resources.Habit{}
 	habitStatus := &resources.Status{}
 	status := &resources.Status{}
 	t := db.NewTransaction()
 	t.Add(func () error {
-		modifyHabit := getModifyHabitFunc(habit, name, repetition, description, deadline, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, basePoints, habitStatus, t)
+		modifyHabit := getModifyHabitFunc(habit, name, repetition, description, deadline, goalId, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, basePoints, habitStatus, t)
 		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), false, habit, modifyHabit); err != nil {
 			return err
 		}

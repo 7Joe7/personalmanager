@@ -17,9 +17,9 @@ import (
 )
 
 var (
-	action, id, name, projectId, goalId, taskId, repetition, deadline, estimate, scheduled, taskType, note *string
-	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious                                        *bool
-	basePoints                                                                                             *int
+	action, id, name, projectId, goalId, taskId, habitId, repetition, deadline, estimate, scheduled, taskType, note *string
+	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious                                                 *bool
+	basePoints                                                                                                      *int
 )
 
 func init() {
@@ -28,6 +28,7 @@ func init() {
 	projectId = flag.String("projectId", "", fmt.Sprintf("Provide project id for project assignment."))
 	goalId = flag.String("goalId", "", fmt.Sprintf("Provide goal id for goal assignment."))
 	taskId = flag.String("taskId", "", fmt.Sprintf("Provide task id for task assignment."))
+	habitId = flag.String("habitId", "", fmt.Sprintf("Provide habit id for habit assignment."))
 	name = flag.String("name", "", "Provide name.")
 	activeFlag = flag.Bool("active", false, "Toggle active/show active only.")
 	doneFlag = flag.Bool("done", false, "Toggle done.")
@@ -76,10 +77,10 @@ func main() {
 		operations.AddTag(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"))
 	case resources.ACT_CREATE_GOAL:
-		operations.AddGoal(*name, *projectId)
+		operations.AddGoal(*name, *projectId, *habitId)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
-		operations.AddHabit(*name, *repetition, *note, *deadline, *activeFlag, *basePoints)
+		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
 		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
@@ -113,10 +114,10 @@ func main() {
 		alfred.PrintEntities(resources.Goals{operations.GetNonActiveGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_HABITS:
 		if *activeFlag {
-		alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
-	} else {
-		alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
-	}
+			alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus()})
+		} else {
+			alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus()})
+		}
 	case resources.ACT_PRINT_HABIT_DESCRIPTION:
 		alfred.PrintResult(operations.GetHabit(*id).Description)
 	case resources.ACT_PRINT_REVIEW:
@@ -149,10 +150,10 @@ func main() {
 		operations.ModifyTag(*id, *name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
 	case resources.ACT_MODIFY_GOAL:
-		operations.ModifyGoal(*id, *name, *taskId, *projectId, *activeFlag, *doneFlag)
+		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
-		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *basePoints)
+		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)
@@ -170,50 +171,16 @@ func main() {
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
-		t.Add(func () error {
+		t.Add(func() error {
 			habit := &resources.Habit{}
-			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("102"), true, habit, func () {
-				habit.ActualStreak = 9
+			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, habit, func() {
+				if habit.ActualStreak > 49 {
+					habit.Tries += (habit.ActualStreak - 50)
+				}
 			})
 			if err != nil {
 				return err
 			}
-			habit = &resources.Habit{}
-			err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("106"), true, habit, func () {
-				habit.ActualStreak = 2
-			})
-			if err != nil {
-				return err
-			}
-			//activePorts := anybar.GetActivePorts(t)
-			//resources.WaitGroup.Add(1)
-			//anybar.EnsureActivePorts(activePorts)
-			//anybar.AddToActivePorts("Create a video journal of personal development", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "25", t)
-			//anybar.AddToActivePorts("Get my nose straightened", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "27", t)
-			//anybar.AddToActivePorts("Solve personal problem", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "5", t)
-			//anybar.AddToActivePorts("Finish Introduction to Operating Systems course", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "18", t)
-			//anybar.AddToActivePorts("Full week of morning routine and 'only after'", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "16", t)
-			//anybar.AddToActivePorts("Solve situation with Tasya", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "11", t)
-			//anybar.AddToActivePorts("Make syncing of AnyBar ports work", resources.ANY_CMD_YELLOW, resources.DB_DEFAULT_GOALS_BUCKET_NAME, "2", t)
-			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "2", t)
-			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "5", t)
-			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "11", t)
-			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "16", t)
-			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "18", t)
-			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "25", t)
-			//anybar.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, "27", t)
-			//activePorts := anybar.GetActivePorts(t)
-			//resources.WaitGroup.Add(1)
-			//anybar.EnsureActivePorts(activePorts)
-			//activePorts := resources.ActivePorts{}
-			//activePortsB, err := json.Marshal(activePorts)
-			//if err != nil {
-			//	panic(err)
-			//}
-			//err = t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ANYBAR_ACTIVE_PORTS, activePortsB)
-			//if err != nil {
-			//	panic(err)
-			//}
 			return nil
 		})
 		t.Execute()
