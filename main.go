@@ -19,7 +19,7 @@ import (
 var (
 	action, id, name, projectId, goalId, taskId, habitId, repetition, deadline, estimate, scheduled, taskType, note *string
 	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious                                                 *bool
-	basePoints                                                                                                      *int
+	basePoints, habitRepetitionGoal                                                                                 *int
 )
 
 func init() {
@@ -36,6 +36,7 @@ func init() {
 	undonePrevious = flag.Bool("undonePrevious", false, "Set undone for previous period.")
 	repetition = flag.String("repetition", "", "Select repetition period.")
 	basePoints = flag.Int("basePoints", -1, "Set base points for success/failure.")
+	habitRepetitionGoal = flag.Int("habitRepetitionGoal", -1, "Set habit goal repetition number.")
 	deadline = flag.String("deadline", "", "Specify deadine in format 'dd.MM.YYYY HH:mm'.")
 	estimate = flag.String("estimate", "", "Specify time estimate in format '2h45m'.")
 	noneAllowed = flag.Bool("noneAllowed", false, "Provide information whether list should be retrieved with none value allowed.")
@@ -77,7 +78,7 @@ func main() {
 		operations.AddTag(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"))
 	case resources.ACT_CREATE_GOAL:
-		operations.AddGoal(*name, *projectId, *habitId)
+		operations.AddGoal(*name, *projectId, *habitId, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
 		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *basePoints)
@@ -150,7 +151,7 @@ func main() {
 		operations.ModifyTag(*id, *name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
 	case resources.ACT_MODIFY_GOAL:
-		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag)
+		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
 		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *basePoints)
@@ -173,10 +174,8 @@ func main() {
 		t := db.NewTransaction()
 		t.Add(func() error {
 			habit := &resources.Habit{}
-			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, habit, func() {
-				if habit.ActualStreak > 49 {
-					habit.Tries += (habit.ActualStreak - 50)
-				}
+			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("22"), true, habit, func () {
+				habit.Done = false
 			})
 			if err != nil {
 				return err

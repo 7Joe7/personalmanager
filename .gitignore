@@ -3,5 +3,6 @@
 /pkg
 /bin
 personal-manager.db
+*.backup
 personal-manager.log
 personalmanager

@@ -6,7 +6,7 @@ import (
 	"github.com/7joe7/personalmanager/anybar"
 )
 
-func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, tr resources.Transaction) func () {
+func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal int, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			g.Name = name
@@ -43,6 +43,9 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 				panic(err)
 			}
 			g.Habit = habit
+		}
+		if habitRepetitionGoal != -1 {
+			g.HabitRepetitionGoal = habitRepetitionGoal
 		}
 		if activeFlag {
 			if g.Active {
@@ -100,10 +103,16 @@ func toggleSubTasksScheduling(scheduledCriteria, scheduledSet string, g *resourc
 	}
 }
 
-func addGoal(name, projectId, habitId string) string {
+func addGoal(name, projectId, habitId string, habitRepetitionGoal int) string {
 	goal := resources.NewGoal(name)
 	if projectId != "" {
 		goal.Project = &resources.Project{Id: projectId}
+	}
+	if habitId != "" {
+		goal.Habit = &resources.Habit{Id: habitId}
+	}
+	if habitRepetitionGoal != -1 {
+		goal.HabitRepetitionGoal = habitRepetitionGoal
 	}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
@@ -121,7 +130,7 @@ func addGoal(name, projectId, habitId string) string {
 	if habitId != "" {
 		tr.Add(func () error {
 			habit := &resources.Habit{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(projectId), true, habit, func () {
+			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func () {
 				habit.Goal = goal
 			})
 			return err
@@ -183,11 +192,11 @@ func deleteGoal(goalId string) {
 	tr.Execute()
 }
 
-func modifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool) {
+func modifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal int) {
 	goal := &resources.Goal{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), false, goal, getModifyGoalFunc(goal, name, taskId, projectId, habitId, activeFlag, doneFlag, tr))
+		return tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), false, goal, getModifyGoalFunc(goal, name, taskId, projectId, habitId, activeFlag, doneFlag, habitRepetitionGoal, tr))
 	})
 	tr.Execute()
 }

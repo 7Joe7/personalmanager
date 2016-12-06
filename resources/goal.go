@@ -11,9 +11,9 @@ type Goal struct {
 	Active              bool     `json:",omitempty"`
 	Project             *Project `json:",omitempty"`
 	Tasks               []*Task
-	Habit               *Habit
-	HabitRepetitionGoal int  `json:",omitempty"`
-	Done                bool `json:",omitempty"`
+	Habit               *Habit `json:",omitempty"`
+	HabitRepetitionGoal int    `json:",omitempty"`
+	Done                bool   `json:",omitempty"`
 }
 
 func (g *Goal) SetId(id string) {
@@ -93,7 +93,7 @@ func (g *Goal) getItem(id string) *AlfredItem {
 			doneNumber += g.Habit.ActualStreak
 		}
 	}
-	subtitle := fmt.Sprintf("%d/%d", doneNumber, len(g.Tasks) + g.HabitRepetitionGoal)
+	subtitle := fmt.Sprintf("%d/%d", doneNumber, len(g.Tasks)+g.HabitRepetitionGoal)
 	if g.Habit != nil {
 		subtitle = fmt.Sprintf("%s, %s", g.Habit.Name, subtitle)
 	}

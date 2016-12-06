@@ -1,25 +1,26 @@
 package resources
 
 import (
-	"time"
 	"fmt"
+	"time"
+	"encoding/json"
 )
 
 type Habit struct {
-	Name          string
-	Active        bool
-	Done          bool
-	Description   string
-	Deadline      *time.Time
-	Tries         int
-	Successes     int
-	ActualStreak  int
-	LastStreak    int
-	LastStreakEnd *time.Time
-	Repetition    string
-	BasePoints    int
-	Id            string
-	Goal          *Goal
+	Name          string     `json:",omitempty"`
+	Active        bool       `json:",omitempty"`
+	Done          bool       `json:",omitempty"`
+	Description   string     `json:",omitempty"`
+	Deadline      *time.Time `json:",omitempty"`
+	Tries         int        `json:",omitempty"`
+	Successes     int        `json:",omitempty"`
+	ActualStreak  int        `json:",omitempty"`
+	LastStreak    int        `json:",omitempty"`
+	LastStreakEnd *time.Time `json:",omitempty"`
+	Repetition    string     `json:",omitempty"`
+	BasePoints    int        `json:",omitempty"`
+	Id            string     `json:",omitempty"`
+	Goal          *Goal      `json:",omitempty"`
 }
 
 func (h *Habit) SetId(id string) {
@@ -32,7 +33,7 @@ func (h *Habit) GetId() string {
 
 func (h *Habit) Load(tr Transaction) error {
 	if h.Goal != nil {
-		err := tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(h.Goal.Id), h.Goal, true)
+		err := tr.RetrieveEntity(DB_DEFAULT_GOALS_BUCKET_NAME, []byte(h.Goal.Id), h.Goal, true)
 		if err != nil {
 			return err
 		}
@@ -66,6 +67,14 @@ func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 		return ICO_BLACK, "black", HBT_BASE_ORDER_DAILY
 	}
 	return "", "", 0
+}
+
+func (h *Habit) MarshalJSON() ([]byte, error) {
+	type mHabit Habit
+	if h.Goal != nil {
+		h.Goal = &Goal{Id: h.Goal.Id}
+	}
+	return json.Marshal(mHabit(*h))
 }
 
 func (h *Habit) getItem(id string) *AlfredItem {
