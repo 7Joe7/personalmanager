@@ -38,7 +38,7 @@ func TestEnsureValues(t *testing.T) {
 
 func TestSynchronize(t *testing.T) {
 	tm := &transactionMock{functionsCalled: []string{}}
-	synchronize(tm)
+	synchronize(tm, false)
 	tm.Execute()
 	verifyTransactionFlow(t, tm)
 

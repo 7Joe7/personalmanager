@@ -108,6 +108,7 @@ const (
 	ACT_SYNC_ANYBAR_PORTS                = "synchronize-anybar-ports"
 	ACT_DEBUG_DATABASE                   = "debug-database"
 	ACT_SYNC_WITH_JIRA                   = "sync-with-jira"
+	ACT_BACKUP_DATABASE                  = "backup-database"
 	ACT_SET_EMAIL                        = "set-email"
 	ACT_CUSTOM                           = "custom"
 

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"runtime/debug"
@@ -17,6 +16,7 @@ import (
 )
 
 var (
+	// parameters
 	action, id, name, projectId, goalId, taskId, habitId, repetition, deadline, estimate, scheduled, taskType, note *string
 	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious                                                 *bool
 	basePoints, habitRepetitionGoal                                                                                 *int
@@ -45,18 +45,12 @@ func init() {
 	note = flag.String("note", "", "Provide note.")
 
 	anybar.Start(anybar.NewAnybarManager())
-	db.Open(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.DB_NAME))
+	db.Open()
 	t := db.NewTransaction()
 	operations.InitializeBuckets(t)
 	operations.EnsureValues(t)
 	operations.Synchronize(t)
 	t.Execute()
-
-	f, err := os.OpenFile(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.LOG_FILE_NAME), os.O_APPEND|os.O_CREATE, 777)
-	if err != nil {
-		panic(err)
-	}
-	log.SetOutput(io.MultiWriter(os.Stdout, f))
 }
 
 func main() {
@@ -66,7 +60,18 @@ func main() {
 			os.Exit(3)
 		}
 	}()
+
 	flag.Parse()
+
+	f, err := os.OpenFile(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.LOG_FILE_NAME), os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
+
+	logBinaryCall()
+
 	switch *action {
 	case resources.ACT_CREATE_TASK:
 		operations.AddTask(*name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *note, *activeFlag, *basePoints)
@@ -167,6 +172,8 @@ func main() {
 		db.PrintoutDbContents(*id)
 	case resources.ACT_SYNC_WITH_JIRA:
 		operations.SyncWithJira()
+	case resources.ACT_BACKUP_DATABASE:
+		db.BackupDatabase()
 	case resources.ACT_SET_EMAIL:
 		operations.SetEmail(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
@@ -174,7 +181,7 @@ func main() {
 		t := db.NewTransaction()
 		t.Add(func() error {
 			habit := &resources.Habit{}
-			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("22"), true, habit, func () {
+			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("96"), true, habit, func () {
 				habit.Done = false
 			})
 			if err != nil {
@@ -187,4 +194,32 @@ func main() {
 		flag.Usage()
 	}
 	resources.WaitGroup.Wait()
+}
+
+func logBinaryCall() {
+	log.Printf(`Called with string parameters:
+		action: %s,
+		id: %s,
+		name: %s,
+		projectId: %s,
+		goalId: %s,
+		taskId: %s,
+		habitId: %s,
+		repetition: %s,
+		deadline: %s,
+		estimate: %s,
+		scheduled: %s,
+		taskType: %s,
+		note: %s,
+		and with bool parameters:
+		noneAllowed: %v,
+		activeFlag: %v,
+		doneFlag: %v,
+		donePrevious: %v,
+		undonePrevious: %v,
+		and int parameters:
+		basePoints: %v,
+		habitRepetitionGoal: %v.`, *action, *id, *name, *projectId, *goalId, *taskId,
+		*habitId, *repetition, *deadline, *estimate, *scheduled, *taskType, *note, *noneAllowed, *activeFlag,
+		*doneFlag, *donePrevious, *undonePrevious, *basePoints, *habitRepetitionGoal)
 }

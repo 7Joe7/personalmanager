@@ -13,7 +13,7 @@ func ModifyReview(repetition, deadline string) {
 }
 
 func Synchronize(t resources.Transaction) {
-	synchronize(t)
+	synchronize(t, true)
 }
 
 func SynchronizeAnybarPorts(t resources.Transaction) {

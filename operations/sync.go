@@ -5,12 +5,16 @@ import (
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/anybar"
+	"github.com/7joe7/personalmanager/db"
 )
 
-func synchronize(t resources.Transaction) {
+func synchronize(t resources.Transaction, backup bool) {
 	t.Add(func () error {
 		lastSync := string(t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_LAST_SYNC_KEY))
 		if lastSync == "" || isTimeForSync(lastSync) {
+			if backup {
+				db.BackupDatabase()
+			}
 			habit := &resources.Habit{}
 			habitStatus := &resources.Status{}
 			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, habit, getSyncHabitFunc(habit, habitStatus, t))

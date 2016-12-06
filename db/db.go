@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/utils"
 )
 
-func Open(path string) {
-	if err := open(path); err != nil {
-		panic(fmt.Errorf("Unable to open database '%s'. %v", path, err))
+func Open() {
+	dbPath := getDatabasePath()
+	if err := open(dbPath); err != nil {
+		panic(fmt.Errorf("Unable to open database '%s'. %v", dbPath, err))
 	}
 }
 
@@ -44,4 +46,15 @@ func FilterEntities(bucketName []byte, shallow bool, addEntity func(), getNewEnt
 
 func NewTransaction() resources.Transaction {
 	return newTransaction()
+}
+
+func BackupDatabase() {
+	err := backupDatabase(getDatabasePath())
+	if err != nil {
+		panic(fmt.Errorf("Unable to backup database. %v", err))
+	}
+}
+
+func getDatabasePath() string {
+	return fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.DB_NAME)
 }

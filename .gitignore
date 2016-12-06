@@ -6,3 +6,5 @@ personal-manager.db
 *.backup
 personal-manager.log
 personalmanager
+custom
+debug-database

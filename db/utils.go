@@ -2,6 +2,7 @@ package db
 
 import (
 	"strconv"
+	"io/ioutil"
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/boltdb/bolt"
@@ -58,6 +59,19 @@ func getIncrementedId(bucket *bolt.Bucket) string {
 func open(path string) error {
 	var err error
 	if db, err = bolt.Open(path, 0644, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func backupDatabase(path string) error {
+	var err error
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(path + ".backup", data, 0644)
+	if err != nil {
 		return err
 	}
 	return nil
