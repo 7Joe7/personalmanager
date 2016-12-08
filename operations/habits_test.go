@@ -145,7 +145,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	h.Deadline = utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
 	tr := &transactionMock{}
 	tr.Add(func () error {
-		getSyncHabitFunc(h, changeStatus, tr)()
+		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
 	tr.Execute()
@@ -159,7 +159,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	h.Deadline = todayDeadline
 	tr = &transactionMock{}
 	tr.Add(func () error {
-		getSyncHabitFunc(h, changeStatus, tr)()
+		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
 	tr.Execute()
@@ -172,7 +172,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400)).Truncate(24 * time.Hour))
 	tr = &transactionMock{}
 	tr.Add(func () error {
-		getSyncHabitFunc(h, changeStatus, tr)()
+		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
 	tr.Execute()
@@ -184,7 +184,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400 * 7)).Truncate(24 * time.Hour))
 	tr = &transactionMock{}
 	tr.Add(func () error {
-		getSyncHabitFunc(h, changeStatus, tr)()
+		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
 	tr.Execute()

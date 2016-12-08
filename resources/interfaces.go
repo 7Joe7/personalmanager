@@ -11,7 +11,7 @@ type Transaction interface {
 	RetrieveEntity(bucketName, id []byte, entity Entity, shallow bool) error
 	RetrieveEntities(bucketName []byte, shallow bool, getObject func (string) Entity) error
 	ModifyEntity(bucketName, key []byte, shallow bool, entity Entity, modifyFunc func ()) error
-	MapEntities(bucketName []byte, shallow bool, entity Entity, mapFunc func ()) error
+	MapEntities(bucketName []byte, shallow bool, getNewEntity func () Entity, mapFunc func (Entity) func ()) error
 	InitializeBucket(bucketName []byte) error
 	FilterEntities(bucketName []byte, shallow bool, addEntity func (), getNewEntity func () Entity, filterFunc func () bool) error
 	Execute()

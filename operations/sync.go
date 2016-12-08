@@ -15,9 +15,8 @@ func synchronize(t resources.Transaction, backup bool) {
 			if backup {
 				db.BackupDatabase()
 			}
-			habit := &resources.Habit{}
 			habitStatus := &resources.Status{}
-			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, habit, getSyncHabitFunc(habit, habitStatus, t))
+			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, getSyncHabitFunc(habitStatus))
 			if err != nil {
 				return err
 			}

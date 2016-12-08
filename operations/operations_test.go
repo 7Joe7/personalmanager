@@ -44,9 +44,8 @@ func TestSynchronize(t *testing.T) {
 
 	expected := fmt.Sprintf(GET_VALUE_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_LAST_SYNC_KEY))
 	test.ExpectString(expected, tm.functionsCalled[2], t)
-	habit := &resources.Habit{}
 	changeStatus := &resources.Status{}
-	expected = fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(resources.DB_DEFAULT_HABITS_BUCKET_NAME), true, habit, getSyncHabitFunc(habit, changeStatus, &transactionMock{}))
+	expected = fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(resources.DB_DEFAULT_HABITS_BUCKET_NAME), true, getNewHabit, getSyncHabitFunc(changeStatus))
 	test.ExpectString(expected, tm.functionsCalled[3], t)
 	status := &resources.Status{}
 	expected = fmt.Sprintf(MODIFY_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), true, resources.DB_ACTUAL_STATUS_KEY, status, getSyncStatusFunc(status, changeStatus))

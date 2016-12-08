@@ -74,8 +74,8 @@ func (tm *transactionMock) ModifyEntity(bucketName, key []byte, shallow bool, en
 	return nil
 }
 
-func (tm *transactionMock) MapEntities(bucketName []byte, shallow bool, entity resources.Entity, mapFunc func()) error {
-	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, entity, mapFunc))
+func (tm *transactionMock) MapEntities(bucketName []byte, shallow bool, getNewEntity func () resources.Entity, mapFunc func(resources.Entity) func ()) error {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, getNewEntity, mapFunc))
 	return nil
 }
 

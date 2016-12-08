@@ -138,15 +138,15 @@ func (t *transaction) ModifyEntity(bucketName, key []byte, shallow bool, entity 
 	return t.modifyEntityInner(b, key, b.Get(key), shallow, entity, modifyFunc)
 }
 
-func (t *transaction) MapEntities(bucketName []byte, shallow bool, entity resources.Entity, mapFunc func ()) error {
+func (t *transaction) MapEntities(bucketName []byte, shallow bool, getNewEntity func () resources.Entity, mapFunc func (resources.Entity) func ()) error {
 	log.Printf(`Mapping entities:
 	bucketName: %s,
-	shallow: %v,
-	entity: %v.`, string(bucketName), shallow, entity)
+	shallow: %v.`, string(bucketName), shallow)
 	b := t.tx.Bucket(bucketName)
 	return b.ForEach(func (k, v []byte) error {
 		if string(k) != string(resources.DB_LAST_ID_KEY) {
-			return t.modifyEntityInner(b, k, v, shallow, entity, mapFunc)
+			entity := getNewEntity()
+			return t.modifyEntityInner(b, k, v, shallow, entity, mapFunc(entity))
 		}
 		return nil
 	})

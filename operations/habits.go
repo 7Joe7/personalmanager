@@ -138,35 +138,42 @@ func removePeriod(repetition string, deadline *time.Time) *time.Time {
 	return nil
 }
 
-func getSyncHabitFunc(h *resources.Habit, changeStatus *resources.Status, tr resources.Transaction) func () {
-	return func () {
-		if !h.Active {
-			return
-		}
+func getNewHabit() resources.Entity {
+	return &resources.Habit{}
+}
 
-		if h.Deadline.Before(time.Now()) {
-			if h.ActualStreak > 49 && *h.LastStreakEnd != *h.Deadline {
-				h.Done = true
-				h.Tries += 1
-				succeedHabit(h, h.Deadline)
-			} else {
-				numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
-				for i := 0; i < numberOfMissedDeadlines; i++ {
-					// if the last period
-					if i == numberOfMissedDeadlines - 1 {
-						// not done or not already failed
-						if !h.Done && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
+func getSyncHabitFunc(changeStatus *resources.Status) func (resources.Entity) func () {
+	return func (entity resources.Entity) func () {
+		return func () {
+			h := entity.(*resources.Habit)
+			if !h.Active {
+				return
+			}
+
+			if h.Deadline.Before(time.Now()) {
+				if h.ActualStreak > 49 && *h.LastStreakEnd != *h.Deadline {
+					h.Done = true
+					h.Tries += 1
+					succeedHabit(h, h.Deadline)
+				} else {
+					numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
+					for i := 0; i < numberOfMissedDeadlines; i++ {
+						// if the last period
+						if i == numberOfMissedDeadlines - 1 {
+							// not done or not already failed
+							if !h.Done && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
+								failHabit(h)
+								changeStatus.Score -= h.ActualStreak * h.ActualStreak * h.BasePoints
+							}
+						} else {
 							failHabit(h)
 							changeStatus.Score -= h.ActualStreak * h.ActualStreak * h.BasePoints
 						}
-					} else {
-						failHabit(h)
-						changeStatus.Score -= h.ActualStreak * h.ActualStreak * h.BasePoints
+						h.Deadline = addPeriod(h.Repetition, h.Deadline)
 					}
-					h.Deadline = addPeriod(h.Repetition, h.Deadline)
+					h.Done = false
+					h.Tries += numberOfMissedDeadlines
 				}
-				h.Done = false
-				h.Tries += numberOfMissedDeadlines
 			}
 		}
 	}

@@ -169,10 +169,12 @@ func TestTransaction_MapEntities(t *testing.T) {
 	task := &resources.Task{}
 	tr := newTransaction()
 	tr.Add(func () error {
-		return tr.MapEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, task, func () {
-			task.Name += " name mapped by transaction"
-			task.Note += " note mapped by transaction"
-			task.Project = testProject1
+		return tr.MapEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, func () resources.Entity { return task }, func (resources.Entity) func () {
+			return func () {
+				task.Name += " name mapped by transaction"
+				task.Note += " note mapped by transaction"
+				task.Project = testProject1
+			}
 		})
 	})
 	test.ExpectSuccess(t, tr.execute())

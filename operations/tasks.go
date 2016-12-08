@@ -108,6 +108,10 @@ func startProgress(t *resources.Task) {
 	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, t.Name, resources.ANY_CMD_BLUE)
 }
 
+func getNewTask() resources.Entity {
+	return &resources.Task{}
+}
+
 func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
 	task := resources.NewTask(name)
 	if projectId != "" {

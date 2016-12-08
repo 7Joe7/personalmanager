@@ -43,14 +43,6 @@ func init() {
 	scheduled = flag.String("scheduled", "", "Provide schedule period. (NEXT|NONE)")
 	taskType = flag.String("taskType", "", "Provide task type. (PERSONAL|WORK)")
 	note = flag.String("note", "", "Provide note.")
-
-	anybar.Start(anybar.NewAnybarManager())
-	db.Open()
-	t := db.NewTransaction()
-	operations.InitializeBuckets(t)
-	operations.EnsureValues(t)
-	operations.Synchronize(t)
-	t.Execute()
 }
 
 func main() {
@@ -71,6 +63,14 @@ func main() {
 	log.SetOutput(f)
 
 	logBinaryCall()
+
+	anybar.Start(anybar.NewAnybarManager())
+	db.Open()
+	t := db.NewTransaction()
+	operations.InitializeBuckets(t)
+	operations.EnsureValues(t)
+	operations.Synchronize(t)
+	t.Execute()
 
 	switch *action {
 	case resources.ACT_CREATE_TASK:

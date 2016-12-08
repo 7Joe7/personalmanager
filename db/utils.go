@@ -36,9 +36,9 @@ func retrieveEntities(bucketName []byte, shallow bool, getObject func (string) r
 	return tr.execute()
 }
 
-func mapEntities(entity resources.Entity, bucketName []byte, shallow bool, mapFunc func ()) error {
+func mapEntities(getNewEntity func () resources.Entity, bucketName []byte, shallow bool, mapFunc func (resources.Entity) func ()) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.MapEntities(bucketName, shallow, entity, mapFunc) })
+	tr.Add(func () error { return tr.MapEntities(bucketName, shallow, getNewEntity, mapFunc) })
 	return tr.execute()
 }
 

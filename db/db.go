@@ -32,8 +32,8 @@ func RetrieveEntities(bucketName []byte, shallow bool, getObject func (string) r
 	}
 }
 
-func MapEntities(entity resources.Entity, bucketName []byte, shallow bool, mapFunc func ()) {
-	if err := mapEntities(entity, bucketName, shallow, mapFunc); err != nil {
+func MapEntities(getNewEntity func () resources.Entity, bucketName []byte, shallow bool, mapFunc func (resources.Entity) func ()) {
+	if err := mapEntities(getNewEntity, bucketName, shallow, mapFunc); err != nil {
 		panic(fmt.Errorf("Unable to map entities from bucket '%s'. %v", bucketName, err))
 	}
 }
