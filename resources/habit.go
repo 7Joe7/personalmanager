@@ -22,6 +22,9 @@ type Habit struct {
 	BasePoints    int        `json:",omitempty"`
 	Id            string     `json:",omitempty"`
 	Goal          *Goal      `json:",omitempty"`
+	Count         int        `json:",omitempty"`
+	Limit         int        `json:",omitempty"`
+	Average       float32    `json:",omitempty"`
 }
 
 func (h *Habit) SetId(id string) {
@@ -57,15 +60,19 @@ func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 			case HBT_REPETITION_MONTHLY:
 				ico, colour, order = ICO_YELLOW, "yellow", HBT_BASE_ORDER_MONTHLY
 			}
+			if h.Negative {
+				if h.Count > h.Limit {
+					ico = ICO_RED
+					colour = "red"
+				} else {
+					ico = ICO_BLACK
+					colour = "black"
+				}
+			}
 			if h.ActualStreak > 21 {
 				ico = ICO_BLUE
 				colour = "blue"
 				order += 1000
-			}
-			if h.Negative {
-				ico = ICO_BLACK
-				colour = "black"
-				order = 2000
 			}
 			return ico, colour, order
 		}
@@ -85,10 +92,16 @@ func (h *Habit) MarshalJSON() ([]byte, error) {
 
 func (h *Habit) getItem(id string) *AlfredItem {
 	var subtitle string
-	if h.Active {
-		subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT, h.Successes, h.Tries, h.ActualStreak,
-			h.Deadline.Format(DATE_FORMAT), h.BasePoints)
-	} else {
+	switch {
+	case h.Active:
+		if h.Negative {
+			subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_BAD_HABIT, h.Limit - h.Count, h.Limit, h.Average, h.Successes,
+				h.Tries, h.ActualStreak, h.Deadline.Format(DATE_FORMAT), h.BasePoints)
+		} else {
+			subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT, h.Successes, h.Tries, h.ActualStreak,
+				h.Deadline.Format(DATE_FORMAT), h.BasePoints)
+		}
+	default:
 		subtitle = fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT, h.Successes, h.Tries)
 	}
 	iconPath, _, order := h.GetIconColourAndOrder()

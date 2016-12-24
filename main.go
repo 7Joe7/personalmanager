@@ -25,25 +25,25 @@ var (
 func init() {
 	action = flag.String("action", "", fmt.Sprintf("Provide action to be taken from this list: %v.", resources.ACTIONS))
 	id = flag.String("id", "", fmt.Sprintf("Provide id of the entity you want to make the action for. Valid for these actions: ."))
+	name = flag.String("name", "", "Provide name.")
 	projectId = flag.String("projectId", "", fmt.Sprintf("Provide project id for project assignment."))
 	goalId = flag.String("goalId", "", fmt.Sprintf("Provide goal id for goal assignment."))
 	taskId = flag.String("taskId", "", fmt.Sprintf("Provide task id for task assignment."))
 	habitId = flag.String("habitId", "", fmt.Sprintf("Provide habit id for habit assignment."))
-	name = flag.String("name", "", "Provide name.")
+	repetition = flag.String("repetition", "", "Select repetition period.")
+	deadline = flag.String("deadline", "", "Specify deadline in format 'dd.MM.YYYY HH:mm'.")
+	estimate = flag.String("estimate", "", "Specify time estimate in format '2h45m'.")
+	scheduled = flag.String("scheduled", "", "Provide schedule period. (NEXT|NONE)")
+	taskType = flag.String("taskType", "", "Provide task type. (PERSONAL|WORK)")
+	note = flag.String("note", "", "Provide note.")
+	noneAllowed = flag.Bool("noneAllowed", false, "Provide information whether list should be retrieved with none value allowed.")
 	activeFlag = flag.Bool("active", false, "Toggle active/show active only.")
 	doneFlag = flag.Bool("done", false, "Toggle done.")
 	donePrevious = flag.Bool("donePrevious", false, "Set done for previous period.")
 	undonePrevious = flag.Bool("undonePrevious", false, "Set undone for previous period.")
 	negativeFlag = flag.Bool("negative", false, "Set negative flag for habits.")
-	repetition = flag.String("repetition", "", "Select repetition period.")
 	basePoints = flag.Int("basePoints", -1, "Set base points for success/failure.")
 	habitRepetitionGoal = flag.Int("habitRepetitionGoal", -1, "Set habit goal repetition number.")
-	deadline = flag.String("deadline", "", "Specify deadine in format 'dd.MM.YYYY HH:mm'.")
-	estimate = flag.String("estimate", "", "Specify time estimate in format '2h45m'.")
-	noneAllowed = flag.Bool("noneAllowed", false, "Provide information whether list should be retrieved with none value allowed.")
-	scheduled = flag.String("scheduled", "", "Provide schedule period. (NEXT|NONE)")
-	taskType = flag.String("taskType", "", "Provide task type. (PERSONAL|WORK)")
-	note = flag.String("note", "", "Provide note.")
 }
 
 func main() {
@@ -88,7 +88,7 @@ func main() {
 		operations.AddGoal(*name, *projectId, *habitId, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
-		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *negativeFlag, *basePoints)
+		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *negativeFlag, *basePoints, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
 		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
@@ -161,7 +161,7 @@ func main() {
 		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
-		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *negativeFlag, *basePoints)
+		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *negativeFlag, *basePoints, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)
@@ -180,23 +180,26 @@ func main() {
 		operations.SetEmail(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
 	case resources.ACT_CUSTOM:
-		//t := db.NewTransaction()
-		//t.Add(func() error {
-		//	getNewHabit := func() resources.Entity {
-		//		return &resources.Habit{}
-		//	}
-		//	err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func(e resources.Entity) func() {
-		//		return func() {
-		//			h := e.(*resources.Habit)
-		//			h.Positive = true
-		//		}
-		//	})
-		//	if err != nil {
-		//		return err
-		//	}
-		//	return nil
-		//})
-		//t.Execute()
+		t := db.NewTransaction()
+		t.Add(func() error {
+			getNewHabit := func() resources.Entity {
+				return &resources.Habit{}
+			}
+			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func(e resources.Entity) func() {
+				return func() {
+					h := e.(*resources.Habit)
+					if h.Goal != nil && h.Goal.Id == "52" {
+						fmt.Printf("h: %v\n", h)
+						h.Goal = nil
+					}
+				}
+			})
+			if err != nil {
+				return err
+			}
+			return nil
+		})
+		t.Execute()
 	default:
 		flag.Usage()
 	}
@@ -226,7 +229,7 @@ func logBinaryCall() {
 		undonePrevious: %v,
 		and int parameters:
 		basePoints: %v,
-		habitRepetitionGoal: %v.`, *action, *id, *name, *projectId, *goalId, *taskId,
+		repetitionGoal: %v.`, *action, *id, *name, *projectId, *goalId, *taskId,
 		*habitId, *repetition, *deadline, *estimate, *scheduled, *taskType, *note, *noneAllowed, *activeFlag,
 		*doneFlag, *donePrevious, *undonePrevious, *basePoints, *habitRepetitionGoal)
 }

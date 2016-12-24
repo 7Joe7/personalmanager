@@ -2,10 +2,10 @@ package db
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/boltdb/bolt"
 	"github.com/7joe7/personalmanager/resources"
-	"log"
 )
 
 type transaction struct {
