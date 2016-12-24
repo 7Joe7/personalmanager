@@ -28,7 +28,8 @@ func (s *Status) getItem() *AlfredItem {
 		Name:  fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today),
 		Valid: false,
 		Icon:  NewAlfredIcon(ICO_HABIT),
-		Mods:  getEmptyMods()}
+		Mods:  getEmptyMods(),
+		order: 0}
 }
 
 func (ts Tasks) MarshalJSON() ([]byte, error) {
@@ -49,7 +50,8 @@ func (ts Tasks) MarshalJSON() ([]byte, error) {
 			Name: fmt.Sprintf("Total estimate: %s", utils.MinutesToHMFormat(sum)),
 			Valid: false,
 			Icon: NewAlfredIcon(ICO_BLACK),
-			Mods: getEmptyMods()})
+			Mods: getEmptyMods(),
+			order: 1})
 	}
 	for id, t := range ts.Tasks {
 		items = append(items, t.getItem(id))
@@ -118,6 +120,38 @@ func (hs Habits) MarshalJSON() ([]byte, error) {
 	if hs.Status != nil {
 		items = append(items, hs.Status.getItem())
 		zeroCount = 1
+	}
+	if hs.Overview {
+		var dailyCount, dailyCountDone, weeklyCount, weeklyCountDone, monthlyCount, monthlyCountDone int
+		for _, h := range hs.Habits {
+			switch h.Repetition {
+			case HBT_REPETITION_DAILY:
+				if h.Done {
+					dailyCountDone++
+				}
+				dailyCount++
+			case HBT_REPETITION_WEEKLY:
+				if h.Done {
+					weeklyCountDone++
+				}
+				weeklyCount++
+			case HBT_REPETITION_MONTHLY:
+				if h.Done {
+					monthlyCountDone++
+				}
+				monthlyCount++
+			}
+		}
+		items = append(items, &AlfredItem{
+			Name: fmt.Sprintf("D: %d/%d, W: %d/%d, M: %d/%d",
+				dailyCountDone, dailyCount,
+				weeklyCountDone, weeklyCount,
+				monthlyCountDone, monthlyCount),
+			Valid: false,
+			Icon: NewAlfredIcon(ICO_BLACK),
+			Mods: getEmptyMods(),
+			order: 1,
+		})
 	}
 	for id, h := range hs.Habits {
 		items = append(items, h.getItem(id))

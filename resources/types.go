@@ -37,6 +37,7 @@ type Habits struct {
 	Habits      map[string]*Habit
 	NoneAllowed bool
 	Status      *Status
+	Overview    bool
 }
 
 type Mod struct {

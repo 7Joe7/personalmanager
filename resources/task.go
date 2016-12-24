@@ -156,7 +156,7 @@ func (t *Task) getItem(id string) *AlfredItem {
 
 	var icoPath string
 	if t.InProgress {
-		order = 1
+		order = 2
 		icoPath = ICO_BLUE
 	} else if t.Done {
 		order = 2000 - t.BasePoints
