@@ -10,6 +10,7 @@ type Habit struct {
 	Name          string     `json:",omitempty"`
 	Active        bool       `json:",omitempty"`
 	Done          bool       `json:",omitempty"`
+	Negative      bool       `json:",omitempty"`
 	Description   string     `json:",omitempty"`
 	Deadline      *time.Time `json:",omitempty"`
 	Tries         int        `json:",omitempty"`
@@ -60,6 +61,11 @@ func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 				ico = ICO_BLUE
 				colour = "blue"
 				order += 1000
+			}
+			if h.Negative {
+				ico = ICO_BLACK
+				colour = "black"
+				order = 2000
 			}
 			return ico, colour, order
 		}

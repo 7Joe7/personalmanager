@@ -18,7 +18,7 @@ import (
 var (
 	// parameters
 	action, id, name, projectId, goalId, taskId, habitId, repetition, deadline, estimate, scheduled, taskType, note *string
-	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious                                                 *bool
+	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious, negativeFlag                                   *bool
 	basePoints, habitRepetitionGoal                                                                                 *int
 )
 
@@ -34,6 +34,7 @@ func init() {
 	doneFlag = flag.Bool("done", false, "Toggle done.")
 	donePrevious = flag.Bool("donePrevious", false, "Set done for previous period.")
 	undonePrevious = flag.Bool("undonePrevious", false, "Set undone for previous period.")
+	negativeFlag = flag.Bool("negative", false, "Set negative flag for habits.")
 	repetition = flag.String("repetition", "", "Select repetition period.")
 	basePoints = flag.Int("basePoints", -1, "Set base points for success/failure.")
 	habitRepetitionGoal = flag.Int("habitRepetitionGoal", -1, "Set habit goal repetition number.")
@@ -49,13 +50,14 @@ func main() {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalf("Panicked. %v %s", r, string(debug.Stack()))
+			fmt.Printf("Panicked. %v %s\n", r, string(debug.Stack()))
 			os.Exit(3)
 		}
 	}()
 
 	flag.Parse()
 
-	f, err := os.OpenFile(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.LOG_FILE_NAME), os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	f, err := os.OpenFile(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.LOG_FILE_NAME), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -86,7 +88,7 @@ func main() {
 		operations.AddGoal(*name, *projectId, *habitId, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
-		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *basePoints)
+		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *negativeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
 		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
@@ -159,7 +161,7 @@ func main() {
 		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
-		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *basePoints)
+		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *negativeFlag, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)
@@ -178,18 +180,23 @@ func main() {
 		operations.SetEmail(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
 	case resources.ACT_CUSTOM:
-		t := db.NewTransaction()
-		t.Add(func() error {
-			habit := &resources.Habit{}
-			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("96"), true, habit, func () {
-				habit.Done = false
-			})
-			if err != nil {
-				return err
-			}
-			return nil
-		})
-		t.Execute()
+		//t := db.NewTransaction()
+		//t.Add(func() error {
+		//	getNewHabit := func() resources.Entity {
+		//		return &resources.Habit{}
+		//	}
+		//	err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func(e resources.Entity) func() {
+		//		return func() {
+		//			h := e.(*resources.Habit)
+		//			h.Positive = true
+		//		}
+		//	})
+		//	if err != nil {
+		//		return err
+		//	}
+		//	return nil
+		//})
+		//t.Execute()
 	default:
 		flag.Usage()
 	}
