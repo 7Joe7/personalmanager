@@ -57,7 +57,7 @@ const (
 	DATE_FORMAT     = "2.1.2006"
 
 	SUB_FORMAT_ACTIVE_HABIT     = "%d/%d, actual %d, %v, base points %d"
-	SUB_FORMAT_ACTIVE_BAD_HABIT = "Today: %d/%d, average: %f, overall: %d/%d, actual: %d, %v, base points %d"
+	SUB_FORMAT_ACTIVE_BAD_HABIT = "Today: %d/%d, average: %.2f, overall: %d/%d, actual: %d, %v, base points %d"
 	SUB_FORMAT_NON_ACTIVE_HABIT = "%d/%d"
 	SUB_FORMAT_TASK             = "%s %s"
 	SUB_FORMAT_PROJECT          = "%s"

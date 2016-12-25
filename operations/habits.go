@@ -183,7 +183,6 @@ func getSyncHabitFunc(changeStatus *resources.Status) func (resources.Entity) fu
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
 				} else if h.Negative && h.Limit > h.Count {
-					h.Done = true
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
 					changeStatus.Score += h.ActualStreak * h.ActualStreak * h.BasePoints

@@ -182,18 +182,26 @@ func main() {
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
 		t.Add(func() error {
-			getNewHabit := func() resources.Entity {
-				return &resources.Habit{}
-			}
-			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func(e resources.Entity) func() {
-				return func() {
-					h := e.(*resources.Habit)
-					if h.Goal != nil && h.Goal.Id == "52" {
-						fmt.Printf("h: %v\n", h)
-						h.Goal = nil
-					}
-				}
+			habit := &resources.Habit{}
+			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("137"), true, habit, func () {
+				habit.Done = false
 			})
+			habit = &resources.Habit{}
+			err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("138"), true, habit, func () {
+				habit.Done = false
+			})
+			//getNewHabit := func() resources.Entity {
+			//	return &resources.Habit{}
+			//}
+			//err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func(e resources.Entity) func() {
+			//	return func() {
+			//		h := e.(*resources.Habit)
+			//		if h.Goal != nil && h.Goal.Id == "52" {
+			//			fmt.Printf("h: %v\n", h)
+			//			h.Goal = nil
+			//		}
+			//	}
+			//})
 			if err != nil {
 				return err
 			}
