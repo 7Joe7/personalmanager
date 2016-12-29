@@ -24,7 +24,7 @@ type Habit struct {
 	Goal          *Goal      `json:",omitempty"`
 	Count         int        `json:",omitempty"`
 	Limit         int        `json:",omitempty"`
-	Average       float32    `json:",omitempty"`
+	Average       float64    `json:",omitempty"`
 }
 
 func (h *Habit) SetId(id string) {

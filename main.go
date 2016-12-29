@@ -49,8 +49,8 @@ func init() {
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Fatalf("Panicked. %v %s", r, string(debug.Stack()))
 			fmt.Printf("Panicked. %v %s\n", r, string(debug.Stack()))
+			log.Fatalf("Panicked. %v %s", r, string(debug.Stack()))
 			os.Exit(3)
 		}
 	}()
@@ -183,12 +183,18 @@ func main() {
 		t := db.NewTransaction()
 		t.Add(func() error {
 			habit := &resources.Habit{}
-			err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("137"), true, habit, func () {
-				habit.Done = false
+			err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("137"), true, habit, func () {
+				habit.Tries = 1
+				habit.Count = 0
+				habit.LastStreak = 0
 			})
-			habit = &resources.Habit{}
+			if err != nil {
+				return err
+			}
 			err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("138"), true, habit, func () {
-				habit.Done = false
+				habit.Tries = 1
+				habit.Count = 0
+				habit.LastStreak = 0
 			})
 			//getNewHabit := func() resources.Entity {
 			//	return &resources.Habit{}

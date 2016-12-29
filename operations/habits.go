@@ -7,6 +7,7 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/anybar"
+	"fmt"
 )
 
 func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag bool, basePoints, repetitionGoal int, status *resources.Status, tr resources.Transaction) func () {
@@ -49,7 +50,7 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 			if toggleDone {
 				if h.Negative {
 					h.Count++
-					h.Average = (h.Average * float32(h.Tries) + 1) / float32(h.Tries)
+					h.Average = (h.Average * float64(h.Tries) + 1) / float64(h.Tries)
 					if h.Count - 1 <= h.Limit && h.Count > h.Limit {
 						failHabit(h)
 						countPointChange(h, status, 1)
@@ -104,6 +105,7 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 				status.Score -= (h.LastStreak + 1) * (h.LastStreak + 1) * h.BasePoints + h.BasePoints
 			}
 		}
+		fmt.Printf("%v\n", h)
 	}
 }
 
@@ -204,6 +206,10 @@ func getSyncHabitFunc(changeStatus *resources.Status) func (resources.Entity) fu
 					}
 					h.Done = false
 					h.Tries += numberOfMissedDeadlines
+				}
+				if h.Negative {
+					h.Count = 0
+					h.Average = h.Average * float64(h.Tries - 1) / float64(h.Tries)
 				}
 			}
 		}
