@@ -33,17 +33,7 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, goalId, deadline, est
 			}
 			t.TimeEstimate = &dur
 		}
-		if scheduled != "" {
-			switch scheduled {
-			case resources.TASK_SCHEDULED_NEXT:
-				t.Scheduled = resources.TASK_SCHEDULED_NEXT
-			case resources.TASK_NOT_SCHEDULED:
-				t.Scheduled = resources.TASK_NOT_SCHEDULED
-				if t.InProgress {
-					stopProgress(t)
-				}
-			}
-		}
+		scheduleTask(scheduled, t)
 		if taskType != "" {
 			t.Type = taskType
 		}
@@ -70,6 +60,20 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, goalId, deadline, est
 				}
 				status.Score += change
 				status.Today += change
+			}
+		}
+	}
+}
+
+func scheduleTask(scheduled string, t *resources.Task) {
+	if scheduled != "" {
+		switch scheduled {
+		case resources.TASK_SCHEDULED_NEXT:
+			t.Scheduled = resources.TASK_SCHEDULED_NEXT
+		case resources.TASK_NOT_SCHEDULED:
+			t.Scheduled = resources.TASK_NOT_SCHEDULED
+			if t.InProgress {
+				stopProgress(t)
 			}
 		}
 	}
@@ -110,6 +114,17 @@ func startProgress(t *resources.Task) {
 
 func getNewTask() resources.Entity {
 	return &resources.Task{}
+}
+
+func getSyncTaskFunc() func (resources.Entity) func () {
+	return func (entity resources.Entity) func () {
+		return func () {
+			t := entity.(*resources.Task)
+			if t.Scheduled != resources.TASK_SCHEDULED_NEXT && t.Deadline != nil && t.Deadline.Before(time.Now().Add(time.Hour * 24 * 4)) {
+				scheduleTask(resources.TASK_SCHEDULED_NEXT, t)
+			}
+		}
+	}
 }
 
 func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
@@ -175,13 +190,13 @@ func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, n
 	return id
 }
 
-func moveActiveTask(t resources.Transaction, toggledTaskId string) error {
+func toggleActiveTask(t resources.Transaction, toggledTaskId string) error {
 	value := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
 	var actualActiveTask []byte
 	valueStr := string(value)
 	if valueStr == toggledTaskId {
 		actualActiveTask = []byte{}
-	} else {
+	} else { // deactivate old task and set new task to actualActiveTask
 		actualActiveTask = []byte(toggledTaskId)
 		if valueStr != "" {
 			task := &resources.Task{}
@@ -191,6 +206,14 @@ func moveActiveTask(t resources.Transaction, toggledTaskId string) error {
 		}
 	}
 	return t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, actualActiveTask)
+}
+
+func setActiveTaskDone(t resources.Transaction, doneTaskId string) error {
+	value := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
+	if string(value) == doneTaskId {
+		return t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, []byte{})
+	}
+	return nil
 }
 
 func deleteTask(taskId string) {
@@ -230,6 +253,7 @@ func deleteTask(taskId string) {
 			}
 		}
 		if task.InProgress {
+			stopProgress(task)
 			if err := t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, []byte{}); err != nil {
 				return err
 			}
@@ -246,7 +270,13 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 	t := db.NewTransaction()
 	t.Add(func() error {
 		if activeFlag {
-			err := moveActiveTask(t, taskId)
+			err := toggleActiveTask(t, taskId)
+			if err != nil {
+				return err
+			}
+		}
+		if doneFlag {
+			err := setActiveTaskDone(t, taskId)
 			if err != nil {
 				return err
 			}

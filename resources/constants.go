@@ -57,13 +57,13 @@ const (
 	DATE_FORMAT     = "2.1.2006"
 
 	SUB_FORMAT_ACTIVE_HABIT     = "%d/%d, actual %d, %v, base points %d"
-	SUB_FORMAT_ACTIVE_BAD_HABIT = "Today: %d/%d, average: %.2f, streak: %d/%d, actual: %d, %v, base points %d"
+	SUB_FORMAT_ACTIVE_BAD_HABIT = "Today: %d/%d, average: %.2f, overall: %d/%d, actual: %d, %v, base points %d"
 	SUB_FORMAT_NON_ACTIVE_HABIT = "%d/%d"
 	SUB_FORMAT_TASK             = "%s %s"
 	SUB_FORMAT_PROJECT          = "%s"
 	SUB_FORMAT_TAG              = ""
 	SUB_FORMAT_GOAL             = "%d/%d"
-	NAME_FORMAT_STATUS          = "Total %d, today %d."
+	NAME_FORMAT_STATUS          = "Total %d, today %d, yesterday %d."
 	NAME_FORMAT_EMPTY           = "There are no %ss."
 
 	HBT_DONE_BASE_ORDER      = 4000
@@ -110,6 +110,7 @@ const (
 	ACT_DEBUG_DATABASE                   = "debug-database"
 	ACT_SYNC_WITH_JIRA                   = "sync-with-jira"
 	ACT_BACKUP_DATABASE                  = "backup-database"
+	ACT_SET_CONFIG_VALUE                 = "set-config-value"
 	ACT_SET_EMAIL                        = "set-email"
 	ACT_CUSTOM                           = "custom"
 
@@ -145,7 +146,7 @@ var (
 	DB_ANYBAR_ACTIVE_PORTS    = []byte("anybar.active.ports")
 	DB_DEFAULT_EMAIL          = []byte("default.email")
 
-	ACTIONS = []string{
+ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_PERSONAL_NEXT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,
 		ACT_CREATE_PROJECT, ACT_PRINT_PROJECTS, ACT_DELETE_PROJECT, ACT_MODIFY_PROJECT,
 		ACT_CREATE_TAG, ACT_PRINT_TAGS, ACT_DELETE_TAG, ACT_MODIFY_TAG, ACT_CREATE_GOAL,

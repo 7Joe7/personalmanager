@@ -25,7 +25,7 @@ func (t *Tag) getItem(id string) *AlfredItem {
 
 func (s *Status) getItem() *AlfredItem {
 	return &AlfredItem{
-		Name:  fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today),
+		Name:  fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today, s.Yesterday),
 		Valid: false,
 		Icon:  NewAlfredIcon(ICO_HABIT),
 		Mods:  getEmptyMods(),
@@ -124,22 +124,24 @@ func (hs Habits) MarshalJSON() ([]byte, error) {
 	if hs.Overview {
 		var dailyCount, dailyCountDone, weeklyCount, weeklyCountDone, monthlyCount, monthlyCountDone int
 		for _, h := range hs.Habits {
-			switch h.Repetition {
-			case HBT_REPETITION_DAILY:
-				if h.Done {
-					dailyCountDone++
+			if !h.Negative {
+				switch h.Repetition {
+				case HBT_REPETITION_DAILY:
+					if h.Done {
+						dailyCountDone++
+					}
+					dailyCount++
+				case HBT_REPETITION_WEEKLY:
+					if h.Done {
+						weeklyCountDone++
+					}
+					weeklyCount++
+				case HBT_REPETITION_MONTHLY:
+					if h.Done {
+						monthlyCountDone++
+					}
+					monthlyCount++
 				}
-				dailyCount++
-			case HBT_REPETITION_WEEKLY:
-				if h.Done {
-					weeklyCountDone++
-				}
-				weeklyCount++
-			case HBT_REPETITION_MONTHLY:
-				if h.Done {
-					monthlyCountDone++
-				}
-				monthlyCount++
 			}
 		}
 		items = append(items, &AlfredItem{

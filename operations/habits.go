@@ -7,7 +7,6 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/anybar"
-	"fmt"
 )
 
 func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag bool, basePoints, repetitionGoal int, status *resources.Status, tr resources.Transaction) func () {
@@ -23,13 +22,7 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 		}
 		if toggleActive {
 			if h.Active {
-				if h.Negative {
-					tr.Add(func () error {
-						return tr.DeleteEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(h.Id))
-					})
-				} else {
-					deactivateHabit(h)
-				}
+				deactivateHabit(h)
 				//anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
 			} else {
 				activateHabit(h, repetition)
@@ -82,13 +75,17 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 					if previousActualStreak == 1 {
 						status.Score += h.BasePoints
 						status.Today += h.ActualStreak * h.ActualStreak * h.BasePoints - h.BasePoints
+						status.Yesterday += h.BasePoints
 					}
 					status.Score += h.ActualStreak * h.ActualStreak * h.BasePoints + (h.ActualStreak - 1) * (h.ActualStreak - 1) * h.BasePoints
+					status.Yesterday += (h.ActualStreak - 1) * (h.ActualStreak - 1) * h.BasePoints
 				} else {
 					if previousActualStreak < 0 {
 						status.Score += previousActualStreak * previousActualStreak * h.BasePoints
+						status.Yesterday += previousActualStreak * previousActualStreak * h.BasePoints
 					}
 					status.Score += (h.ActualStreak + 1) * (h.ActualStreak + 1) * h.BasePoints
+					status.Yesterday += h.ActualStreak * h.ActualStreak * h.BasePoints
 				}
 			}
 			if toggleUndonePrevious {
@@ -103,9 +100,9 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 					h.LastStreak = h.LastStreak - 1
 				}
 				status.Score -= (h.LastStreak + 1) * (h.LastStreak + 1) * h.BasePoints + h.BasePoints
+				status.Yesterday -= (h.LastStreak + 1) * (h.LastStreak + 1) * h.BasePoints + h.BasePoints
 			}
 		}
-		fmt.Printf("%v\n", h)
 	}
 }
 
@@ -184,10 +181,12 @@ func getSyncHabitFunc(changeStatus *resources.Status) func (resources.Entity) fu
 					h.Done = true
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
-				} else if h.Negative && h.Limit > h.Count {
+					h.Deadline = addPeriod(h.Repetition, h.Deadline)
+				} else if h.Negative && h.Limit >= h.Count {
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
 					changeStatus.Score += h.ActualStreak * h.ActualStreak * h.BasePoints
+					h.Deadline = addPeriod(h.Repetition, h.Deadline)
 				} else {
 					numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
 					for i := 0; i < numberOfMissedDeadlines; i++ {
@@ -243,11 +242,7 @@ func deactivateHabit(h *resources.Habit) {
 	h.Active = false
 	h.Deadline = nil
 	h.Done = false
-	h.ActualStreak = 0
-	h.LastStreakEnd = nil
-	h.LastStreak = 0
-	h.Repetition = ""
-	h.BasePoints = 0
+	h.Count = 0
 }
 
 func addHabit(name, repetition, description, deadline, goalId string, activeFlag, negativeFlag bool, basePoints, repetitionGoal int) {

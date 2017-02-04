@@ -8,6 +8,7 @@ import (
 func getSyncStatusFunc(s, changeStatus *resources.Status) func () {
 	return func () {
 		s.Score += changeStatus.Score
+		s.Yesterday = s.Today
 		s.Today = 0
 	}
 }
@@ -16,6 +17,7 @@ func getAddScoreFunc(s, changeStatus *resources.Status) func () {
 	return func () {
 		s.Score += changeStatus.Score
 		s.Today += changeStatus.Today
+		s.Yesterday += changeStatus.Yesterday
 	}
 }
 

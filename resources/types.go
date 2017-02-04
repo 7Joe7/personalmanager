@@ -89,8 +89,9 @@ func (t *Tag) Load(tr Transaction) error {
 }
 
 type Status struct {
-	Score int
-	Today int
+	Score     int
+	Yesterday int
+	Today     int
 }
 
 func (s *Status) SetId(id string) {}
@@ -105,8 +106,8 @@ func (s *Status) Load(tr Transaction) error {
 
 type ActivePorts []*ActivePort
 
-func (ap ActivePorts) Len() int { return len(ap) }
-func (ap ActivePorts) Swap(i, j int) { ap[i], ap[j] = ap[j], ap[i] }
+func (ap ActivePorts) Len() int           { return len(ap) }
+func (ap ActivePorts) Swap(i, j int)      { ap[i], ap[j] = ap[j], ap[i] }
 func (ap ActivePorts) Less(i, j int) bool { return ap[i].Port < ap[j].Port }
 
 type ActivePort struct {

@@ -49,9 +49,9 @@ func TestSynchronize(t *testing.T) {
 	test.ExpectString(expected, tm.functionsCalled[3], t)
 	status := &resources.Status{}
 	expected = fmt.Sprintf(MODIFY_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), true, resources.DB_ACTUAL_STATUS_KEY, status, getSyncStatusFunc(status, changeStatus))
-	test.ExpectString(expected, tm.functionsCalled[7], t)
-	expected = fmt.Sprintf(SET_VALUE_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_LAST_SYNC_KEY), time.Now().Format("Mon Jan 2 15:04:05 -0700 MST 2006"))
 	test.ExpectString(expected, tm.functionsCalled[8], t)
+	expected = fmt.Sprintf(SET_VALUE_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_LAST_SYNC_KEY), time.Now().Format("Mon Jan 2 15:04:05 -0700 MST 2006"))
+	test.ExpectString(expected, tm.functionsCalled[9], t)
 }
 
 func verifyTransactionFlow(t *testing.T, tm *transactionMock) {

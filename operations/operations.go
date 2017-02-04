@@ -56,6 +56,10 @@ func FilterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
 	return filterTasks(false, filter)
 }
 
+func FilterTasksModal(tr resources.Transaction, shallow bool, tasks map[string]*resources.Task, filter func (*resources.Task) bool) error {
+	return filterTasksModal(tr, shallow, tasks, filter)
+}
+
 func FilterTasksSlice(filter func(*resources.Task) bool) []*resources.Task {
 	return filterTasksSlice(false, filter)
 }
@@ -178,12 +182,4 @@ func GetInactiveProjects() map[string]*resources.Project {
 
 func SyncWithJira() {
 	syncWithJira()
-}
-
-func ExportShoppingTasks() {
-	exportTasks()
-}
-
-func SetEmail(email string) {
-	setEmail(email)
 }

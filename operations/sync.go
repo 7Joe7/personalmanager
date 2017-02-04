@@ -20,6 +20,10 @@ func synchronize(t resources.Transaction, backup bool) {
 			if err != nil {
 				return err
 			}
+			err = t.MapEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, true, getNewTask, getSyncTaskFunc())
+			if err != nil {
+				return err
+			}
 			err = addBonusIfAllHabitsDone(t, resources.HBT_REPETITION_DAILY, habitStatus)
 			if err != nil {
 				return err

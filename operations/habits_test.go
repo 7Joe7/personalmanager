@@ -65,7 +65,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 		return nil
 	})
 	tr.Execute()
-	verifyHabitState("testHabit2", "", "", "testHabit2", false, false, 3, 2, 0, 0, 0, 0, 0, h, changeStatus, t)
+	verifyHabitState("testHabit2", "Daily", "", "testHabit2", false, false, 3, 2, 1, 1, 7, 0, 0, h, changeStatus, t)
 	test.ExpectBool(true, h.LastStreakEnd == nil, t)
 
 	// activate habit

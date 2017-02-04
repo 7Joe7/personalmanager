@@ -148,7 +148,7 @@ func TestGetHabitDoneItem(t *testing.T) {
 
 func TestGetStatusItem(t *testing.T) {
 	ai := testStatus.getItem()
-	testCommonAttr(ai, false, "", fmt.Sprintf(NAME_FORMAT_STATUS, testStatus.Score, testStatus.Today), "", ICO_HABIT, t)
+	testCommonAttr(ai, false, "", fmt.Sprintf(NAME_FORMAT_STATUS, testStatus.Score, testStatus.Today, testStatus.Yesterday), "", ICO_HABIT, t)
 }
 
 func TestGetZeroItem(t *testing.T) {

@@ -6,11 +6,13 @@ import (
 	"log"
 	"os"
 	"runtime/debug"
+	"time"
 
 	"github.com/7joe7/personalmanager/alfred"
 	"github.com/7joe7/personalmanager/anybar"
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
+	"github.com/7joe7/personalmanager/operations/exporter"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
 )
@@ -131,7 +133,7 @@ func main() {
 	case resources.ACT_PRINT_REVIEW:
 		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_EXPORT_SHOPPING_TASKS:
-		operations.ExportShoppingTasks()
+		exporter.ExportShoppingTasks()
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"))
 	case resources.ACT_DELETE_TASK:
 		operations.DeleteTask(*id)
@@ -176,37 +178,36 @@ func main() {
 		operations.SyncWithJira()
 	case resources.ACT_BACKUP_DATABASE:
 		db.BackupDatabase()
-	case resources.ACT_SET_EMAIL:
-		operations.SetEmail(*name)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
+	case resources.ACT_SET_CONFIG_VALUE:
+		switch *id {
+		case resources.DB_DEFAULT_EMAIL:
+			exporter.SetEmail(*name)
+			alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
+		}
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
 		t.Add(func() error {
-			habit := &resources.Habit{}
-			err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("137"), true, habit, func () {
-				habit.Tries = 1
-				habit.Count = 0
-				habit.LastStreak = 0
-			})
-			if err != nil {
-				return err
+			getNewHabit := func () resources.Entity {
+				return &resources.Habit{}
 			}
-			err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("138"), true, habit, func () {
-				habit.Tries = 1
-				habit.Count = 0
-				habit.LastStreak = 0
+			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func (e resources.Entity) func () {
+				return func () {
+					h := e.(*resources.Habit)
+					if !h.Active {
+						return
+					}
+					if h.Repetition == resources.HBT_REPETITION_DAILY {
+						for h.Deadline.Before(time.Now()) {
+							h.Deadline = addPeriod(resources.HBT_REPETITION_DAILY, h.Deadline)
+						}
+					}
+				}
 			})
-			//getNewHabit := func() resources.Entity {
-			//	return &resources.Habit{}
-			//}
-			//err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func(e resources.Entity) func() {
-			//	return func() {
-			//		h := e.(*resources.Habit)
-			//		if h.Goal != nil && h.Goal.Id == "52" {
-			//			fmt.Printf("h: %v\n", h)
-			//			h.Goal = nil
-			//		}
-			//	}
+			//habit := &resources.Habit{}
+			//err = t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("137"), true, habit, func () {
+			//	habit.Successes = 6
+			//	habit.LastStreak = 4
+			//	habit.ActualStreak = 2
 			//})
 			if err != nil {
 				return err
@@ -218,6 +219,21 @@ func main() {
 		flag.Usage()
 	}
 	resources.WaitGroup.Wait()
+}
+
+func addPeriod(repetition string, deadline *time.Time) *time.Time {
+	if deadline == nil {
+		return nil
+	}
+	switch repetition {
+	case resources.HBT_REPETITION_DAILY:
+		return utils.GetTimePointer(deadline.Add(24 * time.Hour))
+	case resources.HBT_REPETITION_WEEKLY:
+		return utils.GetTimePointer(deadline.Add(7 * 24 * time.Hour))
+	case resources.HBT_REPETITION_MONTHLY:
+		return utils.GetTimePointer(deadline.AddDate(0, 1, 0))
+	}
+	return nil
 }
 
 func logBinaryCall() {
