@@ -6,7 +6,7 @@ import (
 	"github.com/7joe7/personalmanager/anybar"
 )
 
-func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal int, tr resources.Transaction) func () {
+func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal, priority int, tr resources.Transaction) func () {
 	return func () {
 		if name != "" {
 			g.Name = name
@@ -15,6 +15,7 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 			task := &resources.Task{}
 			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), true, task, func() {
 				task.Goal = g
+				task.BasePoints = g.Priority
 				if g.Active {
 					task.Scheduled = resources.TASK_SCHEDULED_NEXT
 				}
@@ -38,6 +39,7 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 			habit := &resources.Habit{}
 			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func () {
 				habit.Goal = g
+				habit.BasePoints = priority
 			})
 			if err != nil {
 				panic(err)
@@ -46,6 +48,20 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 		}
 		if habitRepetitionGoal != -1 {
 			g.HabitRepetitionGoal = habitRepetitionGoal
+		}
+		if priority != -1 {
+			for i := 0; i < len(g.Tasks); i++ {
+				if g.Tasks[i].BasePoints == g.Priority {
+					task := &resources.Task{}
+					err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(g.Tasks[i].Id), true, task, func () {
+						task.BasePoints = priority
+					})
+					if err != nil {
+						panic(err)
+					}
+				}
+			}
+			g.Priority = priority
 		}
 		if activeFlag {
 			if g.Active {
@@ -103,7 +119,7 @@ func toggleSubTasksScheduling(scheduledCriteria, scheduledSet string, g *resourc
 	}
 }
 
-func addGoal(name, projectId, habitId string, habitRepetitionGoal int) string {
+func addGoal(name, projectId, habitId string, habitRepetitionGoal, priority int) string {
 	goal := resources.NewGoal(name)
 	if projectId != "" {
 		goal.Project = &resources.Project{Id: projectId}
@@ -113,6 +129,9 @@ func addGoal(name, projectId, habitId string, habitRepetitionGoal int) string {
 	}
 	if habitRepetitionGoal != -1 {
 		goal.HabitRepetitionGoal = habitRepetitionGoal
+	}
+	if priority != -1 {
+		goal.Priority = priority
 	}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
@@ -132,6 +151,7 @@ func addGoal(name, projectId, habitId string, habitRepetitionGoal int) string {
 			habit := &resources.Habit{}
 			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func () {
 				habit.Goal = goal
+				habit.BasePoints = goal.Priority
 			})
 			return err
 		})
@@ -192,11 +212,11 @@ func deleteGoal(goalId string) {
 	tr.Execute()
 }
 
-func modifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal int) {
+func modifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal, priority int) {
 	goal := &resources.Goal{}
 	tr := db.NewTransaction()
 	tr.Add(func () error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), false, goal, getModifyGoalFunc(goal, name, taskId, projectId, habitId, activeFlag, doneFlag, habitRepetitionGoal, tr))
+		return tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), false, goal, getModifyGoalFunc(goal, name, taskId, projectId, habitId, activeFlag, doneFlag, habitRepetitionGoal, priority, tr))
 	})
 	tr.Execute()
 }

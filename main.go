@@ -87,7 +87,7 @@ func main() {
 		operations.AddTag(*name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"))
 	case resources.ACT_CREATE_GOAL:
-		operations.AddGoal(*name, *projectId, *habitId, *habitRepetitionGoal)
+		operations.AddGoal(*name, *projectId, *habitId, *habitRepetitionGoal, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
 		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *negativeFlag, *basePoints, *habitRepetitionGoal)
@@ -133,7 +133,7 @@ func main() {
 	case resources.ACT_PRINT_REVIEW:
 		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_EXPORT_SHOPPING_TASKS:
-		exporter.ExportShoppingTasks()
+		exporter.ExportShoppingTasks(resources.CFG_EXPORT_CONFIG_PATH)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"))
 	case resources.ACT_DELETE_TASK:
 		operations.DeleteTask(*id)
@@ -160,7 +160,7 @@ func main() {
 		operations.ModifyTag(*id, *name)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
 	case resources.ACT_MODIFY_GOAL:
-		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal)
+		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
 		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *negativeFlag, *basePoints, *habitRepetitionGoal)
@@ -180,7 +180,7 @@ func main() {
 		db.BackupDatabase()
 	case resources.ACT_SET_CONFIG_VALUE:
 		switch *id {
-		case resources.DB_DEFAULT_EMAIL:
+		case string(resources.DB_DEFAULT_EMAIL):
 			exporter.SetEmail(*name)
 			alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
 		}

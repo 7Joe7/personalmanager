@@ -10,6 +10,7 @@ type Goal struct {
 	Id                  string   `json:",omitempty"`
 	Active              bool     `json:",omitempty"`
 	Project             *Project `json:",omitempty"`
+	Priority            int      `json:",omitempty"`
 	Tasks               []*Task
 	Habit               *Habit `json:",omitempty"`
 	HabitRepetitionGoal int    `json:",omitempty"`
@@ -73,13 +74,13 @@ func (g *Goal) getItem(id string) *AlfredItem {
 	var order int
 	switch {
 	case g.Done:
-		order = 7500
+		order = 7500 - g.Priority
 		iconPath = ICO_GREEN
 	case g.Active:
-		order = 100
+		order = 150 - g.Priority
 		iconPath = ICO_CYAN
 	default:
-		order = 5000
+		order = 5000 - g.Priority
 		iconPath = ICO_BLACK
 	}
 	var doneNumber int
@@ -93,7 +94,7 @@ func (g *Goal) getItem(id string) *AlfredItem {
 			doneNumber += g.Habit.ActualStreak
 		}
 	}
-	subtitle := fmt.Sprintf("%d/%d", doneNumber, len(g.Tasks)+g.HabitRepetitionGoal)
+	subtitle := fmt.Sprintf("Priority %d, %d/%d", g.Priority, doneNumber, len(g.Tasks)+g.HabitRepetitionGoal)
 	if g.Habit != nil {
 		subtitle = fmt.Sprintf("%s, %s", g.Habit.Name, subtitle)
 	}

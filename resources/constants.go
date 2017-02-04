@@ -15,6 +15,8 @@ const (
 	HBT_REPETITION_WEEKLY  = "Weekly"
 	HBT_REPETITION_MONTHLY = "Monthly"
 
+	CFG_EXPORT_CONFIG_PATH = "./export-config.json"
+
 	ICO_BLACK_ALT    = "./icons/black_alt@2x.png"
 	ICO_BLACK        = "./icons/black@2x.png"
 	ICO_BLUE         = "./icons/blue@2x.png"
@@ -62,7 +64,7 @@ const (
 	SUB_FORMAT_TASK             = "%s %s"
 	SUB_FORMAT_PROJECT          = "%s"
 	SUB_FORMAT_TAG              = ""
-	SUB_FORMAT_GOAL             = "%d/%d"
+	SUB_FORMAT_GOAL             = "Priority %d, %d/%d"
 	NAME_FORMAT_STATUS          = "Total %d, today %d, yesterday %d."
 	NAME_FORMAT_EMPTY           = "There are no %ss."
 

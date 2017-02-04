@@ -291,9 +291,19 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 			})
 		}
 		if goalId != "" {
-			return t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func () {
+			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func () {
 				task.Goal.Tasks = append(task.Goal.Tasks, task)
 			})
+			if err != nil {
+				return err
+			}
+			err = t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), false, task, func () {
+				task.BasePoints = task.Goal.Priority
+			})
+			if err != nil {
+				return err
+			}
+			return nil
 		}
 		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getAddScoreFunc(status, changeStatus))
 	})
