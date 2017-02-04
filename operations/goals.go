@@ -245,7 +245,11 @@ func getActiveGoals() map[string]*resources.Goal {
 }
 
 func getNonActiveGoals() map[string]*resources.Goal {
-	return FilterGoals(func (g *resources.Goal) bool { return !g.Active })
+	return FilterGoals(func (g *resources.Goal) bool { return !g.Active && !g.Done })
+}
+
+func getIncompleteGoals() map[string]*resources.Goal {
+	return FilterGoals(func (g *resources.Goal) bool { return !g.Done })
 }
 
 func filterGoals(shallow bool, filter func(*resources.Goal) bool) map[string]*resources.Goal {

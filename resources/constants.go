@@ -99,6 +99,7 @@ const (
 	ACT_PRINT_GOALS                      = "print-goals"
 	ACT_PRINT_ACTIVE_GOALS               = "print-active-goals"
 	ACT_PRINT_NON_ACTIVE_GOALS           = "print-non-active-goals"
+	ACT_PRINT_INCOMPLETE_GOALS           = "print-incomplete-goals"
 	ACT_DELETE_GOAL                      = "delete-goal"
 	ACT_MODIFY_GOAL                      = "modify-goal"
 	ACT_CREATE_HABIT                     = "create-habit"

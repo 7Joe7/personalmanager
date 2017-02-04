@@ -122,6 +122,8 @@ func main() {
 		alfred.PrintEntities(resources.Goals{operations.GetActiveGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_NON_ACTIVE_GOALS:
 		alfred.PrintEntities(resources.Goals{operations.GetNonActiveGoals(), *noneAllowed, operations.GetStatus()})
+	case resources.ACT_PRINT_INCOMPLETE_GOALS:
+		alfred.PrintEntities(resources.Goals{operations.GetIncompleteGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_HABITS:
 		if *activeFlag {
 			alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus(), true})

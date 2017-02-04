@@ -148,6 +148,10 @@ func GetNonActiveGoals() map[string]*resources.Goal {
 	return getNonActiveGoals()
 }
 
+func GetIncompleteGoals() map[string]*resources.Goal {
+	return getIncompleteGoals()
+}
+
 func AddProject(name string) {
 	addProject(name)
 }
