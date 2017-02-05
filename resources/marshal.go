@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+
 	"github.com/7joe7/personalmanager/utils"
 )
 
@@ -47,10 +48,10 @@ func (ts Tasks) MarshalJSON() ([]byte, error) {
 			}
 		}
 		items = append(items, &AlfredItem{
-			Name: fmt.Sprintf("Total estimate: %s", utils.MinutesToHMFormat(sum)),
+			Name:  fmt.Sprintf("Total estimate: %s", utils.MinutesToHMFormat(sum)),
 			Valid: false,
-			Icon: NewAlfredIcon(ICO_BLACK),
-			Mods: getEmptyMods(),
+			Icon:  NewAlfredIcon(ICO_BLACK),
+			Mods:  getEmptyMods(),
 			order: 1})
 	}
 	for id, t := range ts.Tasks {
@@ -150,8 +151,8 @@ func (hs Habits) MarshalJSON() ([]byte, error) {
 				weeklyCountDone, weeklyCount,
 				monthlyCountDone, monthlyCount),
 			Valid: false,
-			Icon: NewAlfredIcon(ICO_BLACK),
-			Mods: getEmptyMods(),
+			Icon:  NewAlfredIcon(ICO_BLACK),
+			Mods:  getEmptyMods(),
 			order: 1,
 		})
 	}
@@ -178,7 +179,7 @@ func getZeroItem(noneAllowed, empty bool, elementType string) *AlfredItem {
 	if noneAllowed {
 		return &AlfredItem{
 			Name:  "No " + elementType,
-			Arg:   "",
+			Arg:   "-",
 			Icon:  NewAlfredIcon(ICO_BLACK),
 			Valid: true,
 			Mods:  getEmptyMods(),

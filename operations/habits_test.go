@@ -4,14 +4,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/7joe7/personalmanager/anybar"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/utils"
-	"github.com/7joe7/personalmanager/anybar"
 )
 
 var (
-	tomorrowDeadline = utils.GetTimePointer(time.Now().Add(24 * time.Hour).Truncate(24 * time.Hour))
+	tomorrowDeadline    = utils.GetTimePointer(time.Now().Add(24 * time.Hour).Truncate(24 * time.Hour))
 	tomorrowDeadlineStr = tomorrowDeadline.Format(resources.DATE_FORMAT)
 )
 
@@ -47,7 +47,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h := getInactiveHabit("testHabit1", 2, 1)
 	changeStatus := &resources.Status{}
 	tr := &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getModifyHabitFunc(h, "testHabit", "", "", "", "", false, false, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
@@ -60,7 +60,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h = getActiveHabit("testHabit2", resources.HBT_REPETITION_DAILY, 3, 2, 1, 1, 7)
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getModifyHabitFunc(h, "", "", "", "", "", true, false, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
@@ -72,7 +72,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h = getInactiveHabit("testHabit3", 8, 5)
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getModifyHabitFunc(h, "", resources.HBT_REPETITION_DAILY, "", tomorrowDeadlineStr, "", true, false, false, false, false, 5, -1, changeStatus, tr)()
 		return nil
 	})
@@ -86,7 +86,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h.LastStreakEnd = previousDeadline
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getModifyHabitFunc(h, "", "", "", "", "", false, true, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
@@ -100,7 +100,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h.Done = true
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getModifyHabitFunc(h, "", "", "", "", "", false, true, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
@@ -114,7 +114,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h.LastStreakEnd = utils.GetTimePointer(h.Deadline.Add(-24 * 7 * time.Hour))
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getModifyHabitFunc(h, "", "", "", "", "", false, false, true, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
@@ -128,7 +128,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	h.Done = true
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getModifyHabitFunc(h, "", "", "", "", "", false, false, true, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
@@ -144,7 +144,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	h.Done = true
 	h.Deadline = utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
 	tr := &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
@@ -158,7 +158,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	todayDeadline := utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
 	h.Deadline = todayDeadline
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
@@ -171,7 +171,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400)).Truncate(24 * time.Hour))
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
@@ -183,7 +183,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	h.Deadline = utils.GetTimePointer(time.Now().Add(time.Duration(-1000000000 * 86400 * 7)).Truncate(24 * time.Hour))
 	tr = &transactionMock{}
-	tr.Add(func () error {
+	tr.Add(func() error {
 		getSyncHabitFunc(changeStatus)(h)()
 		return nil
 	})
@@ -194,8 +194,8 @@ func TestGetSyncHabitFunc(t *testing.T) {
 
 func TestGetHabits(t *testing.T) {
 	tm := &transactionMock{functionsCalled: []string{}}
-	tm.Add(func () error {
-		return tm.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, false, func (id string) resources.Entity {
+	tm.Add(func() error {
+		return tm.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, false, func(id string) resources.Entity {
 			return &resources.Habit{}
 		})
 	})
@@ -205,7 +205,7 @@ func TestGetHabits(t *testing.T) {
 
 func TestGetHabit(t *testing.T) {
 	tm := &transactionMock{functionsCalled: []string{}}
-	tm.Add(func () error {
+	tm.Add(func() error {
 		return tm.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte("id"), &resources.Habit{}, false)
 	})
 	tm.Execute()
@@ -213,8 +213,8 @@ func TestGetHabit(t *testing.T) {
 }
 
 func verifyHabitState(expectedName, expectedRepetition, expectedDeadline, expectedId string, expectedActive, expectedDone bool,
-		expectedTries, expectedSuccesses, expectedActualStreak, expectedLastStreak, expectedBasePoints, expectedScore,
-		expectedTodayScore int, h *resources.Habit, changeStatus *resources.Status, t *testing.T) {
+	expectedTries, expectedSuccesses, expectedActualStreak, expectedLastStreak, expectedBasePoints, expectedScore,
+	expectedTodayScore int, h *resources.Habit, changeStatus *resources.Status, t *testing.T) {
 	test.ExpectString(expectedName, h.Name, t)
 	test.ExpectString(expectedRepetition, h.Repetition, t)
 	test.ExpectBool(expectedActive, h.Active, t)
@@ -236,11 +236,11 @@ func verifyHabitState(expectedName, expectedRepetition, expectedDeadline, expect
 }
 
 func getInactiveHabit(name string, tries, successes int) *resources.Habit {
-	return &resources.Habit{Name:name, Active:false, Done:false, Deadline: nil, Tries: tries, Successes: successes,
+	return &resources.Habit{Name: name, Active: false, Done: false, Deadline: nil, Tries: tries, Successes: successes,
 		ActualStreak: 0, LastStreak: 0, LastStreakEnd: nil, Repetition: "", BasePoints: 0, Id: name}
 }
 
 func getActiveHabit(name, repetition string, tries, successes, actualStreak, lastStreak, basePoints int) *resources.Habit {
-	return &resources.Habit{Name:name, Active:true, Done:false,Deadline:utils.GetTimePointer(time.Now().Add(24 * time.Hour).Truncate(24 * time.Hour)),
-		Tries:tries,Successes:successes,ActualStreak:actualStreak,LastStreak:lastStreak,LastStreakEnd:nil,Repetition:repetition, BasePoints:basePoints,Id:name}
+	return &resources.Habit{Name: name, Active: true, Done: false, Deadline: utils.GetTimePointer(time.Now().Add(24 * time.Hour).Truncate(24 * time.Hour)),
+		Tries: tries, Successes: successes, ActualStreak: actualStreak, LastStreak: lastStreak, LastStreakEnd: nil, Repetition: repetition, BasePoints: basePoints, Id: name}
 }

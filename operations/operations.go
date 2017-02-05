@@ -48,7 +48,7 @@ func GetTasks() map[string]*resources.Task {
 	return getTasks()
 }
 
-func GetPersonalTasks() map[string] *resources.Task {
+func GetPersonalTasks() map[string]*resources.Task {
 	return getPersonalTasks()
 }
 
@@ -56,7 +56,7 @@ func FilterTasks(filter func(*resources.Task) bool) map[string]*resources.Task {
 	return filterTasks(false, filter)
 }
 
-func FilterTasksModal(tr resources.Transaction, shallow bool, tasks map[string]*resources.Task, filter func (*resources.Task) bool) error {
+func FilterTasksModal(tr resources.Transaction, shallow bool, tasks map[string]*resources.Task, filter func(*resources.Task) bool) error {
 	return filterTasksModal(tr, shallow, tasks, filter)
 }
 

@@ -4,11 +4,12 @@ import (
 	"io/ioutil"
 	"net/smtp"
 
-	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/db"
-	"github.com/7joe7/personalmanager/operations"
 	"encoding/json"
 	"fmt"
+
+	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/operations"
+	"github.com/7joe7/personalmanager/resources"
 )
 
 // TODO change to exportEntities - add Export method to all entities
@@ -17,8 +18,10 @@ func exportTasks(cfgAddress string) {
 	tasks := map[string]*resources.Task{}
 	var email string
 	tr := db.NewTransaction()
-	tr.Add(func () error { return operations.FilterTasksModal(tr, false, tasks, func (t *resources.Task) bool { return t.Type == resources.TASK_TYPE_SHOPPING }) })
-	tr.Add(func () error {
+	tr.Add(func() error {
+		return operations.FilterTasksModal(tr, false, tasks, func(t *resources.Task) bool { return t.Type == resources.TASK_TYPE_SHOPPING })
+	})
+	tr.Add(func() error {
 		email = string(tr.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_DEFAULT_EMAIL))
 		return nil
 	})
@@ -37,7 +40,7 @@ func exportTasks(cfgAddress string) {
 
 func setEmail(email string) {
 	tr := db.NewTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_DEFAULT_EMAIL, []byte(email))
 	})
 	tr.Execute()

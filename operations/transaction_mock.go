@@ -2,6 +2,7 @@ package operations
 
 import (
 	"fmt"
+
 	"github.com/7joe7/personalmanager/resources"
 )
 
@@ -44,8 +45,8 @@ func (tm *transactionMock) EnsureValue(bucketName, key, defaultValue []byte) err
 	return nil
 }
 
-func (tm *transactionMock) ModifyValue(bucketName, key []byte, modify func ([]byte) []byte) error {
-	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MODIFY_VALUE_CALLED_FORMAT, string(bucketName), string(key), modify))
+func (tm *transactionMock) ModifyValue(bucketName, key []byte, modify func([]byte) []byte) error {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MODIFY_VALUE_CALLED_FORMAT, string(bucketName), string(key), "modify"))
 	return nil
 }
 
@@ -70,12 +71,12 @@ func (tm *transactionMock) RetrieveEntity(bucketName, id []byte, entity resource
 }
 
 func (tm *transactionMock) ModifyEntity(bucketName, key []byte, shallow bool, entity resources.Entity, modifyFunc func()) error {
-	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MODIFY_ENTITY_CALLED_FORMAT, string(bucketName), shallow, string(key), entity, modifyFunc))
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MODIFY_ENTITY_CALLED_FORMAT, string(bucketName), shallow, string(key), entity, "modifyFunc"))
 	return nil
 }
 
-func (tm *transactionMock) MapEntities(bucketName []byte, shallow bool, getNewEntity func () resources.Entity, mapFunc func(resources.Entity) func ()) error {
-	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, getNewEntity, mapFunc))
+func (tm *transactionMock) MapEntities(bucketName []byte, shallow bool, getNewEntity func() resources.Entity, mapFunc func(resources.Entity) func()) error {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(MAP_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, "getNewEntity", "mapFunc"))
 	return nil
 }
 
@@ -85,23 +86,27 @@ func (tm *transactionMock) InitializeBucket(bucketName []byte) error {
 }
 
 func (tm *transactionMock) RetrieveEntities(bucketName []byte, shallow bool, getObject func(string) resources.Entity) error {
-	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(RETRIEVE_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, getObject))
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(RETRIEVE_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, "getObject"))
 	return nil
 }
 
-func (tm *transactionMock) FilterEntities(bucketName []byte, shallow bool, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
-	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(FILTER_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, addEntity, getNewEntity, filterFunc))
+func (tm *transactionMock) FilterEntities(bucketName []byte, shallow bool, addEntity func(), getNewEntity func() resources.Entity, filterFunc func() bool) error {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(FILTER_ENTITIES_CALLED_FORMAT, string(bucketName), shallow, "addEntity", "getNewEntity", "filterFunc"))
 	return nil
 }
 
 func (tm *transactionMock) Execute() {
 	tm.functionsCalled = append(tm.functionsCalled, EXECUTE_CALLED_FORMAT)
-	for i := 0; i < len(tm.execs); i++ { tm.execs[i]() }
+	for i := 0; i < len(tm.execs); i++ {
+		tm.execs[i]()
+	}
 }
 
 func (tm *transactionMock) View() {
 	tm.functionsCalled = append(tm.functionsCalled, VIEW_CALLED_FORMAT)
-	for i := 0; i < len(tm.execs); i++ { tm.execs[i]() }
+	for i := 0; i < len(tm.execs); i++ {
+		tm.execs[i]()
+	}
 }
 
 func (tm *transactionMock) Add(exec func() error) {

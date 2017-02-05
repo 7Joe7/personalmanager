@@ -1,19 +1,21 @@
 package operations
 
 import (
-	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/anybar"
+	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/resources"
+	rutils "github.com/7joe7/personalmanager/resources/utils"
 )
 
-func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal, priority int, tr resources.Transaction) func () {
-	return func () {
+func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal, priority int, tr resources.Transaction) func() {
+	return func() {
+		var err error
 		if name != "" {
 			g.Name = name
 		}
-		if taskId != "" {
+		if taskId != "" && taskId != "-" {
 			task := &resources.Task{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), true, task, func() {
+			err = tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), true, task, func() {
 				task.Goal = g
 				task.BasePoints = g.Priority
 				if g.Active {
@@ -25,9 +27,22 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 			}
 			g.Tasks = append(g.Tasks, task)
 		}
-		if projectId != "" {
+		switch projectId {
+		case "-":
+			if g.Project != nil {
+				project := &resources.Project{}
+				err = tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, project, func() {
+					project.Goals = rutils.RemoveGoalFromGoals(project.Goals, g)
+				})
+				if err != nil {
+					panic(err)
+				}
+				g.Project = nil
+			}
+		case "":
+		default:
 			project := &resources.Project{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, project, func () {
+			err = tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, project, func() {
 				project.Goals = append(project.Goals, g)
 			})
 			if err != nil {
@@ -35,9 +50,22 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 			}
 			g.Project = project
 		}
-		if habitId != "" {
+		switch habitId {
+		case "-":
+			if g.Habit != nil {
+				habit := &resources.Habit{}
+				err = tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(g.Habit.Id), true, habit, func() {
+					habit.Goal = nil
+				})
+				if err != nil {
+					panic(err)
+				}
+				g.Habit = nil
+			}
+		case "":
+		default:
 			habit := &resources.Habit{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func () {
+			err = tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func() {
 				habit.Goal = g
 				habit.BasePoints = priority
 			})
@@ -53,7 +81,7 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 			for i := 0; i < len(g.Tasks); i++ {
 				if g.Tasks[i].BasePoints == g.Priority {
 					task := &resources.Task{}
-					err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(g.Tasks[i].Id), true, task, func () {
+					err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(g.Tasks[i].Id), true, task, func() {
 						task.BasePoints = priority
 					})
 					if err != nil {
@@ -94,7 +122,7 @@ func getModifyGoalFunc(g *resources.Goal, name, taskId, projectId, habitId strin
 				}
 			}
 			status := &resources.Status{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, func () {
+			err = tr.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, func() {
 				status.Score += scoreChange
 				status.Today += scoreChange
 			})
@@ -109,7 +137,7 @@ func toggleSubTasksScheduling(scheduledCriteria, scheduledSet string, g *resourc
 	for i := 0; i < len(g.Tasks); i++ {
 		if g.Tasks[i].Scheduled == scheduledCriteria && !g.Tasks[i].Done {
 			task := &resources.Task{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(g.Tasks[i].Id), true, task, func () {
+			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(g.Tasks[i].Id), true, task, func() {
 				task.Scheduled = scheduledSet
 			})
 			if err != nil {
@@ -121,10 +149,10 @@ func toggleSubTasksScheduling(scheduledCriteria, scheduledSet string, g *resourc
 
 func addGoal(name, projectId, habitId string, habitRepetitionGoal, priority int) string {
 	goal := resources.NewGoal(name)
-	if projectId != "" {
+	if projectId != "" && projectId != "-" {
 		goal.Project = &resources.Project{Id: projectId}
 	}
-	if habitId != "" {
+	if habitId != "" && habitId != "-" {
 		goal.Habit = &resources.Habit{Id: habitId}
 	}
 	if habitRepetitionGoal != -1 {
@@ -134,22 +162,22 @@ func addGoal(name, projectId, habitId string, habitRepetitionGoal, priority int)
 		goal.Priority = priority
 	}
 	tr := db.NewTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.AddEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, goal)
 	})
-	if projectId != "" {
-		tr.Add(func () error {
+	if projectId != "" && projectId != "-" {
+		tr.Add(func() error {
 			project := &resources.Project{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, project, func () {
+			err := tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, project, func() {
 				project.Goals = append(project.Goals, goal)
 			})
 			return err
 		})
 	}
-	if habitId != "" {
-		tr.Add(func () error {
+	if habitId != "" && habitId != "-" {
+		tr.Add(func() error {
 			habit := &resources.Habit{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func () {
+			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), true, habit, func() {
 				habit.Goal = goal
 				habit.BasePoints = goal.Priority
 			})
@@ -162,7 +190,7 @@ func addGoal(name, projectId, habitId string, habitRepetitionGoal, priority int)
 
 func deleteGoal(goalId string) {
 	tr := db.NewTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		goal := &resources.Goal{}
 		err := tr.RetrieveEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal, true)
 		if err != nil {
@@ -170,7 +198,7 @@ func deleteGoal(goalId string) {
 		}
 		for i := 0; i < len(goal.Tasks); i++ {
 			task := &resources.Task{}
-			err = tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(goal.Tasks[i].Id), true, task, func () {
+			err = tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(goal.Tasks[i].Id), true, task, func() {
 				task.Goal = nil
 			})
 			if err != nil {
@@ -179,7 +207,7 @@ func deleteGoal(goalId string) {
 		}
 		if goal.Project != nil {
 			project := &resources.Project{}
-			err = tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(goal.Project.Id), true, project, func () {
+			err = tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(goal.Project.Id), true, project, func() {
 				for i := 0; i < len(project.Goals); i++ {
 					if project.Goals[i].Id == goal.Id {
 						project.Goals = append(project.Goals[:i], project.Goals[i+1:]...)
@@ -193,7 +221,7 @@ func deleteGoal(goalId string) {
 		}
 		if goal.Habit != nil {
 			habit := &resources.Habit{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(goal.Habit.Id), true, habit, func () {
+			err := tr.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(goal.Habit.Id), true, habit, func() {
 				habit.Goal = nil
 			})
 			if err != nil {
@@ -215,7 +243,7 @@ func deleteGoal(goalId string) {
 func modifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal, priority int) {
 	goal := &resources.Goal{}
 	tr := db.NewTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), false, goal, getModifyGoalFunc(goal, name, taskId, projectId, habitId, activeFlag, doneFlag, habitRepetitionGoal, priority, tr))
 	})
 	tr.Execute()
@@ -224,7 +252,7 @@ func modifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, don
 func getGoal(goalId string) *resources.Goal {
 	goal := &resources.Goal{}
 	tr := db.NewTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal, false)
 	})
 	tr.Execute()
@@ -233,7 +261,7 @@ func getGoal(goalId string) *resources.Goal {
 
 func getGoals() map[string]*resources.Goal {
 	goals := map[string]*resources.Goal{}
-	db.RetrieveEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, false, func (id string) resources.Entity {
+	db.RetrieveEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, false, func(id string) resources.Entity {
 		goals[id] = &resources.Goal{}
 		return goals[id]
 	})
@@ -241,25 +269,25 @@ func getGoals() map[string]*resources.Goal {
 }
 
 func getActiveGoals() map[string]*resources.Goal {
-	return FilterGoals(func (g *resources.Goal) bool { return g.Active && !g.Done })
+	return FilterGoals(func(g *resources.Goal) bool { return g.Active && !g.Done })
 }
 
 func getNonActiveGoals() map[string]*resources.Goal {
-	return FilterGoals(func (g *resources.Goal) bool { return !g.Active && !g.Done })
+	return FilterGoals(func(g *resources.Goal) bool { return !g.Active && !g.Done })
 }
 
 func getIncompleteGoals() map[string]*resources.Goal {
-	return FilterGoals(func (g *resources.Goal) bool { return !g.Done })
+	return FilterGoals(func(g *resources.Goal) bool { return !g.Done })
 }
 
 func filterGoals(shallow bool, filter func(*resources.Goal) bool) map[string]*resources.Goal {
 	goals := map[string]*resources.Goal{}
 	var goal *resources.Goal
-	getNewEntity := func () resources.Entity {
+	getNewEntity := func() resources.Entity {
 		goal = &resources.Goal{}
 		return goal
 	}
-	addEntity := func () { goals[goal.Id] = goal }
+	addEntity := func() { goals[goal.Id] = goal }
 	db.FilterEntities(resources.DB_DEFAULT_GOALS_BUCKET_NAME, shallow, addEntity, getNewEntity, func() bool { return filter(goal) })
 	return goals
 }

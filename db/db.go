@@ -20,25 +20,25 @@ func DeleteEntity(bucketName, id []byte) {
 	}
 }
 
-func ModifyEntity(bucketName, id []byte, shallow bool, entity resources.Entity, modify func ()) {
+func ModifyEntity(bucketName, id []byte, shallow bool, entity resources.Entity, modify func()) {
 	if err := modifyEntity(bucketName, id, shallow, entity, modify); err != nil {
 		panic(fmt.Errorf("Unable to modify entity id '%s' in bucket '%s'. %v", string(id), bucketName, err))
 	}
 }
 
-func RetrieveEntities(bucketName []byte, shallow bool, getObject func (string) resources.Entity) {
+func RetrieveEntities(bucketName []byte, shallow bool, getObject func(string) resources.Entity) {
 	if err := retrieveEntities(bucketName, shallow, getObject); err != nil {
 		panic(fmt.Errorf("Unable to retrieve entities from bucket '%s'. %v", bucketName, err))
 	}
 }
 
-func MapEntities(getNewEntity func () resources.Entity, bucketName []byte, shallow bool, mapFunc func (resources.Entity) func ()) {
+func MapEntities(getNewEntity func() resources.Entity, bucketName []byte, shallow bool, mapFunc func(resources.Entity) func()) {
 	if err := mapEntities(getNewEntity, bucketName, shallow, mapFunc); err != nil {
 		panic(fmt.Errorf("Unable to map entities from bucket '%s'. %v", bucketName, err))
 	}
 }
 
-func FilterEntities(bucketName []byte, shallow bool, addEntity func(), getNewEntity func () resources.Entity, filterFunc func () bool) {
+func FilterEntities(bucketName []byte, shallow bool, addEntity func(), getNewEntity func() resources.Entity, filterFunc func() bool) {
 	if err := filterEntities(bucketName, shallow, addEntity, getNewEntity, filterFunc); err != nil {
 		panic(fmt.Errorf("Unable to retrieve entities from bucket '%s'. %v", bucketName, err))
 	}

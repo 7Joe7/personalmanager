@@ -1,8 +1,8 @@
 package db
 
 import (
-	"strconv"
 	"io/ioutil"
+	"strconv"
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/boltdb/bolt"
@@ -14,37 +14,37 @@ var (
 
 func deleteEntity(bucketName, id []byte) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.DeleteEntity(bucketName, id) })
+	tr.Add(func() error { return tr.DeleteEntity(bucketName, id) })
 	return tr.execute()
 }
 
 func retrieveEntity(bucketName, id []byte, entity resources.Entity, shallow bool) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.RetrieveEntity(bucketName, id, entity, shallow)})
+	tr.Add(func() error { return tr.RetrieveEntity(bucketName, id, entity, shallow) })
 	return tr.execute()
 }
 
-func modifyEntity(bucketName, id []byte, shallow bool, entity resources.Entity, modify func ()) error {
+func modifyEntity(bucketName, id []byte, shallow bool, entity resources.Entity, modify func()) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.ModifyEntity(bucketName, id, shallow, entity, modify)})
+	tr.Add(func() error { return tr.ModifyEntity(bucketName, id, shallow, entity, modify) })
 	return tr.execute()
 }
 
-func retrieveEntities(bucketName []byte, shallow bool, getObject func (string) resources.Entity) error {
+func retrieveEntities(bucketName []byte, shallow bool, getObject func(string) resources.Entity) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.RetrieveEntities(bucketName, shallow, getObject) })
+	tr.Add(func() error { return tr.RetrieveEntities(bucketName, shallow, getObject) })
 	return tr.execute()
 }
 
-func mapEntities(getNewEntity func () resources.Entity, bucketName []byte, shallow bool, mapFunc func (resources.Entity) func ()) error {
+func mapEntities(getNewEntity func() resources.Entity, bucketName []byte, shallow bool, mapFunc func(resources.Entity) func()) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.MapEntities(bucketName, shallow, getNewEntity, mapFunc) })
+	tr.Add(func() error { return tr.MapEntities(bucketName, shallow, getNewEntity, mapFunc) })
 	return tr.execute()
 }
 
-func filterEntities(bucketName []byte, shallow bool, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
+func filterEntities(bucketName []byte, shallow bool, addEntity func(), getNewEntity func() resources.Entity, filterFunc func() bool) error {
 	tr := newTransaction()
-	tr.Add(func () error { return tr.FilterEntities(bucketName, shallow, addEntity, getNewEntity, filterFunc)})
+	tr.Add(func() error { return tr.FilterEntities(bucketName, shallow, addEntity, getNewEntity, filterFunc) })
 	return tr.view()
 }
 
@@ -70,7 +70,7 @@ func backupDatabase(path string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(path + ".backup", data, 0644)
+	err = ioutil.WriteFile(path+".backup", data, 0644)
 	if err != nil {
 		return err
 	}

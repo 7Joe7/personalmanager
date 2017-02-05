@@ -1,8 +1,8 @@
 package alfred
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"io"
 )
 

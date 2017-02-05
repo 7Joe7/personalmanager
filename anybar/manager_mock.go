@@ -8,10 +8,10 @@ func NewAnybarManagerMock() resources.AnybarManager {
 	return &anybarManagerMock{}
 }
 
-type anybarManagerMock struct{
-	PingResult bool
+type anybarManagerMock struct {
+	PingResult        bool
 	ActivePortsResult resources.ActivePorts
-	NewPortResult int
+	NewPortResult     int
 }
 
 func (am *anybarManagerMock) RemoveAndQuit(bucketName []byte, id string, t resources.Transaction) {
@@ -53,4 +53,3 @@ func (am *anybarManagerMock) GetActivePorts(t resources.Transaction) resources.A
 func (am *anybarManagerMock) Ping(port int) bool {
 	return am.PingResult
 }
-

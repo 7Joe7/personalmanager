@@ -2,30 +2,31 @@ package resources
 
 import (
 	"encoding/json"
-	"time"
 	"strconv"
+	"time"
+
+	"fmt"
 
 	"github.com/7joe7/personalmanager/utils"
-	"fmt"
 )
 
 type Task struct {
-	Id              string `json:",omitempty"`
-	Name            string `json:",omitempty"`
-	Note            string `json:",omitempty"`
-	BasePoints      int    `json:",omitempty"`
-	InProgress      bool   `json:",omitempty"`
-	Done            bool   `json:",omitempty"`
-	Tags            []*Tag `json:",omitempty"`
-	Scheduled       string `json:",omitempty"`
-	Type            string `json:",omitempty"`
-	InProgressSince *time.Time
-	DoneTime        *time.Time
-	Deadline        *time.Time
-	TimeEstimate    *time.Duration
-	TimeSpent       *time.Duration
-	Project         *Project
-	Goal            *Goal
+	Id              string         `json:",omitempty"`
+	Name            string         `json:",omitempty"`
+	Note            string         `json:",omitempty"`
+	BasePoints      int            `json:",omitempty"`
+	InProgress      bool           `json:",omitempty"`
+	Done            bool           `json:",omitempty"`
+	Tags            []*Tag         `json:",omitempty"`
+	Scheduled       string         `json:",omitempty"`
+	Type            string         `json:",omitempty"`
+	InProgressSince *time.Time     `json:",omitempty"`
+	DoneTime        *time.Time     `json:",omitempty"`
+	Deadline        *time.Time     `json:",omitempty"`
+	TimeEstimate    *time.Duration `json:",omitempty"`
+	TimeSpent       *time.Duration `json:",omitempty"`
+	Project         *Project       `json:",omitempty"`
+	Goal            *Goal          `json:",omitempty"`
 }
 
 func (t *Task) SetId(id string) {
@@ -143,7 +144,7 @@ func (t *Task) getItem(id string) *AlfredItem {
 		}
 	} else {
 		if t.InProgress {
-			subtitle += utils.MinutesToHMFormat(t.TimeSpent.Minutes() + time.Now().Sub(*t.InProgressSince).Minutes()) + "/"
+			subtitle += utils.MinutesToHMFormat(t.TimeSpent.Minutes()+time.Now().Sub(*t.InProgressSince).Minutes()) + "/"
 		} else {
 			subtitle += utils.DurationToHMFormat(t.TimeSpent) + "/"
 		}
@@ -161,7 +162,7 @@ func (t *Task) getItem(id string) *AlfredItem {
 	} else if t.Done {
 		order = 2000 - t.BasePoints
 		icoPath = ICO_GREEN
-	} else if t.Deadline != nil && t.Deadline.Before(time.Now().Add(time.Hour * 24)) {
+	} else if t.Deadline != nil && t.Deadline.Before(time.Now().Add(time.Hour*24)) {
 		order = 250 - t.BasePoints
 		icoPath = ICO_RED
 	} else if todayTagPresent {

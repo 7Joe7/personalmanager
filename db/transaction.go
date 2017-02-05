@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/boltdb/bolt"
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/boltdb/bolt"
 )
 
 type transaction struct {
-	tx *bolt.Tx
-	execs []func () error
+	tx    *bolt.Tx
+	execs []func() error
 }
 
 func newTransaction() *transaction {
-	return &transaction{execs:[]func () error {}}
+	return &transaction{execs: []func() error{}}
 }
 
 func (t *transaction) GetValue(bucketName, key []byte) []byte {
@@ -32,7 +32,7 @@ func (t *transaction) SetValue(bucketName, key, value []byte) error {
 	return t.tx.Bucket(bucketName).Put(key, value)
 }
 
-func (t *transaction) ModifyValue(bucketName, key []byte, modify func ([]byte) []byte) error {
+func (t *transaction) ModifyValue(bucketName, key []byte, modify func([]byte) []byte) error {
 	log.Printf(`Modifying value:
 	bucketName: %s,
 	key: %s.`, string(bucketName), string(key))
@@ -108,11 +108,11 @@ func (t *transaction) RetrieveEntity(bucketName, id []byte, entity resources.Ent
 	return entity.Load(t)
 }
 
-func (t *transaction) RetrieveEntities(bucketName []byte, shallow bool, getObject func (string) resources.Entity) error {
+func (t *transaction) RetrieveEntities(bucketName []byte, shallow bool, getObject func(string) resources.Entity) error {
 	log.Printf(`Retrieving entities:
 	bucketName: %s,
 	shallow: %v`, string(bucketName), shallow)
-	return t.tx.Bucket(bucketName).ForEach(func (k, v []byte) error {
+	return t.tx.Bucket(bucketName).ForEach(func(k, v []byte) error {
 		key := string(k)
 		if key == string(resources.DB_LAST_ID_KEY) {
 			return nil
@@ -128,7 +128,7 @@ func (t *transaction) RetrieveEntities(bucketName []byte, shallow bool, getObjec
 	})
 }
 
-func (t *transaction) ModifyEntity(bucketName, key []byte, shallow bool, entity resources.Entity, modifyFunc func ()) error {
+func (t *transaction) ModifyEntity(bucketName, key []byte, shallow bool, entity resources.Entity, modifyFunc func()) error {
 	log.Printf(`Modifying entity:
 	bucketName: %s,
 	key: %s,
@@ -138,12 +138,12 @@ func (t *transaction) ModifyEntity(bucketName, key []byte, shallow bool, entity 
 	return t.modifyEntityInner(b, key, b.Get(key), shallow, entity, modifyFunc)
 }
 
-func (t *transaction) MapEntities(bucketName []byte, shallow bool, getNewEntity func () resources.Entity, mapFunc func (resources.Entity) func ()) error {
+func (t *transaction) MapEntities(bucketName []byte, shallow bool, getNewEntity func() resources.Entity, mapFunc func(resources.Entity) func()) error {
 	log.Printf(`Mapping entities:
 	bucketName: %s,
 	shallow: %v.`, string(bucketName), shallow)
 	b := t.tx.Bucket(bucketName)
-	return b.ForEach(func (k, v []byte) error {
+	return b.ForEach(func(k, v []byte) error {
 		if string(k) != string(resources.DB_LAST_ID_KEY) {
 			entity := getNewEntity()
 			return t.modifyEntityInner(b, k, v, shallow, entity, mapFunc(entity))
@@ -152,7 +152,7 @@ func (t *transaction) MapEntities(bucketName []byte, shallow bool, getNewEntity 
 	})
 }
 
-func (t *transaction) modifyEntityInner(bucket *bolt.Bucket, key, value []byte, shallow bool, entity resources.Entity, modify func ()) error {
+func (t *transaction) modifyEntityInner(bucket *bolt.Bucket, key, value []byte, shallow bool, entity resources.Entity, modify func()) error {
 	if err := json.Unmarshal(value, entity); err != nil {
 		return err
 	}
@@ -167,11 +167,11 @@ func (t *transaction) modifyEntityInner(bucket *bolt.Bucket, key, value []byte, 
 	return bucket.Put(key, resultValue)
 }
 
-func (t *transaction) FilterEntities(bucketName []byte, shallow bool, addEntity func (), getNewEntity func () resources.Entity, filterFunc func () bool) error {
+func (t *transaction) FilterEntities(bucketName []byte, shallow bool, addEntity func(), getNewEntity func() resources.Entity, filterFunc func() bool) error {
 	log.Printf(`Filtering entities:
 	bucketName: %s,
 	shallow: %v`, string(bucketName), shallow)
-	return t.tx.Bucket(bucketName).ForEach(func (k, v []byte) error {
+	return t.tx.Bucket(bucketName).ForEach(func(k, v []byte) error {
 		key := string(k)
 		if key == string(resources.DB_LAST_ID_KEY) {
 			return nil
@@ -231,6 +231,6 @@ func (t *transaction) View() {
 	}
 }
 
-func (t *transaction) Add(exec func () error) {
+func (t *transaction) Add(exec func() error) {
 	t.execs = append(t.execs, exec)
 }

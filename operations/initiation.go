@@ -9,7 +9,7 @@ import (
 )
 
 func initializeBuckets(t resources.Transaction, bucketsToInitialize [][]byte) {
-	t.Add(func () error {
+	t.Add(func() error {
 		for i := 0; i < len(bucketsToInitialize); i++ {
 			if err := t.InitializeBucket(bucketsToInitialize[i]); err != nil {
 				return err
@@ -20,8 +20,8 @@ func initializeBuckets(t resources.Transaction, bucketsToInitialize [][]byte) {
 }
 
 func ensureValues(t resources.Transaction) {
-	t.Add(func () error {
-		err := t.EnsureEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, &resources.Review{Repetition:resources.HBT_REPETITION_WEEKLY, Deadline:utils.GetFirstSaturday()})
+	t.Add(func() error {
+		err := t.EnsureEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, &resources.Review{Repetition: resources.HBT_REPETITION_WEEKLY, Deadline: utils.GetFirstSaturday()})
 		if err != nil {
 			return err
 		}

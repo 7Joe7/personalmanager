@@ -1,8 +1,8 @@
 package anybar
 
 import (
-	"sort"
 	"encoding/json"
+	"sort"
 
 	"github.com/7joe7/personalmanager/resources"
 )

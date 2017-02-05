@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/test"
 )
 
 func TestStartNew(t *testing.T) {

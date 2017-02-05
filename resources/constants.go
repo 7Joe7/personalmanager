@@ -6,7 +6,7 @@ const (
 	MSG_CREATE_SUCCESS = "Successfully created %s."
 	MSG_DELETE_SUCCESS = "Successfully deleted %s."
 	MSG_MODIFY_SUCCESS = "Successfully modified %s."
-	MSG_SET_SUCCESS = "Successfully set %s to %s."
+	MSG_SET_SUCCESS    = "Successfully set %s to %s."
 	MSG_EXPORT_SUCCESS = "Successfully exported %s."
 
 	LOG_FILE_NAME = "personal-manager.log"
@@ -68,10 +68,10 @@ const (
 	NAME_FORMAT_STATUS          = "Total %d, today %d, yesterday %d."
 	NAME_FORMAT_EMPTY           = "There are no %ss."
 
-	HBT_DONE_BASE_ORDER      = 4000
-	HBT_BASE_ORDER_DAILY     = 1000
-	HBT_BASE_ORDER_WEEKLY    = 1250
-	HBT_BASE_ORDER_MONTHLY   = 1500
+	HBT_DONE_BASE_ORDER    = 4000
+	HBT_BASE_ORDER_DAILY   = 1000
+	HBT_BASE_ORDER_WEEKLY  = 1250
+	HBT_BASE_ORDER_MONTHLY = 1500
 
 	ACT_CREATE_TASK                      = "create-task"
 	ACT_PRINT_TASKS                      = "print-tasks"
@@ -149,7 +149,7 @@ var (
 	DB_ANYBAR_ACTIVE_PORTS    = []byte("anybar.active.ports")
 	DB_DEFAULT_EMAIL          = []byte("default.email")
 
-ACTIONS = []string{
+	ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_PERSONAL_NEXT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,
 		ACT_CREATE_PROJECT, ACT_PRINT_PROJECTS, ACT_DELETE_PROJECT, ACT_MODIFY_PROJECT,
 		ACT_CREATE_TAG, ACT_PRINT_TAGS, ACT_DELETE_TAG, ACT_MODIFY_TAG, ACT_CREATE_GOAL,

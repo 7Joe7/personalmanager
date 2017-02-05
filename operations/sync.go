@@ -3,13 +3,13 @@ package operations
 import (
 	"time"
 
-	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/anybar"
 	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/resources"
 )
 
 func synchronize(t resources.Transaction, backup bool) {
-	t.Add(func () error {
+	t.Add(func() error {
 		lastSync := string(t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_LAST_SYNC_KEY))
 		if lastSync == "" || isTimeForSync(lastSync) {
 			if backup {
@@ -51,7 +51,7 @@ func synchronize(t resources.Transaction, backup bool) {
 }
 
 func synchronizeAnybarPorts(t resources.Transaction) {
-	t.Add(func () error {
+	t.Add(func() error {
 		var err error
 		activeTaskId := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
 		if !anybar.Ping(resources.ANY_PORT_ACTIVE_TASK) && activeTaskId != nil && string(activeTaskId) != "" {
@@ -72,7 +72,7 @@ func synchronizeAnybarPorts(t resources.Transaction) {
 
 func addBonusIfAllHabitsDone(t resources.Transaction, repetition string, changeStatus *resources.Status) error {
 	habits := map[string]*resources.Habit{}
-	err := filterHabitsModal(t, true, habits, func (h *resources.Habit) bool { return h.Active && h.Repetition == repetition })
+	err := filterHabitsModal(t, true, habits, func(h *resources.Habit) bool { return h.Active && h.Repetition == repetition })
 	if err != nil {
 		return err
 	}

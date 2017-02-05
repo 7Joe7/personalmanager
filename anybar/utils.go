@@ -1,11 +1,11 @@
 package anybar
 
 import (
-	"time"
+	"encoding/json"
+	"fmt"
 	"net"
 	"os/exec"
-	"fmt"
-	"encoding/json"
+	"time"
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
@@ -66,7 +66,7 @@ func ping(port int) bool {
 	}
 	defer conn.Close()
 	var received bool
-	go func () {
+	go func() {
 		toReceive := make([]byte, 5)
 		_, _, err := conn.ReadFromUDP(toReceive)
 		if err != nil {

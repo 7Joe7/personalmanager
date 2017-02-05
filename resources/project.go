@@ -1,18 +1,18 @@
 package resources
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
 type Project struct {
-	Name string `json:",omitempty"`
-	Note string `json:",omitempty"`
-	Id   string `json:",omitempty"`
-	Active bool `json:",omitempty"`
-	Done   bool `json:",omitempty"`
-	Tasks []*Task
-	Goals []*Goal
+	Name   string `json:",omitempty"`
+	Note   string `json:",omitempty"`
+	Id     string `json:",omitempty"`
+	Active bool   `json:",omitempty"`
+	Done   bool   `json:",omitempty"`
+	Tasks  []*Task
+	Goals  []*Goal
 }
 
 func (p *Project) SetId(id string) {
@@ -26,24 +26,24 @@ func (p *Project) GetId() string {
 func (p *Project) Load(tr Transaction) error {
 	tasks := []*Task{}
 	var task *Task
-	getNewEntity := func () Entity {
+	getNewEntity := func() Entity {
 		task = &Task{}
 		return task
 	}
-	addEntity := func () { tasks = append(tasks, task) }
-	err := tr.FilterEntities(DB_DEFAULT_TASKS_BUCKET_NAME, true, addEntity, getNewEntity, func () bool { return task.Project != nil && task.Project.Id == p.Id })
+	addEntity := func() { tasks = append(tasks, task) }
+	err := tr.FilterEntities(DB_DEFAULT_TASKS_BUCKET_NAME, true, addEntity, getNewEntity, func() bool { return task.Project != nil && task.Project.Id == p.Id })
 	if err != nil {
 		return err
 	}
 	p.Tasks = tasks
 	goals := []*Goal{}
 	var goal *Goal
-	getNewEntity = func () Entity {
+	getNewEntity = func() Entity {
 		goal = &Goal{}
 		return goal
 	}
-	addEntity = func () { goals = append(goals, goal) }
-	err = tr.FilterEntities(DB_DEFAULT_GOALS_BUCKET_NAME, true, addEntity, getNewEntity, func () bool { return goal.Project != nil && goal.Project.Id == p.Id })
+	addEntity = func() { goals = append(goals, goal) }
+	err = tr.FilterEntities(DB_DEFAULT_GOALS_BUCKET_NAME, true, addEntity, getNewEntity, func() bool { return goal.Project != nil && goal.Project.Id == p.Id })
 	if err != nil {
 		return err
 	}

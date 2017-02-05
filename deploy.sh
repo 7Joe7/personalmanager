@@ -3,6 +3,7 @@
 set -x
 set -e
 
+sh ./precommit
 sh ./test.sh
 
 go build

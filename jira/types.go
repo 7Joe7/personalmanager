@@ -2,9 +2,8 @@ package jira
 
 type JqlResult struct {
 	MaxResults int
-	Issues []Issue
+	Issues     []Issue
 }
 
 type Issue struct {
-
 }

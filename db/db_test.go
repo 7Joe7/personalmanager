@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/boltdb/bolt"
 	"github.com/7joe7/personalmanager/test"
+	"github.com/boltdb/bolt"
 )
 
 const (
@@ -20,7 +20,7 @@ func TestTransaction_InitializeBucket(t *testing.T) {
 }
 
 func TestTransaction_GetValue(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_TASKS_BUCKET_NAME)
@@ -30,13 +30,13 @@ func TestTransaction_GetValue(t *testing.T) {
 }
 
 func TestTransaction_SetValue(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_TASKS_BUCKET_NAME)
 	testAddEntity("0", testTask1, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.SetValue(resources.DB_DEFAULT_TASKS_BUCKET_NAME, resources.DB_LAST_ID_KEY, []byte("7"))
 	})
 	test.ExpectSuccess(t, tr.execute())
@@ -48,14 +48,14 @@ func TestTransaction_ModifyValue(t *testing.T) {
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_BASIC_BUCKET_NAME)
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, []byte("9"))
 	})
 	test.ExpectSuccess(t, tr.execute())
 	testGetValue("9", resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, t)
 	tr = newTransaction()
-	tr.Add(func () error {
-		return tr.ModifyValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, func (value []byte) []byte {
+	tr.Add(func() error {
+		return tr.ModifyValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, func(value []byte) []byte {
 			if string(value) == "9" {
 				return []byte("11")
 			}
@@ -70,9 +70,9 @@ func TestTransaction_ModifyValue(t *testing.T) {
 func TestTransaction_EnsureEntity(t *testing.T) {
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_BASIC_BUCKET_NAME)
-	status := &resources.Status{Score:49,Today:12}
+	status := &resources.Status{Score: 49, Today: 12}
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.EnsureEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status)
 	})
 	test.ExpectSuccess(t, tr.execute())
@@ -89,20 +89,20 @@ func TestTransaction_EnsureEntity(t *testing.T) {
 }
 
 func TestTransaction_AddEntity(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_TASKS_BUCKET_NAME)
 	testBucketInitialization(t, resources.DB_DEFAULT_PROJECTS_BUCKET_NAME)
 	testAddEntity("0", testProject1, resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, t)
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.AddEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, testTask1)
 	})
 	test.ExpectSuccess(t, tr.execute())
 	taskToVerify := &resources.Task{}
 	tr = newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
 	test.ExpectSuccess(t, tr.execute())
@@ -111,7 +111,7 @@ func TestTransaction_AddEntity(t *testing.T) {
 }
 
 func TestTransaction_RetrieveEntity(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_TASKS_BUCKET_NAME)
@@ -120,7 +120,7 @@ func TestTransaction_RetrieveEntity(t *testing.T) {
 	testAddEntity("0", testTask1, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	taskToVerify := &resources.Task{}
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
 	test.ExpectSuccess(t, tr.execute())
@@ -129,7 +129,7 @@ func TestTransaction_RetrieveEntity(t *testing.T) {
 }
 
 func TestTransaction_ModifyEntity(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testOpen(t)
 	testBucketInitialization(t, resources.DB_DEFAULT_TASKS_BUCKET_NAME)
@@ -138,8 +138,8 @@ func TestTransaction_ModifyEntity(t *testing.T) {
 	testAddEntity("0", testTask1, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	taskToModify := &resources.Task{}
 	tr := newTransaction()
-	tr.Add(func () error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), false, taskToModify, func () {
+	tr.Add(func() error {
+		return tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), false, taskToModify, func() {
 			taskToModify.Name = "name modified by transaction"
 			taskToModify.Note = "note modified by transaction"
 			taskToModify.Project.Name = "modified through task by transaction which is invalid"
@@ -148,7 +148,7 @@ func TestTransaction_ModifyEntity(t *testing.T) {
 	test.ExpectSuccess(t, tr.execute())
 	taskToVerify := &resources.Task{}
 	tr = newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
 	test.ExpectSuccess(t, tr.execute())
@@ -157,7 +157,7 @@ func TestTransaction_ModifyEntity(t *testing.T) {
 }
 
 func TestTransaction_MapEntities(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testTask2 := &resources.Task{Name: "test2", Note: "note2", Project: nil}
 	testOpen(t)
@@ -168,9 +168,9 @@ func TestTransaction_MapEntities(t *testing.T) {
 	testAddEntity("1", testTask2, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	task := &resources.Task{}
 	tr := newTransaction()
-	tr.Add(func () error {
-		return tr.MapEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, func () resources.Entity { return task }, func (resources.Entity) func () {
-			return func () {
+	tr.Add(func() error {
+		return tr.MapEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, func() resources.Entity { return task }, func(resources.Entity) func() {
+			return func() {
 				task.Name += " name mapped by transaction"
 				task.Note += " note mapped by transaction"
 				task.Project = testProject1
@@ -189,7 +189,7 @@ func TestOpen(t *testing.T) {
 }
 
 func TestTransaction_FilterEntities(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testTask2 := &resources.Task{Name: "test2", Note: "note2", Project: nil}
 	testOpen(t)
@@ -200,12 +200,12 @@ func TestTransaction_FilterEntities(t *testing.T) {
 	testAddEntity("1", testTask2, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	task := &resources.Task{}
 	tasks := map[string]*resources.Task{}
-	getNewEntity := func () resources.Entity {
+	getNewEntity := func() resources.Entity {
 		task = &resources.Task{}
 		return task
 	}
-	addEntity := func () { tasks[task.Id] = task }
-	test.ExpectSuccess(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, addEntity, getNewEntity, func () bool { return task.Project == nil }))
+	addEntity := func() { tasks[task.Id] = task }
+	test.ExpectSuccess(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, addEntity, getNewEntity, func() bool { return task.Project == nil }))
 	if len(tasks) != 1 {
 		t.Errorf("Expected size of tasks to be 1, it is %d.", len(tasks))
 	}
@@ -214,7 +214,7 @@ func TestTransaction_FilterEntities(t *testing.T) {
 }
 
 func TestTransaction_DeleteEntity(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testTask2 := &resources.Task{Name: "test2", Note: "note2", Project: nil}
 	testOpen(t)
@@ -224,7 +224,7 @@ func TestTransaction_DeleteEntity(t *testing.T) {
 	testAddEntity("0", testTask1, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	testAddEntity("1", testTask2, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.DeleteEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id))
 	})
 	test.ExpectSuccess(t, tr.execute())
@@ -235,7 +235,7 @@ func TestTransaction_DeleteEntity(t *testing.T) {
 }
 
 func TestTransaction_RetrieveEntities(t *testing.T) {
-	testProject1 := &resources.Project{Name: "testProject1", Note:"Note project"}
+	testProject1 := &resources.Project{Name: "testProject1", Note: "Note project"}
 	testTask1 := &resources.Task{Name: "test1", Note: "note1", Project: testProject1}
 	testTask2 := &resources.Task{Name: "test2", Note: "note2", Project: nil}
 	testOpen(t)
@@ -246,8 +246,8 @@ func TestTransaction_RetrieveEntities(t *testing.T) {
 	testAddEntity("1", testTask2, resources.DB_DEFAULT_TASKS_BUCKET_NAME, t)
 	tasks := map[string]*resources.Task{}
 	tr := newTransaction()
-	tr.Add(func () error {
-		return tr.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, func (id string) resources.Entity {
+	tr.Add(func() error {
+		return tr.RetrieveEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, func(id string) resources.Entity {
 			tasks[id] = &resources.Task{}
 			return tasks[id]
 		})
@@ -260,7 +260,7 @@ func TestTransaction_RetrieveEntities(t *testing.T) {
 
 func TestTransaction_Add(t *testing.T) {
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return nil
 	})
 	if len(tr.execs) != 1 {
@@ -272,7 +272,7 @@ func TestTransaction_Execute(t *testing.T) {
 	testOpen(t)
 	var addWasCalled bool
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		addWasCalled = true
 		return nil
 	})
@@ -287,7 +287,7 @@ func TestTransaction_View(t *testing.T) {
 	testOpen(t)
 	var addWasCalled bool
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		addWasCalled = true
 		return nil
 	})
@@ -337,7 +337,7 @@ func testRetrieveStatus(toVerify, expected *resources.Status, t *testing.T) {
 
 func testAddEntity(expectedId string, entity resources.Entity, bucketName []byte, t *testing.T) {
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.AddEntity(bucketName, entity)
 	})
 	test.ExpectSuccess(t, tr.execute())
@@ -372,7 +372,7 @@ func testBucketInitialization(t *testing.T, bucketName []byte) {
 
 func testGetValue(expectedValue string, bucketName, lastIdKey []byte, t *testing.T) {
 	tr := newTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		value := tr.GetValue(bucketName, lastIdKey)
 		if string(value) != expectedValue {
 			t.Errorf("Expected last id key equal to '%s', got '%s'.", expectedValue, string(value))

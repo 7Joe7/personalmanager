@@ -1,13 +1,13 @@
 package alfred
 
 import (
-	"testing"
-	"os"
 	"io/ioutil"
+	"os"
+	"testing"
 )
 
 var (
-	testText = []byte("This is a test")
+	testText       = []byte("This is a test")
 	testOutputPath = "test.txt"
 )
 

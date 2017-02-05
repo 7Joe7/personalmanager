@@ -1,9 +1,9 @@
 package resources
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
-	"encoding/json"
 )
 
 type Habit struct {
@@ -79,7 +79,6 @@ func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 	} else {
 		return ICO_BLACK, "black", HBT_BASE_ORDER_DAILY
 	}
-	return "", "", 0
 }
 
 func (h *Habit) MarshalJSON() ([]byte, error) {
@@ -95,7 +94,7 @@ func (h *Habit) getItem(id string) *AlfredItem {
 	switch {
 	case h.Active:
 		if h.Negative {
-			subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_BAD_HABIT, h.Limit - h.Count, h.Limit, h.Average, h.Successes,
+			subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_BAD_HABIT, h.Limit-h.Count, h.Limit, h.Average, h.Successes,
 				h.Tries, h.ActualStreak, h.Deadline.Format(DATE_FORMAT), h.BasePoints)
 		} else {
 			subtitle = fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT, h.Successes, h.Tries, h.ActualStreak,

@@ -7,7 +7,7 @@ const (
 func GetJqlResult(jql string) {
 	startAt := 0
 	result := getPart(startAt, MAX_RESULTS)
-	for len(result.Issues) == startAt + MAX_RESULTS {
+	for len(result.Issues) == startAt+MAX_RESULTS {
 		startAt += MAX_RESULTS
 		result.Issues = append(result.Issues, getPart(startAt, MAX_RESULTS).Issues...)
 	}

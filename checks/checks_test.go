@@ -1,8 +1,8 @@
 package checks
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestVerifications(t *testing.T) {
@@ -13,9 +13,10 @@ func TestVerifications(t *testing.T) {
 	testCommonVerifications("Habit", verifyHabit, t)
 }
 
-func testCommonVerifications(entityName string, verify func (string) error, t *testing.T) {
-	if err := verify(""); err == nil || err.Error() != fmt.Sprintf("%s name is empty.", entityName) {
-		t.Errorf("Expected error with text '%s', got %v.", err)
+func testCommonVerifications(entityName string, verify func(string) error, t *testing.T) {
+	expectedErrText := fmt.Sprintf("%s name is empty.", entityName)
+	if err := verify(""); err == nil || err.Error() != expectedErrText {
+		t.Errorf("Expected error with text '%s', got %v.", expectedErrText, err)
 	}
 	if err := verify("valid name"); err != nil {
 		t.Errorf("Expected success, got error (%v).", err)

@@ -3,21 +3,25 @@ package operations
 import (
 	"time"
 
+	"github.com/7joe7/personalmanager/anybar"
+	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
-	"github.com/7joe7/personalmanager/db"
-	"github.com/7joe7/personalmanager/anybar"
 )
 
-func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag bool, basePoints, repetitionGoal int, status *resources.Status, tr resources.Transaction) func () {
-	return func () {
+func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag bool, basePoints, repetitionGoal int, status *resources.Status, tr resources.Transaction) func() {
+	return func() {
 		if name != "" {
 			h.Name = name
 		}
 		if description != "" {
 			h.Description = description
 		}
-		if goalId != "" {
+		switch goalId {
+		case "-":
+			h.Goal = nil
+		case "":
+		default:
 			h.Goal = &resources.Goal{Id: goalId}
 		}
 		if toggleActive {
@@ -43,12 +47,12 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 			if toggleDone {
 				if h.Negative {
 					h.Count++
-					h.Average = (h.Average * float64(h.Tries) + 1) / float64(h.Tries)
-					if h.Count - 1 <= h.Limit && h.Count > h.Limit {
+					h.Average = (h.Average*float64(h.Tries) + 1) / float64(h.Tries)
+					if h.Count-1 <= h.Limit && h.Count > h.Limit {
 						failHabit(h)
 						countPointChange(h, status, 1)
 					} else if h.Count > h.Limit {
-						countPointChange(h, status, h.Count - h.Limit + 1)
+						countPointChange(h, status, h.Count-h.Limit+1)
 					}
 				} else {
 					if h.Done {
@@ -74,10 +78,10 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 				if h.Done {
 					if previousActualStreak == 1 {
 						status.Score += h.BasePoints
-						status.Today += h.ActualStreak * h.ActualStreak * h.BasePoints - h.BasePoints
+						status.Today += h.ActualStreak*h.ActualStreak*h.BasePoints - h.BasePoints
 						status.Yesterday += h.BasePoints
 					}
-					status.Score += h.ActualStreak * h.ActualStreak * h.BasePoints + (h.ActualStreak - 1) * (h.ActualStreak - 1) * h.BasePoints
+					status.Score += h.ActualStreak*h.ActualStreak*h.BasePoints + (h.ActualStreak-1)*(h.ActualStreak-1)*h.BasePoints
 					status.Yesterday += (h.ActualStreak - 1) * (h.ActualStreak - 1) * h.BasePoints
 				} else {
 					if previousActualStreak < 0 {
@@ -94,13 +98,13 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 				h.ActualStreak = -1
 				h.Successes -= 1
 				if h.Done {
-					status.Score -= h.ActualStreak * h.ActualStreak * h.BasePoints - h.BasePoints
-					status.Today -= h.ActualStreak * h.ActualStreak * h.BasePoints - h.BasePoints
+					status.Score -= h.ActualStreak*h.ActualStreak*h.BasePoints - h.BasePoints
+					status.Today -= h.ActualStreak*h.ActualStreak*h.BasePoints - h.BasePoints
 					h.ActualStreak = 1
 					h.LastStreak = h.LastStreak - 1
 				}
-				status.Score -= (h.LastStreak + 1) * (h.LastStreak + 1) * h.BasePoints + h.BasePoints
-				status.Yesterday -= (h.LastStreak + 1) * (h.LastStreak + 1) * h.BasePoints + h.BasePoints
+				status.Score -= (h.LastStreak+1)*(h.LastStreak+1)*h.BasePoints + h.BasePoints
+				status.Yesterday -= (h.LastStreak+1)*(h.LastStreak+1)*h.BasePoints + h.BasePoints
 			}
 		}
 	}
@@ -168,9 +172,9 @@ func getNewHabit() resources.Entity {
 	return &resources.Habit{}
 }
 
-func getSyncHabitFunc(changeStatus *resources.Status) func (resources.Entity) func () {
-	return func (entity resources.Entity) func () {
-		return func () {
+func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) func() {
+	return func(entity resources.Entity) func() {
+		return func() {
 			h := entity.(*resources.Habit)
 			if !h.Active {
 				return
@@ -191,7 +195,7 @@ func getSyncHabitFunc(changeStatus *resources.Status) func (resources.Entity) fu
 					numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
 					for i := 0; i < numberOfMissedDeadlines; i++ {
 						// if the last period
-						if i == numberOfMissedDeadlines - 1 {
+						if i == numberOfMissedDeadlines-1 {
 							// not done or not already failed
 							if !h.Done && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
 								failHabit(h)
@@ -208,7 +212,7 @@ func getSyncHabitFunc(changeStatus *resources.Status) func (resources.Entity) fu
 				}
 				if h.Negative {
 					h.Count = 0
-					h.Average = h.Average * float64(h.Tries - 1) / float64(h.Tries)
+					h.Average = h.Average * float64(h.Tries-1) / float64(h.Tries)
 				}
 			}
 		}
@@ -250,7 +254,7 @@ func addHabit(name, repetition, description, deadline, goalId string, activeFlag
 	if description != "" {
 		h.Description = description
 	}
-	if goalId != "" {
+	if goalId != "" && goalId == "-" {
 		h.Goal = &resources.Goal{Id: goalId}
 	}
 	if negativeFlag {
@@ -273,7 +277,7 @@ func addHabit(name, repetition, description, deadline, goalId string, activeFlag
 		}
 	}
 	tr := db.NewTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		err := tr.AddEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h)
 		if err != nil {
 			return err
@@ -289,7 +293,7 @@ func addHabit(name, repetition, description, deadline, goalId string, activeFlag
 
 func deleteHabit(habitId string) {
 	t := db.NewTransaction()
-	t.Add(func () error {
+	t.Add(func() error {
 		h := &resources.Habit{}
 		err := t.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), h, true)
 		if err != nil {
@@ -297,7 +301,7 @@ func deleteHabit(habitId string) {
 		}
 		if h.Goal != nil {
 			goal := &resources.Goal{}
-			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(h.Goal.Id), true, goal, func () {
+			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(h.Goal.Id), true, goal, func() {
 				goal.Habit = nil
 			})
 			if err != nil {
@@ -317,7 +321,7 @@ func modifyHabit(habitId, name, repetition, description, deadline, goalId string
 	habitStatus := &resources.Status{}
 	status := &resources.Status{}
 	t := db.NewTransaction()
-	t.Add(func () error {
+	t.Add(func() error {
 		modifyHabit := getModifyHabitFunc(habit, name, repetition, description, deadline, goalId, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, basePoints, repetitionGoal, habitStatus, t)
 		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), false, habit, modifyHabit); err != nil {
 			return err
@@ -333,7 +337,7 @@ func modifyHabit(habitId, name, repetition, description, deadline, goalId string
 func getHabit(habitId string) *resources.Habit {
 	habit := &resources.Habit{}
 	tr := db.NewTransaction()
-	tr.Add(func () error {
+	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), habit, false)
 	})
 	tr.Execute()
@@ -342,36 +346,36 @@ func getHabit(habitId string) *resources.Habit {
 
 func getHabits() map[string]*resources.Habit {
 	habits := map[string]*resources.Habit{}
-	db.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, false, func (id string) resources.Entity {
+	db.RetrieveEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, false, func(id string) resources.Entity {
 		habits[id] = &resources.Habit{}
 		return habits[id]
 	})
 	return habits
 }
 
-func filterHabits(shallow bool, filter func (*resources.Habit) bool) map[string]*resources.Habit {
+func filterHabits(shallow bool, filter func(*resources.Habit) bool) map[string]*resources.Habit {
 	habits := map[string]*resources.Habit{}
 	tr := db.NewTransaction()
-	tr.Add(func () error { return filterHabitsModal(tr, shallow, habits, filter) })
+	tr.Add(func() error { return filterHabitsModal(tr, shallow, habits, filter) })
 	tr.Execute()
 	return habits
 }
 
-func filterHabitsModal(t resources.Transaction, shallow bool, habits map[string]*resources.Habit, filter func (*resources.Habit) bool) error {
+func filterHabitsModal(t resources.Transaction, shallow bool, habits map[string]*resources.Habit, filter func(*resources.Habit) bool) error {
 	var entity *resources.Habit
-	getNewEntityFunc := func () resources.Entity {
+	getNewEntityFunc := func() resources.Entity {
 		entity = &resources.Habit{}
 		return entity
 	}
-	addEntityFunc := func () { habits[entity.Id] = entity }
-	entityFilter := func () bool { return filter(entity) }
+	addEntityFunc := func() { habits[entity.Id] = entity }
+	entityFilter := func() bool { return filter(entity) }
 	return t.FilterEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, shallow, addEntityFunc, getNewEntityFunc, entityFilter)
 }
 
 func getActiveHabits() map[string]*resources.Habit {
-	return FilterHabits(func (h *resources.Habit) bool { return h.Active })
+	return FilterHabits(func(h *resources.Habit) bool { return h.Active })
 }
 
 func getNonActiveHabits() map[string]*resources.Habit {
-	return FilterHabits(func (h *resources.Habit) bool { return !h.Active })
+	return FilterHabits(func(h *resources.Habit) bool { return !h.Active })
 }
