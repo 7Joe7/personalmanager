@@ -3,9 +3,13 @@ package operations
 import (
 	"time"
 
+	"fmt"
+	"strconv"
+
 	"github.com/7joe7/personalmanager/anybar"
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
+	"github.com/7joe7/personalmanager/utils"
 )
 
 func synchronize(t resources.Transaction, backup bool) {
@@ -14,6 +18,25 @@ func synchronize(t resources.Transaction, backup bool) {
 		if lastSync == "" || isTimeForSync(lastSync) {
 			if backup {
 				db.BackupDatabase()
+			}
+			if utils.IsSunday() {
+				weeksLeftText := string(t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_WEEKS_LEFT))
+				if weeksLeftText != "" {
+					weeksLeft, err := strconv.Atoi(weeksLeftText)
+					if err != nil {
+						panic(err)
+					}
+					weeksLeft -= 1
+					err = t.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_WEEKS_LEFT, []byte(fmt.Sprint(weeksLeft)))
+					if err != nil {
+						panic(err)
+					}
+					resources.WaitGroup.Add(2)
+					go func() {
+						anybar.Quit(resources.ANY_PORT_WEEKS_LEFT)
+						anybar.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeftText, resources.ANY_CMD_BROWN)
+					}()
+				}
 			}
 			habitStatus := &resources.Status{}
 			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, getSyncHabitFunc(habitStatus))
@@ -60,8 +83,15 @@ func synchronizeAnybarPorts(t resources.Transaction) {
 			if err != nil {
 				return err
 			}
+			if activeTask.InProgress {
+				resources.WaitGroup.Add(1)
+				go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, activeTask.Name, resources.ANY_CMD_BLUE)
+			}
+		}
+		weeksLeft := string(t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_WEEKS_LEFT))
+		if weeksLeft != "" && !anybar.Ping(resources.ANY_PORT_WEEKS_LEFT) {
 			resources.WaitGroup.Add(1)
-			go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, activeTask.Name, resources.ANY_CMD_BLUE)
+			go anybar.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeft, resources.ANY_CMD_BROWN)
 		}
 		activePorts := anybar.GetActivePorts(t)
 		resources.WaitGroup.Add(1)

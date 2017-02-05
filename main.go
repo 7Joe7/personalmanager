@@ -185,6 +185,14 @@ func main() {
 		case string(resources.DB_DEFAULT_EMAIL):
 			exporter.SetEmail(*name)
 			alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
+		case string(resources.DB_WEEKS_LEFT):
+			operations.SetWeeksLeft(*basePoints)
+			weeksLeft := fmt.Sprint(*basePoints)
+			if !anybar.Ping(resources.ANY_PORT_WEEKS_LEFT) {
+				resources.WaitGroup.Add(1)
+				go anybar.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeft, resources.ANY_CMD_BROWN)
+			}
+			alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "weeks left", weeksLeft))
 		}
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()

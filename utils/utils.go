@@ -21,6 +21,10 @@ func getFirstSaturday() *time.Time {
 	return GetTimePointer(now.Add(time.Duration(24*(6-int(now.Weekday()))) * time.Hour))
 }
 
+func isSunday() bool {
+	return time.Now().Weekday() == time.Sunday
+}
+
 func getDurationForRepetitionPeriod(repetition string) int {
 	switch repetition {
 	case "Daily":

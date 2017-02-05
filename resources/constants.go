@@ -49,8 +49,10 @@ const (
 	ANY_CMD_WHITE        = "white"
 	ANY_CMD_WHITE_ALT    = "white_alt"
 	ANY_CMD_YELLOW       = "yellow"
+	ANY_CMD_BROWN        = "#8B4513"
 
 	ANY_PORT_ACTIVE_TASK = 2800
+	ANY_PORT_WEEKS_LEFT  = 2801
 	ANY_PORTS_RANGE_BASE = 2100
 
 	ANY_SLEEP_TIME = 200
@@ -148,6 +150,7 @@ var (
 	DB_ACTUAL_ACTIVE_TASK_KEY = []byte("actual.active.task")
 	DB_ANYBAR_ACTIVE_PORTS    = []byte("anybar.active.ports")
 	DB_DEFAULT_EMAIL          = []byte("default.email")
+	DB_WEEKS_LEFT             = []byte("weeks.left")
 
 	ACTIONS = []string{
 		ACT_CREATE_TASK, ACT_PRINT_PERSONAL_NEXT_TASKS, ACT_DELETE_TASK, ACT_MODIFY_TASK,

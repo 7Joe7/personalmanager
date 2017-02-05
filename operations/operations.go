@@ -187,3 +187,7 @@ func GetInactiveProjects() map[string]*resources.Project {
 func SyncWithJira() {
 	syncWithJira()
 }
+
+func SetWeeksLeft(weeksLeft int) {
+	setWeeksLeft(weeksLeft)
+}

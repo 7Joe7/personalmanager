@@ -16,6 +16,10 @@ func GetFirstSaturday() *time.Time {
 	return getFirstSaturday()
 }
 
+func IsSunday() bool {
+	return isSunday()
+}
+
 func GetDurationForRepetitionPeriod(repetition string) int {
 	return getDurationForRepetitionPeriod(repetition)
 }
