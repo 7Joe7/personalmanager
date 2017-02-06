@@ -11,6 +11,7 @@ type Habit struct {
 	Active        bool       `json:",omitempty"`
 	Done          bool       `json:",omitempty"`
 	Negative      bool       `json:",omitempty"`
+	Learned       bool       `json:",omitempty"`
 	Description   string     `json:",omitempty"`
 	Deadline      *time.Time `json:",omitempty"`
 	Tries         int        `json:",omitempty"`
@@ -47,7 +48,7 @@ func (h *Habit) Load(tr Transaction) error {
 
 func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 	if h.Active {
-		if h.Done || h.ActualStreak > 49 {
+		if h.Done || h.Learned {
 			return ICO_GREEN, "green", HBT_DONE_BASE_ORDER
 		} else {
 			var order int

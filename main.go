@@ -20,7 +20,7 @@ import (
 var (
 	// parameters
 	action, id, name, projectId, goalId, taskId, habitId, repetition, deadline, estimate, scheduled, taskType, note *string
-	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious, negativeFlag                                   *bool
+	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious, negativeFlag, learnedFlag                      *bool
 	basePoints, habitRepetitionGoal                                                                                 *int
 )
 
@@ -44,6 +44,7 @@ func init() {
 	donePrevious = flag.Bool("donePrevious", false, "Set done for previous period.")
 	undonePrevious = flag.Bool("undonePrevious", false, "Set undone for previous period.")
 	negativeFlag = flag.Bool("negative", false, "Set negative flag for habits.")
+	learnedFlag = flag.Bool("learned", false, "Set learned flag for habits.")
 	basePoints = flag.Int("basePoints", -1, "Set base points for success/failure.")
 	habitRepetitionGoal = flag.Int("habitRepetitionGoal", -1, "Set habit goal repetition number.")
 }
@@ -165,7 +166,7 @@ func main() {
 		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal, *basePoints)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
-		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *negativeFlag, *basePoints, *habitRepetitionGoal)
+		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *negativeFlag, *learnedFlag, *basePoints, *habitRepetitionGoal)
 		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)
@@ -197,11 +198,11 @@ func main() {
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()
 		t.Add(func() error {
-			getNewHabit := func () resources.Entity {
+			getNewHabit := func() resources.Entity {
 				return &resources.Habit{}
 			}
-			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func (e resources.Entity) func () {
-				return func () {
+			err := t.MapEntities(resources.DB_DEFAULT_HABITS_BUCKET_NAME, true, getNewHabit, func(e resources.Entity) func() {
+				return func() {
 					h := e.(*resources.Habit)
 					if !h.Active {
 						return

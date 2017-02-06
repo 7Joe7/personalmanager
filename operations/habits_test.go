@@ -48,7 +48,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus := &resources.Status{}
 	tr := &transactionMock{}
 	tr.Add(func() error {
-		getModifyHabitFunc(h, "testHabit", "", "", "", "", false, false, false, false, false, -1, -1, changeStatus, tr)()
+		getModifyHabitFunc(h, "testHabit", "", "", "", "", false, false, false, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
 	tr.Execute()
@@ -61,7 +61,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
 	tr.Add(func() error {
-		getModifyHabitFunc(h, "", "", "", "", "", true, false, false, false, false, -1, -1, changeStatus, tr)()
+		getModifyHabitFunc(h, "", "", "", "", "", true, false, false, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
 	tr.Execute()
@@ -73,7 +73,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
 	tr.Add(func() error {
-		getModifyHabitFunc(h, "", resources.HBT_REPETITION_DAILY, "", tomorrowDeadlineStr, "", true, false, false, false, false, 5, -1, changeStatus, tr)()
+		getModifyHabitFunc(h, "", resources.HBT_REPETITION_DAILY, "", tomorrowDeadlineStr, "", true, false, false, false, false, false, 5, -1, changeStatus, tr)()
 		return nil
 	})
 	tr.Execute()
@@ -87,7 +87,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
 	tr.Add(func() error {
-		getModifyHabitFunc(h, "", "", "", "", "", false, true, false, false, false, -1, -1, changeStatus, tr)()
+		getModifyHabitFunc(h, "", "", "", "", "", false, true, false, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
 	tr.Execute()
@@ -101,7 +101,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
 	tr.Add(func() error {
-		getModifyHabitFunc(h, "", "", "", "", "", false, true, false, false, false, -1, -1, changeStatus, tr)()
+		getModifyHabitFunc(h, "", "", "", "", "", false, true, false, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
 	tr.Execute()
@@ -115,7 +115,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
 	tr.Add(func() error {
-		getModifyHabitFunc(h, "", "", "", "", "", false, false, true, false, false, -1, -1, changeStatus, tr)()
+		getModifyHabitFunc(h, "", "", "", "", "", false, false, true, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
 	tr.Execute()
@@ -129,7 +129,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	changeStatus = &resources.Status{}
 	tr = &transactionMock{}
 	tr.Add(func() error {
-		getModifyHabitFunc(h, "", "", "", "", "", false, false, true, false, false, -1, -1, changeStatus, tr)()
+		getModifyHabitFunc(h, "", "", "", "", "", false, false, true, false, false, false, -1, -1, changeStatus, tr)()
 		return nil
 	})
 	tr.Execute()

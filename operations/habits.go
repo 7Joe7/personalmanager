@@ -9,7 +9,7 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 )
 
-func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag bool, basePoints, repetitionGoal int, status *resources.Status, tr resources.Transaction) func() {
+func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, learnedFlag bool, basePoints, repetitionGoal int, status *resources.Status, tr resources.Transaction) func() {
 	return func() {
 		if name != "" {
 			h.Name = name
@@ -36,6 +36,9 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 		}
 		if negativeFlag {
 			h.Negative = !h.Negative
+		}
+		if learnedFlag {
+			h.Learned = !h.Learned
 		}
 		if h.Active {
 			if basePoints != -1 {
@@ -181,7 +184,7 @@ func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) fun
 			}
 
 			if h.Deadline.Before(time.Now()) {
-				if h.ActualStreak > 49 && *h.LastStreakEnd != *h.Deadline {
+				if h.Learned && *h.LastStreakEnd != *h.Deadline {
 					h.Done = true
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
@@ -316,13 +319,13 @@ func deleteHabit(habitId string) {
 	t.Execute()
 }
 
-func modifyHabit(habitId, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag bool, basePoints, repetitionGoal int) {
+func modifyHabit(habitId, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, learnedFlag bool, basePoints, repetitionGoal int) {
 	habit := &resources.Habit{}
 	habitStatus := &resources.Status{}
 	status := &resources.Status{}
 	t := db.NewTransaction()
 	t.Add(func() error {
-		modifyHabit := getModifyHabitFunc(habit, name, repetition, description, deadline, goalId, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, basePoints, repetitionGoal, habitStatus, t)
+		modifyHabit := getModifyHabitFunc(habit, name, repetition, description, deadline, goalId, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, learnedFlag, basePoints, repetitionGoal, habitStatus, t)
 		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), false, habit, modifyHabit); err != nil {
 			return err
 		}
