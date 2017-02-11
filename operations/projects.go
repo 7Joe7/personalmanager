@@ -111,11 +111,11 @@ func getProjects() map[string]*resources.Project {
 }
 
 func getActiveProjects() map[string]*resources.Project {
-	return FilterProjects(func(p *resources.Project) bool { return p.Active })
+	return FilterProjects(func(p *resources.Project) bool { return p.Active && !p.Done })
 }
 
 func getInactiveProjects() map[string]*resources.Project {
-	return FilterProjects(func(p *resources.Project) bool { return !p.Active })
+	return FilterProjects(func(p *resources.Project) bool { return !p.Active && !p.Done })
 }
 
 func filterProjects(shallow bool, filter func(*resources.Project) bool) map[string]*resources.Project {

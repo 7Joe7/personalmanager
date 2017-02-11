@@ -11,10 +11,10 @@ type Goal struct {
 	Active              bool     `json:",omitempty"`
 	Project             *Project `json:",omitempty"`
 	Priority            int      `json:",omitempty"`
-	Tasks               []*Task
-	Habit               *Habit `json:",omitempty"`
-	HabitRepetitionGoal int    `json:",omitempty"`
-	Done                bool   `json:",omitempty"`
+	Tasks               []*Task  `json:",omitempty"`
+	Habit               *Habit   `json:",omitempty"`
+	HabitRepetitionGoal int      `json:",omitempty"`
+	Done                bool     `json:",omitempty"`
 }
 
 func (g *Goal) SetId(id string) {

@@ -47,6 +47,7 @@ func (p *Project) Load(tr Transaction) error {
 	if err != nil {
 		return err
 	}
+	p.Goals = goals
 	return nil
 }
 
