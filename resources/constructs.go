@@ -1,31 +1,31 @@
 package resources
 
 import (
-	"github.com/7joe7/personalmanager/checks"
+	"github.com/7joe7/personalmanager/resources/validation"
 )
 
 func NewTask(name string) *Task {
-	checks.VerifyTask(name)
+	validation.VerifyTask(name)
 	return &Task{Name: name, BasePoints: 1}
 }
 
 func NewProject(name string) *Project {
-	checks.VerifyProject(name)
+	validation.VerifyProject(name)
 	return &Project{Name: name}
 }
 
 func NewTag(name string) *Tag {
-	checks.VerifyTag(name)
+	validation.VerifyTag(name)
 	return &Tag{Name: name}
 }
 
 func NewGoal(name string) *Goal {
-	checks.VerifyGoal(name)
+	validation.VerifyGoal(name)
 	return &Goal{Name: name}
 }
 
 func NewHabit(name string) *Habit {
-	checks.VerifyHabit(name)
+	validation.VerifyHabit(name)
 	return &Habit{Name: name}
 }
 

@@ -1,4 +1,4 @@
-package checks
+package validation
 
 func VerifyTask(name string) {
 	if err := verifyTask(name); err != nil {
