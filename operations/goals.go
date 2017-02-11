@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/7joe7/personalmanager/anybar"
 	"github.com/7joe7/personalmanager/db"
+	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/resources"
 	rutils "github.com/7joe7/personalmanager/resources/utils"
 )

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/7joe7/personalmanager/anybar"
+	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/utils"

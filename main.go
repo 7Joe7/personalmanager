@@ -8,8 +8,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/7joe7/personalmanager/alfred"
-	"github.com/7joe7/personalmanager/anybar"
+	"github.com/7joe7/personalmanager/operations/alfred"
+	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
 	"github.com/7joe7/personalmanager/operations/exporter"
