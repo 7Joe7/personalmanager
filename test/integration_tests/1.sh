@@ -3,7 +3,7 @@
 set -x
 set -e
 
-source ./build.sh
+source build.sh
 
 ./personalmanager -action "create-habit" -name "First habit"
 ./personalmanager -action "print-habits"
@@ -23,4 +23,4 @@ source ./build.sh
 ./personalmanager -action "delete-habit" -id "1"
 ./personalmanager -action "print-habits"
 
-source ./teardown.sh
+source teardown.sh

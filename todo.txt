@@ -1,4 +1,0 @@
-* finish operations tests
-* add integration with work tasks - new bucket for tasks, new abbreviation and the whole cycle
-* add links to work tasks to jira on keystroke
-* some basic integration tests

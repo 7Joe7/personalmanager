@@ -3,7 +3,7 @@
 set -x
 set -e
 
-source ./build.sh
+source build.sh
 
 ./personalmanager -action "create-task" -name "First task"
 ./personalmanager -action "print-tasks"
@@ -14,4 +14,4 @@ source ./build.sh
 ./personalmanager -action "delete-task" -id "0"
 ./personalmanager -action "print-tasks"
 
-source ./teardown.sh
+source teardown.sh
