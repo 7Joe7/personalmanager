@@ -199,7 +199,9 @@ func deleteGoal(goalId string) {
 		for i := 0; i < len(goal.Tasks); i++ {
 			task := &resources.Task{}
 			err = tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(goal.Tasks[i].Id), true, task, func() {
-				task.Goal = nil
+				if task.Goal.Id == goal.Id {
+					task.Goal = nil
+				}
 			})
 			if err != nil {
 				return err
