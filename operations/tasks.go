@@ -318,7 +318,7 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 			}
 		case "":
 		default:
-			if task.Project.Id != projectId {
+			if task.Project != nil && task.Project.Id != projectId {
 				if task.Project != nil {
 					err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(task.Project.Id), true, task.Project, func() {
 						task.Project.Tasks = rutils.RemoveTaskFromTasks(task.Project.Tasks, task)
@@ -348,7 +348,7 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 			}
 		case "":
 		default:
-			if task.Goal.Id != goalId {
+			if task.Goal != nil && task.Goal.Id != goalId {
 				if task.Goal != nil {
 					err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(task.Goal.Id), true, task.Goal, func() {
 						task.Goal.Tasks = rutils.RemoveTaskFromTasks(task.Goal.Tasks, task)
