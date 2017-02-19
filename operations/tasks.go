@@ -360,11 +360,11 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 				task.Goal = &resources.Goal{}
 				err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func() {
 					task.Goal.Tasks = append(task.Goal.Tasks, task)
+					basePoints = task.Goal.Priority
 				})
 				if err != nil {
 					return err
 				}
-				basePoints = task.Goal.Priority
 			}
 		}
 		err = t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), false, task, getModifyTaskFunc(task, name, projectId, goalId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
