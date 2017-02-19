@@ -319,21 +319,19 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 		case "":
 		default:
 			if task.Project != nil && task.Project.Id != projectId {
-				if task.Project != nil {
-					err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(task.Project.Id), true, task.Project, func() {
-						task.Project.Tasks = rutils.RemoveTaskFromTasks(task.Project.Tasks, task)
-					})
-					if err != nil {
-						return err
-					}
-				}
-				task.Project = &resources.Project{}
-				err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, task.Project, func() {
-					task.Project.Tasks = append(task.Project.Tasks, task)
+				err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(task.Project.Id), true, task.Project, func() {
+					task.Project.Tasks = rutils.RemoveTaskFromTasks(task.Project.Tasks, task)
 				})
 				if err != nil {
 					return err
 				}
+			}
+			task.Project = &resources.Project{}
+			err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, task.Project, func() {
+				task.Project.Tasks = append(task.Project.Tasks, task)
+			})
+			if err != nil {
+				return err
 			}
 		}
 		switch goalId {
@@ -349,23 +347,21 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 		case "":
 		default:
 			if task.Goal != nil && task.Goal.Id != goalId {
-				if task.Goal != nil {
-					err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(task.Goal.Id), true, task.Goal, func() {
-						task.Goal.Tasks = rutils.RemoveTaskFromTasks(task.Goal.Tasks, task)
-					})
-					if err != nil {
-						return err
-					}
-				}
-				task.Goal = &resources.Goal{}
-				err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func() {
-					task.Goal.Tasks = append(task.Goal.Tasks, task)
-					basePoints = task.Goal.Priority
+				err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(task.Goal.Id), true, task.Goal, func() {
+					task.Goal.Tasks = rutils.RemoveTaskFromTasks(task.Goal.Tasks, task)
 				})
 				if err != nil {
 					return err
 				}
 			}
+			task.Goal = &resources.Goal{}
+			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func() {
+				task.Goal.Tasks = append(task.Goal.Tasks, task)
+			})
+			if err != nil {
+				return err
+			}
+			basePoints = task.Goal.Priority
 		}
 		err = t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), false, task, getModifyTaskFunc(task, name, projectId, goalId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
 		if err != nil {
