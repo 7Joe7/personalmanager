@@ -15,6 +15,7 @@ import (
 	"github.com/7joe7/personalmanager/operations/exporter"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
+	rutils "github.com/7joe7/personalmanager/resources/utils"
 )
 
 var (
@@ -26,12 +27,12 @@ var (
 
 func init() {
 	action = flag.String("action", "", fmt.Sprintf("Provide action to be taken from this list: %v.", resources.ACTIONS))
-	id = flag.String("id", "", fmt.Sprintf("Provide id of the entity you want to make the action for. Valid for these actions: ."))
+	id = flag.String("id", "", "Provide id of the entity you want to make the action for. Valid for these actions: .")
 	name = flag.String("name", "", "Provide name.")
-	projectId = flag.String("projectId", "", fmt.Sprintf("Provide project id for project assignment."))
-	goalId = flag.String("goalId", "", fmt.Sprintf("Provide goal id for goal assignment."))
-	taskId = flag.String("taskId", "", fmt.Sprintf("Provide task id for task assignment."))
-	habitId = flag.String("habitId", "", fmt.Sprintf("Provide habit id for habit assignment."))
+	projectId = flag.String("projectId", "", "Provide project id for project assignment.")
+	goalId = flag.String("goalId", "", "Provide goal id for goal assignment.")
+	taskId = flag.String("taskId", "", "Provide task id for task assignment.")
+	habitId = flag.String("habitId", "", "Provide habit id for habit assignment.")
 	repetition = flag.String("repetition", "", "Select repetition period.")
 	deadline = flag.String("deadline", "", "Specify deadline in format 'dd.MM.YYYY HH:mm'.")
 	estimate = flag.String("estimate", "", "Specify time estimate in format '2h45m'.")
@@ -60,7 +61,12 @@ func main() {
 
 	flag.Parse()
 
-	f, err := os.OpenFile(fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.LOG_FILE_NAME), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	err := ensureAppSupportFolder(rutils.GetAppSupportFolderPath())
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := os.OpenFile(fmt.Sprintf("%s/%s", rutils.GetAppSupportFolderPath(), resources.LOG_FILE_NAME), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -273,4 +279,20 @@ func logBinaryCall() {
 		repetitionGoal: %v.`, *action, *id, *name, *projectId, *goalId, *taskId,
 		*habitId, *repetition, *deadline, *estimate, *scheduled, *taskType, *note, *noneAllowed, *activeFlag,
 		*doneFlag, *donePrevious, *undonePrevious, *basePoints, *habitRepetitionGoal)
+}
+
+// Creating application support folder if it doesn't exist
+func ensureAppSupportFolder(appSupportFolderPath string) error {
+	_, err := os.Stat(appSupportFolderPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = os.Mkdir(appSupportFolderPath, os.FileMode(0744))
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+	return nil
 }

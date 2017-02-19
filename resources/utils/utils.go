@@ -2,6 +2,8 @@ package utils
 
 import (
 	"github.com/7joe7/personalmanager/resources"
+	"fmt"
+	"os"
 )
 
 func removeTaskFromTasks(ts []*resources.Task, t *resources.Task) []*resources.Task {
@@ -47,4 +49,8 @@ func removeTagFromTags(ts []*resources.Tag, t *resources.Tag) []*resources.Tag {
 		}
 	}
 	return ts
+}
+
+func getAppSupportFolderPath() string {
+	return fmt.Sprintf("%s/%s/%s.%s", os.Getenv("HOME"), resources.APP_SUPPORT_FOLDER_PATH, resources.VENDOR_ID, resources.APP_NAME)
 }

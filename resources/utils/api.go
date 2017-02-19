@@ -1,6 +1,8 @@
 package utils
 
-import "github.com/7joe7/personalmanager/resources"
+import (
+	"github.com/7joe7/personalmanager/resources"
+)
 
 func RemoveTaskFromTasks(tasks []*resources.Task, taskToRemove *resources.Task) []*resources.Task {
 	return removeTaskFromTasks(tasks, taskToRemove)
@@ -20,4 +22,8 @@ func RemoveGoalFromGoals(goals []*resources.Goal, goalToRemove *resources.Goal) 
 
 func RemoveTagFromTags(tags []*resources.Tag, tagToRemove *resources.Tag) []*resources.Tag {
 	return removeTagFromTags(tags, tagToRemove)
+}
+
+func GetAppSupportFolderPath() string {
+	return getAppSupportFolderPath()
 }

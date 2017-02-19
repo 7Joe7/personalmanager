@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/utils"
+	rutils "github.com/7joe7/personalmanager/resources/utils"
 )
 
 func Open() {
@@ -56,5 +56,5 @@ func BackupDatabase() {
 }
 
 func getDatabasePath() string {
-	return fmt.Sprintf("%s/%s", utils.GetRunningBinaryPath(), resources.DB_NAME)
+	return fmt.Sprintf("%s/%s", rutils.GetAppSupportFolderPath(), resources.DB_NAME)
 }

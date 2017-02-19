@@ -1,6 +1,10 @@
 package resources
 
 const (
+	APP_SUPPORT_FOLDER_PATH = "Library/Application Support/Alfred 3/Workflow Data"
+	VENDOR_ID = "org.erneker"
+	APP_NAME = "personalmanager"
+
 	DB_NAME = "personal-manager.db"
 
 	MSG_CREATE_SUCCESS = "Successfully created %s."
