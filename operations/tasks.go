@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/7joe7/personalmanager/db"
-	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/resources"
 	rutils "github.com/7joe7/personalmanager/resources/utils"
 	"github.com/7joe7/personalmanager/utils"
@@ -57,7 +56,7 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, goalId, deadline, est
 			}
 		}
 		if doneFlag {
-			change := countScoreChange(t)
+			change := t.CountScoreChange()
 			if t.Done {
 				t.Done = false
 				status.Score -= change
@@ -88,14 +87,6 @@ func scheduleTask(scheduled string, t *resources.Task) {
 	}
 }
 
-func countScoreChange(t *resources.Task) int {
-	change := t.BasePoints * 10
-	if t.TimeEstimate != nil {
-		change += int(t.TimeEstimate.Minutes()) * t.BasePoints
-	}
-	return change
-}
-
 func stopProgress(t *resources.Task) {
 	t.InProgress = false
 	var length float64
@@ -111,14 +102,14 @@ func stopProgress(t *resources.Task) {
 	}
 	t.TimeSpent = &d
 	resources.WaitGroup.Add(1)
-	go anybar.Quit(resources.ANY_PORT_ACTIVE_TASK)
+	go resources.Abr.Quit(resources.ANY_PORT_ACTIVE_TASK)
 }
 
 func startProgress(t *resources.Task) {
 	t.InProgress = true
 	t.InProgressSince = utils.GetTimePointer(time.Now())
 	resources.WaitGroup.Add(1)
-	go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, t.Name, resources.ANY_CMD_BLUE)
+	go resources.Abr.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, t.Name, resources.ANY_CMD_BLUE)
 }
 
 func getNewTask() resources.Entity {

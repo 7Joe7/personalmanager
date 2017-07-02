@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"github.com/7joe7/personalmanager/resources"
 	"fmt"
 	"os"
+
+	"github.com/7joe7/personalmanager/resources"
 )
 
 func removeTaskFromTasks(ts []*resources.Task, t *resources.Task) []*resources.Task {

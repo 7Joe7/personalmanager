@@ -184,3 +184,11 @@ func (t *Task) getItem(id string) *AlfredItem {
 		Valid:    true,
 		order:    order}
 }
+
+func (t *Task) CountScoreChange() int {
+	change := t.BasePoints * 10
+	if t.TimeEstimate != nil {
+		change += int(t.TimeEstimate.Minutes()) * t.BasePoints
+	}
+	return change
+}

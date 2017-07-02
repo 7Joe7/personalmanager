@@ -1,32 +1,85 @@
 package alfred
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
+
+	"bytes"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var (
-	testText       = []byte("This is a test")
-	testOutputPath = "test.txt"
-)
+type testObj struct {
+	Ahoj  string `json:"ahoj"`
+	Behoj string `json:"behoj"`
+}
+
+func TestNewAlfred(t *testing.T) {
+	a := NewAlfred(os.Stdout)
+	assert.Equal(t, os.Stdout, a.output, "wrong references")
+}
 
 func TestPrintResult(t *testing.T) {
-	testString := string(testText)
-	testOutput, err := os.Create(testOutputPath)
-	if err != nil {
-		t.Errorf("Create file - expected success, got error (%v).", err)
+	vectors := []struct {
+		input  string
+		output string
+		err    error
+	}{
+		{
+			input:  "This is a test",
+			output: "This is a test",
+			err:    nil,
+		},
 	}
-	printResult(testString, testOutput)
-	actualBytes, err := ioutil.ReadFile(testOutputPath)
-	if err != nil {
-		t.Errorf("Read output - expected success, got error (%v).", err)
+
+	for _, v := range vectors {
+		out := bytes.NewBuffer(make([]byte, 0, len(v.input)))
+		a := &alfred{out}
+		a.PrintResult(v.input)
+		o := make([]byte, len(v.output), len(v.output))
+		_, err := out.Read(o)
+		assert.Equal(t, v.err == nil, err == nil, "wrong failure condition")
+		if err != nil && v.err != nil {
+			assert.Equal(t, v.err.Error(), err.Error(), "wrong error")
+			continue
+		}
+		if err != nil {
+			continue
+		}
+		assert.Equal(t, v.output, string(o), "wrong output")
 	}
-	actualOutput := string(actualBytes)
-	if actualOutput != testString {
-		t.Errorf("Expected output '%s', got '%s'.", testString, actualOutput)
+}
+
+func TestPrintEntities(t *testing.T) {
+	vectors := []struct {
+		input  interface{}
+		output string
+		err    error
+	}{
+		{
+			input: &testObj{
+				Ahoj:  "ahoj",
+				Behoj: "behoj",
+			},
+			output: "{\"ahoj\":\"ahoj\",\"behoj\":\"behoj\"}",
+			err:    nil,
+		},
 	}
-	if err := os.Remove(testOutputPath); err != nil {
-		t.Errorf("Remove output file - expected success, got error (%v).", err)
+
+	for _, v := range vectors {
+		out := bytes.NewBuffer(make([]byte, 0))
+		a := &alfred{out}
+		a.PrintEntities(v.input)
+		o := make([]byte, len(v.output), len(v.output))
+		_, err := out.Read(o)
+		assert.Equal(t, v.err == nil, err == nil, "wrong failure condition")
+		if err != nil && v.err != nil {
+			assert.Equal(t, v.err.Error(), err.Error(), "wrong error")
+			continue
+		}
+		if err != nil {
+			continue
+		}
+		assert.Equal(t, v.output, string(o), "wrong output")
 	}
 }

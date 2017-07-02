@@ -5,31 +5,35 @@ import (
 	"time"
 
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/test"
+	"github.com/stretchr/testify/assert"
+)
+
+var (
+	m anybarManager = anybarManager{"./"}
 )
 
 func TestStartNew(t *testing.T) {
-	output, err := start(1736, "ahoj")
-	test.ExpectSuccess(t, err)
-	test.ExpectString("", output, t)
+	resources.WaitGroup.Add(1)
+	nm := NewAnybarManager("./")
+	nm.StartNew(1736, "ahoj")
 	time.Sleep(100 * time.Millisecond)
-	test.ExpectSuccess(t, sendCommand(1736, resources.ANY_CMD_QUIT))
+	assert.Nil(t, m.sendCommand(1736, resources.ANY_CMD_QUIT))
 }
 
 func TestChangeIcon(t *testing.T) {
-	output, err := start(1737, "ahoj")
-	test.ExpectSuccess(t, err)
-	test.ExpectString("", output, t)
+	nm := NewAnybarManager("./")
+	m.start(1737, "ahoj")
 	time.Sleep(100 * time.Millisecond)
-	test.ExpectSuccess(t, sendCommand(1737, resources.ANY_CMD_BLUE))
-	test.ExpectSuccess(t, sendCommand(1737, resources.ANY_CMD_QUIT))
+	resources.WaitGroup.Add(1)
+	nm.ChangeIcon(1737, resources.ANY_CMD_BLUE)
+	assert.Nil(t, m.sendCommand(1737, resources.ANY_CMD_QUIT))
 }
 
 func TestQuit(t *testing.T) {
-	output, err := start(1738, "ahoj")
-	test.ExpectSuccess(t, err)
-	test.ExpectString("", output, t)
+	nm := NewAnybarManager("./")
+	m.start(1738, "ahoj")
 	time.Sleep(100 * time.Millisecond)
-	test.ExpectSuccess(t, sendCommand(1738, resources.ANY_CMD_BLUE))
-	test.ExpectSuccess(t, sendCommand(1738, resources.ANY_CMD_QUIT))
+	assert.Nil(t, m.sendCommand(1738, resources.ANY_CMD_BLUE))
+	resources.WaitGroup.Add(1)
+	nm.Quit(1738)
 }

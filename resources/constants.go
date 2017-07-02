@@ -2,8 +2,8 @@ package resources
 
 const (
 	APP_SUPPORT_FOLDER_PATH = "Library/Application Support/Alfred 3/Workflow Data"
-	VENDOR_ID = "org.erneker"
-	APP_NAME = "personalmanager"
+	VENDOR_ID               = "org.erneker"
+	APP_NAME                = "personalmanager"
 
 	DB_NAME = "personal-manager.db"
 
@@ -12,6 +12,7 @@ const (
 	MSG_MODIFY_SUCCESS = "Successfully modified %s."
 	MSG_SET_SUCCESS    = "Successfully set %s to %s."
 	MSG_EXPORT_SUCCESS = "Successfully exported %s."
+	MSG_SYNC_SUCCESS   = "Successfully synchronized %s."
 
 	LOG_FILE_NAME = "personal-manager.log"
 

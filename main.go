@@ -12,6 +12,8 @@ import (
 	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
+	"github.com/7joe7/personalmanager/operations/goals"
+	"github.com/7joe7/personalmanager/operations/configuration"
 	"github.com/7joe7/personalmanager/operations/exporter"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
@@ -72,10 +74,11 @@ func main() {
 	}
 	defer f.Close()
 	log.SetOutput(f)
+	resources.Alf = alfred.NewAlfred(os.Stdout)
+	resources.Abr = anybar.NewAnybarManager(utils.GetRunningBinaryPath())
 
 	logBinaryCall()
 
-	anybar.Start(anybar.NewAnybarManager())
 	db.Open()
 	t := db.NewTransaction()
 	operations.InitializeBuckets(t)
@@ -86,101 +89,102 @@ func main() {
 	switch *action {
 	case resources.ACT_CREATE_TASK:
 		operations.AddTask(*name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *note, *activeFlag, *basePoints)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"))
 	case resources.ACT_CREATE_PROJECT:
 		operations.AddProject(*name)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "project"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "project"))
 	case resources.ACT_CREATE_TAG:
 		operations.AddTag(*name)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"))
 	case resources.ACT_CREATE_GOAL:
-		operations.AddGoal(*name, *projectId, *habitId, *habitRepetitionGoal, *basePoints)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
+		goals.AddGoal(*name, *projectId, *habitId, *habitRepetitionGoal, *basePoints)
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"))
 	case resources.ACT_CREATE_HABIT:
 		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *negativeFlag, *basePoints, *habitRepetitionGoal)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
-		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_PERSONAL_TASKS:
-		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetPersonalTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetPersonalTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_PERSONAL_NEXT_TASKS:
-		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS:
-		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_SHOPPING_TASKS:
-		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetShoppingTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetShoppingTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_NEXT_TASKS:
-		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetWorkNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetWorkNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_UNSCHEDULED_TASKS:
-		alfred.PrintEntities(resources.Tasks{Tasks: operations.GetWorkUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetWorkUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_TASK_NOTE:
-		alfred.PrintResult(operations.GetTask(*id).Note)
+		resources.Alf.PrintResult(operations.GetTask(*id).Note)
 	case resources.ACT_PRINT_PROJECTS:
-		alfred.PrintEntities(resources.Projects{operations.GetProjects(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Projects{operations.GetProjects(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_ACTIVE_PROJECTS:
-		alfred.PrintEntities(resources.Projects{operations.GetActiveProjects(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Projects{operations.GetActiveProjects(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_INACTIVE_PROJECTS:
-		alfred.PrintEntities(resources.Projects{operations.GetInactiveProjects(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Projects{operations.GetInactiveProjects(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_TAGS:
-		alfred.PrintEntities(resources.Tags{operations.GetTags(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tags{operations.GetTags(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_GOALS:
-		alfred.PrintEntities(resources.Goals{operations.GetGoals(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Goals{goals.GetGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_ACTIVE_GOALS:
-		alfred.PrintEntities(resources.Goals{operations.GetActiveGoals(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Goals{goals.GetActiveGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_NON_ACTIVE_GOALS:
-		alfred.PrintEntities(resources.Goals{operations.GetNonActiveGoals(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Goals{goals.GetNonActiveGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_INCOMPLETE_GOALS:
-		alfred.PrintEntities(resources.Goals{operations.GetIncompleteGoals(), *noneAllowed, operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Goals{goals.GetIncompleteGoals(), *noneAllowed, operations.GetStatus()})
 	case resources.ACT_PRINT_HABITS:
 		if *activeFlag {
-			alfred.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus(), true})
+			resources.Alf.PrintEntities(resources.Habits{operations.GetActiveHabits(), *noneAllowed, operations.GetStatus(), true})
 		} else {
-			alfred.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus(), false})
+			resources.Alf.PrintEntities(resources.Habits{operations.GetNonActiveHabits(), *noneAllowed, operations.GetStatus(), false})
 		}
 	case resources.ACT_PRINT_HABIT_DESCRIPTION:
-		alfred.PrintResult(operations.GetHabit(*id).Description)
+		resources.Alf.PrintResult(operations.GetHabit(*id).Description)
 	case resources.ACT_PRINT_REVIEW:
-		alfred.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
+		resources.Alf.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}})
 	case resources.ACT_EXPORT_SHOPPING_TASKS:
 		exporter.ExportShoppingTasks(resources.CFG_EXPORT_CONFIG_PATH)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"))
 	case resources.ACT_DELETE_TASK:
 		operations.DeleteTask(*id)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "task"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "task"))
 	case resources.ACT_DELETE_PROJECT:
 		operations.DeleteProject(*id)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "project"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "project"))
 	case resources.ACT_DELETE_TAG:
 		operations.DeleteTag(*id)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "tag"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "tag"))
 	case resources.ACT_DELETE_GOAL:
-		operations.DeleteGoal(*id)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "goal"))
+		goals.DeleteGoal(*id)
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "goal"))
 	case resources.ACT_DELETE_HABIT:
 		operations.DeleteHabit(*id)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "habit"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_TASK:
 		operations.ModifyTask(*id, *name, *projectId, *goalId, *deadline, *estimate, *scheduled, *taskType, *note, *basePoints, *activeFlag, *doneFlag)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "task"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "task"))
 	case resources.ACT_MODIFY_PROJECT:
 		operations.ModifyProject(*id, *name, *taskId, *goalId, *activeFlag, *doneFlag)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "project"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "project"))
 	case resources.ACT_MODIFY_TAG:
 		operations.ModifyTag(*id, *name)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"))
 	case resources.ACT_MODIFY_GOAL:
-		operations.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal, *basePoints)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
+		goals.ModifyGoal(*id, *name, *taskId, *projectId, *habitId, *activeFlag, *doneFlag, *habitRepetitionGoal, *basePoints)
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"))
 	case resources.ACT_MODIFY_HABIT:
 		operations.ModifyHabit(*id, *name, *repetition, *note, *deadline, *goalId, *activeFlag, *doneFlag, *donePrevious, *undonePrevious, *negativeFlag, *learnedFlag, *basePoints, *habitRepetitionGoal)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"))
 	case resources.ACT_MODIFY_REVIEW:
 		operations.ModifyReview(*repetition, *deadline)
-		alfred.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "review"))
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "review"))
 	case resources.ACT_SYNC_ANYBAR_PORTS:
 		t := db.NewTransaction()
 		operations.SynchronizeAnybarPorts(t)
 		t.Execute()
+		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_SYNC_SUCCESS, "AnyBar ports"))
 	case resources.ACT_DEBUG_DATABASE:
 		db.PrintoutDbContents(*id)
 	case resources.ACT_SYNC_WITH_JIRA:
@@ -191,15 +195,15 @@ func main() {
 		switch *id {
 		case string(resources.DB_DEFAULT_EMAIL):
 			exporter.SetEmail(*name)
-			alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
+			resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "e-mail", *name))
 		case string(resources.DB_WEEKS_LEFT):
-			operations.SetWeeksLeft(*basePoints)
+			configuration.SetWeeksLeft(*basePoints)
 			weeksLeft := fmt.Sprint(*basePoints)
-			if !anybar.Ping(resources.ANY_PORT_WEEKS_LEFT) {
+			if !resources.Abr.Ping(resources.ANY_PORT_WEEKS_LEFT) {
 				resources.WaitGroup.Add(1)
-				go anybar.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeft, resources.ANY_CMD_BROWN)
+				go resources.Abr.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeft, resources.ANY_CMD_BROWN)
 			}
-			alfred.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "weeks left", weeksLeft))
+			resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_SET_SUCCESS, "weeks left", weeksLeft))
 		}
 	case resources.ACT_CUSTOM:
 		t := db.NewTransaction()

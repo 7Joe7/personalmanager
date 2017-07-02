@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -124,7 +124,7 @@ func TestGetHabitNonActiveItem(t *testing.T) {
 	testCommonAttr(ai, true, testId, testHabitNonActive.Name, fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT,
 		testHabitNonActive.Successes, testHabitNonActive.Tries), ICO_BLACK, t)
 	expectedOrder := HBT_BASE_ORDER_DAILY
-	test.ExpectInt(expectedOrder, ai.order, t)
+	assert.Equal(t, expectedOrder, ai.order)
 }
 
 func TestGetHabitActiveItem(t *testing.T) {
@@ -134,7 +134,7 @@ func TestGetHabitActiveItem(t *testing.T) {
 		testHabitActive.ActualStreak, testHabitActive.Deadline.Format(DATE_FORMAT),
 		testHabitActive.BasePoints), ICO_RED, t)
 	expectedOrder := HBT_BASE_ORDER_DAILY - testHabitActive.BasePoints
-	test.ExpectInt(expectedOrder, ai.order, t)
+	assert.Equal(t, expectedOrder, ai.order)
 }
 
 func TestGetHabitDoneItem(t *testing.T) {
@@ -143,7 +143,7 @@ func TestGetHabitDoneItem(t *testing.T) {
 		testHabitDone.Successes, testHabitDone.Tries, testHabitDone.ActualStreak,
 		testHabitDone.Deadline.Format(DATE_FORMAT), testHabitDone.BasePoints), ICO_GREEN, t)
 	expectedOrder := HBT_DONE_BASE_ORDER - testHabitDone.BasePoints
-	test.ExpectInt(expectedOrder, ai.order, t)
+	assert.Equal(t, expectedOrder, ai.order)
 }
 
 func TestGetStatusItem(t *testing.T) {
@@ -162,15 +162,15 @@ func TestGetZeroItem(t *testing.T) {
 }
 
 func testCommonAttr(ai *AlfredItem, valid bool, testId, expectedName, expectedSubtitle, expectedIconPath string, t *testing.T) {
-	test.ExpectString(testId, ai.Arg, t)
-	test.ExpectString(expectedName, ai.Name, t)
-	test.ExpectBool(valid, ai.Valid, t)
-	test.ExpectString(expectedSubtitle, ai.Subtitle, t)
-	test.ExpectString(expectedIconPath, ai.Icon.Path, t)
+	assert.Equal(t, testId, ai.Arg)
+	assert.Equal(t, expectedName, ai.Name)
+	assert.Equal(t, valid, ai.Valid)
+	assert.Equal(t, expectedSubtitle, ai.Subtitle)
+	assert.Equal(t, expectedIconPath, ai.Icon.Path)
 }
 
 func testMarshalling(entity interface{}, expectedJson string, t *testing.T) {
 	bytes, err := json.Marshal(entity)
-	test.ExpectSuccess(t, err)
-	test.ExpectString(expectedJson, string(bytes), t)
+	assert.Nil(t, err)
+	assert.Equal(t, expectedJson, string(bytes))
 }

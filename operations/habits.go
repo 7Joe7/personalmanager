@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/7joe7/personalmanager/db"
-	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
 )
@@ -184,7 +183,7 @@ func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) fun
 			}
 
 			if h.Deadline.Before(time.Now()) {
-				if h.Learned && *h.LastStreakEnd != *h.Deadline {
+				if h.Learned && (h.LastStreakEnd == nil || *h.LastStreakEnd != *h.Deadline) {
 					h.Done = true
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
@@ -312,7 +311,7 @@ func deleteHabit(habitId string) {
 			}
 		}
 		if h.Active {
-			anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, habitId, t)
+			resources.Abr.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, habitId, t)
 		}
 		return t.DeleteEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId))
 	})

@@ -3,6 +3,9 @@
 set -x
 set -e
 
+echo $PATH
+echo $GOPATH
+
 export PROJECT_NAME="github.com/7joe7/personalmanager"
 
 failed=false

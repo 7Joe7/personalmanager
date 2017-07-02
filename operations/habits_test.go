@@ -4,10 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -18,31 +17,30 @@ var (
 func TestGetNumberOfMissedDeadlines(t *testing.T) {
 	h := getActiveHabit("habit1", resources.HBT_REPETITION_DAILY, 7, 3, 3, 0, 7)
 	h.Deadline = utils.GetTimePointer(time.Now().Truncate(24 * time.Hour))
-	test.ExpectInt(1, getNumberOfMissedDeadlines(h), t)
+	assert.Equal(t, 1, getNumberOfMissedDeadlines(h))
 
 	h = getActiveHabit("habit2", resources.HBT_REPETITION_DAILY, 7, 3, 3, 0, 7)
 	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * time.Hour).Truncate(24 * time.Hour))
-	test.ExpectInt(2, getNumberOfMissedDeadlines(h), t)
+	assert.Equal(t, 2, getNumberOfMissedDeadlines(h))
 
 	h = getActiveHabit("habit3", resources.HBT_REPETITION_WEEKLY, 7, 3, 3, 0, 7)
 	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * time.Hour).Truncate(24 * time.Hour))
-	test.ExpectInt(1, getNumberOfMissedDeadlines(h), t)
+	assert.Equal(t, 1, getNumberOfMissedDeadlines(h))
 
 	h = getActiveHabit("habit3", resources.HBT_REPETITION_WEEKLY, 7, 3, 3, 0, 7)
 	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * 7 * time.Hour).Truncate(24 * time.Hour))
-	test.ExpectInt(2, getNumberOfMissedDeadlines(h), t)
+	assert.Equal(t, 2, getNumberOfMissedDeadlines(h))
 
 	h = getActiveHabit("habit3", resources.HBT_REPETITION_MONTHLY, 7, 3, 3, 0, 7)
 	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * time.Hour).Truncate(24 * time.Hour))
-	test.ExpectInt(1, getNumberOfMissedDeadlines(h), t)
+	assert.Equal(t, 1, getNumberOfMissedDeadlines(h))
 
 	h = getActiveHabit("habit3", resources.HBT_REPETITION_MONTHLY, 7, 3, 3, 0, 7)
 	h.Deadline = utils.GetTimePointer(time.Now().Add(-24 * 30 * time.Hour).Truncate(24 * time.Hour))
-	test.ExpectInt(2, getNumberOfMissedDeadlines(h), t)
+	assert.Equal(t, 2, getNumberOfMissedDeadlines(h))
 }
 
 func TestGetModifyHabitFunc(t *testing.T) {
-	anybar.Start(anybar.NewAnybarManagerMock())
 	// change habit name
 	h := getInactiveHabit("testHabit1", 2, 1)
 	changeStatus := &resources.Status{}
@@ -54,7 +52,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	tr.Execute()
 
 	verifyHabitState("testHabit", "", "", "testHabit1", false, false, 2, 1, 0, 0, 0, 0, 0, h, changeStatus, t)
-	test.ExpectBool(true, h.LastStreakEnd == nil, t)
+	assert.Nil(t, h.LastStreakEnd)
 
 	// deactivate habit
 	h = getActiveHabit("testHabit2", resources.HBT_REPETITION_DAILY, 3, 2, 1, 1, 7)
@@ -66,7 +64,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	})
 	tr.Execute()
 	verifyHabitState("testHabit2", "Daily", "", "testHabit2", false, false, 3, 2, 1, 1, 7, 0, 0, h, changeStatus, t)
-	test.ExpectBool(true, h.LastStreakEnd == nil, t)
+	assert.Nil(t, h.LastStreakEnd)
 
 	// activate habit
 	h = getInactiveHabit("testHabit3", 8, 5)
@@ -93,7 +91,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	tr.Execute()
 	verifyHabitState("testHabit4", resources.HBT_REPETITION_WEEKLY, tomorrowDeadlineStr, "testHabit4", true, true,
 		32, 15, 1, 4, 9, 18, 18, h, changeStatus, t)
-	test.ExpectBool(true, h.LastStreakEnd == previousDeadline, t)
+	assert.True(t, h.LastStreakEnd == previousDeadline)
 
 	// fail done habit
 	h = getActiveHabit("testHabit5", resources.HBT_REPETITION_MONTHLY, 2, 1, 1, 0, 12)
@@ -107,7 +105,7 @@ func TestGetModifyHabitFunc(t *testing.T) {
 	tr.Execute()
 	verifyHabitState("testHabit5", resources.HBT_REPETITION_MONTHLY, tomorrowDeadlineStr, "testHabit5", true, false,
 		2, 0, -1, 1, 12, -36, -36, h, changeStatus, t)
-	test.ExpectString(h.Deadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT), t)
+	assert.Equal(t, h.Deadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT))
 
 	// set habit done previous period
 	h = getActiveHabit("testHabit6", resources.HBT_REPETITION_WEEKLY, 8, 6, -1, 6, 3)
@@ -165,7 +163,7 @@ func TestGetSyncHabitFunc(t *testing.T) {
 	tr.Execute()
 	verifyHabitState("testHabit9", resources.HBT_REPETITION_DAILY, tomorrowDeadlineStr, "testHabit9", true, false,
 		20, 12, -1, 3, 8, -8, 0, h, changeStatus, t)
-	test.ExpectString(todayDeadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT), t)
+	assert.Equal(t, todayDeadline.Format(resources.DATE_FORMAT), h.LastStreakEnd.Format(resources.DATE_FORMAT))
 
 	h = getActiveHabit("testHabit10", resources.HBT_REPETITION_DAILY, 21, 13, 2, 4, 6)
 	changeStatus = &resources.Status{}
@@ -215,24 +213,24 @@ func TestGetHabit(t *testing.T) {
 func verifyHabitState(expectedName, expectedRepetition, expectedDeadline, expectedId string, expectedActive, expectedDone bool,
 	expectedTries, expectedSuccesses, expectedActualStreak, expectedLastStreak, expectedBasePoints, expectedScore,
 	expectedTodayScore int, h *resources.Habit, changeStatus *resources.Status, t *testing.T) {
-	test.ExpectString(expectedName, h.Name, t)
-	test.ExpectString(expectedRepetition, h.Repetition, t)
-	test.ExpectBool(expectedActive, h.Active, t)
-	test.ExpectBool(expectedDone, h.Done, t)
+	assert.Equal(t, expectedName, h.Name)
+	assert.Equal(t, expectedRepetition, h.Repetition)
+	assert.Equal(t, expectedActive, h.Active)
+	assert.Equal(t, expectedDone, h.Done)
 	if expectedDeadline == "" {
-		test.ExpectBool(true, h.Deadline == nil, t)
+		assert.Nil(t, h.Deadline)
 	} else {
-		test.ExpectString(expectedDeadline, h.Deadline.Format(resources.DATE_FORMAT), t)
+		assert.Equal(t, expectedDeadline, h.Deadline.Format(resources.DATE_FORMAT))
 	}
-	test.ExpectInt(expectedTries, h.Tries, t)
-	test.ExpectInt(expectedSuccesses, h.Successes, t)
-	test.ExpectInt(expectedActualStreak, h.ActualStreak, t)
-	test.ExpectInt(expectedLastStreak, h.LastStreak, t)
-	//test.ExpectBool(expectedLastStreakEnd, h.LastStreakEnd == nil, t)
-	test.ExpectInt(expectedBasePoints, h.BasePoints, t)
-	test.ExpectString(expectedId, h.Id, t)
-	test.ExpectInt(expectedScore, changeStatus.Score, t)
-	test.ExpectInt(expectedTodayScore, changeStatus.Today, t)
+	assert.Equal(t, expectedTries, h.Tries)
+	assert.Equal(t, expectedSuccesses, h.Successes)
+	assert.Equal(t, expectedActualStreak, h.ActualStreak)
+	assert.Equal(t, expectedLastStreak, h.LastStreak)
+	//assert.Equal(t, expectedLastStreakEnd, h.LastStreakEnd == nil)
+	assert.Equal(t, expectedBasePoints, h.BasePoints)
+	assert.Equal(t, expectedId, h.Id)
+	assert.Equal(t, expectedScore, changeStatus.Score)
+	assert.Equal(t, expectedTodayScore, changeStatus.Today)
 }
 
 func getInactiveHabit(name string, tries, successes int) *resources.Habit {

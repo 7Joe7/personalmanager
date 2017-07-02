@@ -5,7 +5,6 @@ import (
 
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
-	//"github.com/7joe7/personalmanager/operations/anybar"
 )
 
 func initializeBuckets(t resources.Transaction, bucketsToInitialize [][]byte) {

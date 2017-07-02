@@ -12,6 +12,21 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 )
 
+type exportConfig struct {
+	SmtpAddress        string `json:"smtpAddress"`
+	SmtpPort           int    `json:"smtpPort"`
+	AdminEmailAddress  string `json:"adminEmailAddress"`
+	AdminEmailPassword string `json:"adminEmailPassword"`
+}
+
+func ExportShoppingTasks(cfgAddress string) {
+	exportTasks(cfgAddress)
+}
+
+func SetEmail(email string) {
+	setEmail(email)
+}
+
 // TODO change to exportEntities - add Export method to all entities
 // TODO allow to send somebody else
 func exportTasks(cfgAddress string) {
@@ -32,7 +47,7 @@ func exportTasks(cfgAddress string) {
 	}
 
 	config := readExportConfig(cfgAddress)
-	err := smtp.SendMail(fmt.Sprintf("%s:%s", config.SmtpAddress, config.SmtpPort), smtp.PlainAuth("", config.AdminEmailAddress, config.AdminEmailPassword, config.SmtpAddress), config.AdminEmailAddress, []string{email}, []byte(message))
+	err := smtp.SendMail(fmt.Sprintf("%s:%d", config.SmtpAddress, config.SmtpPort), smtp.PlainAuth("", config.AdminEmailAddress, config.AdminEmailPassword, config.SmtpAddress), config.AdminEmailAddress, []string{email}, []byte(message))
 	if err != nil {
 		panic(err)
 	}

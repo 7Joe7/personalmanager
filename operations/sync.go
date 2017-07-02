@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/7joe7/personalmanager/db"
-	"github.com/7joe7/personalmanager/operations/anybar"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
 )
@@ -33,8 +32,8 @@ func synchronize(t resources.Transaction, backup bool) {
 					}
 					resources.WaitGroup.Add(2)
 					go func() {
-						anybar.Quit(resources.ANY_PORT_WEEKS_LEFT)
-						anybar.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeftText, resources.ANY_CMD_BROWN)
+						resources.Abr.Quit(resources.ANY_PORT_WEEKS_LEFT)
+						resources.Abr.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeftText, resources.ANY_CMD_BROWN)
 					}()
 				}
 			}
@@ -77,7 +76,7 @@ func synchronizeAnybarPorts(t resources.Transaction) {
 	t.Add(func() error {
 		var err error
 		activeTaskId := t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY)
-		if !anybar.Ping(resources.ANY_PORT_ACTIVE_TASK) && activeTaskId != nil && string(activeTaskId) != "" {
+		if !resources.Abr.Ping(resources.ANY_PORT_ACTIVE_TASK) && activeTaskId != nil && string(activeTaskId) != "" {
 			activeTask := &resources.Task{}
 			err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, activeTaskId, activeTask, true)
 			if err != nil {
@@ -85,17 +84,17 @@ func synchronizeAnybarPorts(t resources.Transaction) {
 			}
 			if activeTask.InProgress {
 				resources.WaitGroup.Add(1)
-				go anybar.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, activeTask.Name, resources.ANY_CMD_BLUE)
+				go resources.Abr.StartWithIcon(resources.ANY_PORT_ACTIVE_TASK, activeTask.Name, resources.ANY_CMD_BLUE)
 			}
 		}
 		weeksLeft := string(t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_WEEKS_LEFT))
-		if weeksLeft != "" && !anybar.Ping(resources.ANY_PORT_WEEKS_LEFT) {
+		if weeksLeft != "" && !resources.Abr.Ping(resources.ANY_PORT_WEEKS_LEFT) {
 			resources.WaitGroup.Add(1)
-			go anybar.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeft, resources.ANY_CMD_BROWN)
+			go resources.Abr.StartWithIcon(resources.ANY_PORT_WEEKS_LEFT, weeksLeft, resources.ANY_CMD_BROWN)
 		}
-		activePorts := anybar.GetActivePorts(t)
+		activePorts := resources.Abr.GetActivePorts(t)
 		resources.WaitGroup.Add(1)
-		go anybar.EnsureActivePorts(activePorts)
+		go resources.Abr.EnsureActivePorts(activePorts)
 		return nil
 	})
 }

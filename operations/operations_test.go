@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/test"
 	"github.com/7joe7/personalmanager/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInitializeBuckets(t *testing.T) {
@@ -17,7 +17,7 @@ func TestInitializeBuckets(t *testing.T) {
 
 	for j := 2; j < len(resources.BUCKETS_TO_INTIALIZE)+2; j++ {
 		expected := fmt.Sprintf(INITIALIZE_BUCKET_CALLED_FORMAT, string(resources.BUCKETS_TO_INTIALIZE[j-2]))
-		test.ExpectString(expected, tm.functionsCalled[j], t)
+		assert.Equal(t, expected, tm.functionsCalled[j])
 	}
 }
 
@@ -28,11 +28,11 @@ func TestEnsureValues(t *testing.T) {
 	verifyTransactionFlow(t, tm)
 
 	expected := fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_REVIEW_SETTINGS_KEY), &resources.Review{Repetition: resources.HBT_REPETITION_WEEKLY, Deadline: utils.GetFirstSaturday()})
-	test.ExpectString(expected, tm.functionsCalled[2], t)
+	assert.Equal(t, expected, tm.functionsCalled[2])
 	expected = fmt.Sprintf(ENSURE_VALUE_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ANYBAR_ACTIVE_PORTS), []byte{})
-	test.ExpectString(expected, tm.functionsCalled[3], t)
+	assert.Equal(t, expected, tm.functionsCalled[3])
 	expected = fmt.Sprintf(ENSURE_ENTITY_CALLED_FORMAT, string(resources.DB_DEFAULT_BASIC_BUCKET_NAME), string(resources.DB_ACTUAL_STATUS_KEY), &resources.Status{})
-	test.ExpectString(expected, tm.functionsCalled[4], t)
+	assert.Equal(t, expected, tm.functionsCalled[4])
 }
 
 func TestSynchronize(t *testing.T) {
@@ -53,6 +53,6 @@ func TestSynchronize(t *testing.T) {
 }
 
 func verifyTransactionFlow(t *testing.T, tm *transactionMock) {
-	test.ExpectString("Add", tm.functionsCalled[0], t)
-	test.ExpectBool(false, tm.functionsCalled[1] != "Execute" && tm.functionsCalled[1] != "View", t)
+	assert.Equal(t, "Add", tm.functionsCalled[0])
+	assert.False(t, tm.functionsCalled[1] != "Execute" && tm.functionsCalled[1] != "View")
 }

@@ -116,42 +116,6 @@ func GetNonActiveHabits() map[string]*resources.Habit {
 	return getNonActiveHabits()
 }
 
-func AddGoal(name, projectId, habitId string, habitRepetitionGoal, priority int) string {
-	return addGoal(name, projectId, habitId, habitRepetitionGoal, priority)
-}
-
-func DeleteGoal(goalId string) {
-	deleteGoal(goalId)
-}
-
-func ModifyGoal(goalId, name, taskId, projectId, habitId string, activeFlag, doneFlag bool, habitRepetitionGoal, priority int) {
-	modifyGoal(goalId, name, taskId, projectId, habitId, activeFlag, doneFlag, habitRepetitionGoal, priority)
-}
-
-func GetGoal(goalId string) *resources.Goal {
-	return getGoal(goalId)
-}
-
-func GetGoals() map[string]*resources.Goal {
-	return getGoals()
-}
-
-func FilterGoals(filter func(*resources.Goal) bool) map[string]*resources.Goal {
-	return filterGoals(false, filter)
-}
-
-func GetActiveGoals() map[string]*resources.Goal {
-	return getActiveGoals()
-}
-
-func GetNonActiveGoals() map[string]*resources.Goal {
-	return getNonActiveGoals()
-}
-
-func GetIncompleteGoals() map[string]*resources.Goal {
-	return getIncompleteGoals()
-}
-
 func AddProject(name string) {
 	addProject(name)
 }
@@ -186,8 +150,4 @@ func GetInactiveProjects() map[string]*resources.Project {
 
 func SyncWithJira() {
 	syncWithJira()
-}
-
-func SetWeeksLeft(weeksLeft int) {
-	setWeeksLeft(weeksLeft)
 }

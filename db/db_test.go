@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/7joe7/personalmanager/resources"
-	"github.com/7joe7/personalmanager/test"
 	"github.com/boltdb/bolt"
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -39,7 +39,7 @@ func TestTransaction_SetValue(t *testing.T) {
 	tr.Add(func() error {
 		return tr.SetValue(resources.DB_DEFAULT_TASKS_BUCKET_NAME, resources.DB_LAST_ID_KEY, []byte("7"))
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	testGetValue("7", resources.DB_DEFAULT_TASKS_BUCKET_NAME, resources.DB_LAST_ID_KEY, t)
 	removeDb(t)
 }
@@ -51,7 +51,7 @@ func TestTransaction_ModifyValue(t *testing.T) {
 	tr.Add(func() error {
 		return tr.SetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, []byte("9"))
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	testGetValue("9", resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, t)
 	tr = newTransaction()
 	tr.Add(func() error {
@@ -62,7 +62,7 @@ func TestTransaction_ModifyValue(t *testing.T) {
 			return []byte("Something is wrong")
 		})
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	testGetValue("11", resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_ACTIVE_TASK_KEY, t)
 	removeDb(t)
 }
@@ -75,15 +75,15 @@ func TestTransaction_EnsureEntity(t *testing.T) {
 	tr.Add(func() error {
 		return tr.EnsureEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status)
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	statusToVerify := &resources.Status{}
-	test.ExpectSuccess(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, statusToVerify, false))
+	assert.Nil(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, statusToVerify, false))
 	testRetrieveStatus(statusToVerify, status, t)
 	status.Score = 24
 	status.Today = 1
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	status2ToVerify := &resources.Status{}
-	test.ExpectSuccess(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status2ToVerify, false))
+	assert.Nil(t, retrieveEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, status2ToVerify, false))
 	testRetrieveStatus(status2ToVerify, statusToVerify, t)
 	removeDb(t)
 }
@@ -99,13 +99,13 @@ func TestTransaction_AddEntity(t *testing.T) {
 	tr.Add(func() error {
 		return tr.AddEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, testTask1)
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	taskToVerify := &resources.Task{}
 	tr = newTransaction()
 	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	testRetrieveTask(testProject1, testTask1, taskToVerify, nil, t)
 	removeDb(t)
 }
@@ -123,7 +123,7 @@ func TestTransaction_RetrieveEntity(t *testing.T) {
 	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	testRetrieveTask(testProject1, testTask1, taskToVerify, nil, t)
 	removeDb(t)
 }
@@ -145,13 +145,13 @@ func TestTransaction_ModifyEntity(t *testing.T) {
 			taskToModify.Project.Name = "modified through task by transaction which is invalid"
 		})
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	taskToVerify := &resources.Task{}
 	tr = newTransaction()
 	tr.Add(func() error {
 		return tr.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), taskToVerify, false)
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	testRetrieveTask(testProject1, taskToModify, taskToVerify, nil, t)
 	removeDb(t)
 }
@@ -177,7 +177,7 @@ func TestTransaction_MapEntities(t *testing.T) {
 			}
 		})
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	taskToVerify := &resources.Task{}
 	testRetrieveTask(testProject1, task, taskToVerify, retrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask2.Id), taskToVerify, false), t)
 	removeDb(t)
@@ -205,7 +205,7 @@ func TestTransaction_FilterEntities(t *testing.T) {
 		return task
 	}
 	addEntity := func() { tasks[task.Id] = task }
-	test.ExpectSuccess(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, addEntity, getNewEntity, func() bool { return task.Project == nil }))
+	assert.Nil(t, filterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, false, addEntity, getNewEntity, func() bool { return task.Project == nil }))
 	if len(tasks) != 1 {
 		t.Errorf("Expected size of tasks to be 1, it is %d.", len(tasks))
 	}
@@ -227,7 +227,7 @@ func TestTransaction_DeleteEntity(t *testing.T) {
 	tr.Add(func() error {
 		return tr.DeleteEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id))
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	if err := retrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(testTask1.Id), &resources.Task{}, false); err == nil {
 		t.Errorf("Expected error, got nil.")
 	}
@@ -252,7 +252,7 @@ func TestTransaction_RetrieveEntities(t *testing.T) {
 			return tasks[id]
 		})
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	testRetrieveTask(testProject1, testTask1, tasks[testTask1.Id], nil, t)
 	testRetrieveTask(nil, testTask2, tasks[testTask2.Id], nil, t)
 	removeDb(t)
@@ -276,7 +276,7 @@ func TestTransaction_Execute(t *testing.T) {
 		addWasCalled = true
 		return nil
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	if !addWasCalled {
 		t.Errorf("Expected true, got %v.", addWasCalled)
 	}
@@ -291,7 +291,7 @@ func TestTransaction_View(t *testing.T) {
 		addWasCalled = true
 		return nil
 	})
-	test.ExpectSuccess(t, tr.view())
+	assert.Nil(t, tr.view())
 	if !addWasCalled {
 		t.Errorf("Expected true, got %v.", addWasCalled)
 	}
@@ -299,7 +299,7 @@ func TestTransaction_View(t *testing.T) {
 }
 
 func testRetrieveTask(expectedProject *resources.Project, expectedEntity, gotEntity *resources.Task, err error, t *testing.T) {
-	test.ExpectSuccess(t, err)
+	assert.Nil(t, err)
 	if gotEntity.Name != expectedEntity.Name {
 		t.Errorf("Expected saved name to be '%s'. It is '%s'.", expectedEntity.Name, gotEntity.Name)
 	}
@@ -340,16 +340,16 @@ func testAddEntity(expectedId string, entity resources.Entity, bucketName []byte
 	tr.Add(func() error {
 		return tr.AddEntity(bucketName, entity)
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	if entity.GetId() != expectedId {
 		t.Errorf("Expected first id to be '0', it is '%s'.", entity.GetId())
 	}
 }
 
 func testOpen(t *testing.T) {
-	test.ExpectSuccess(t, open(TEST_DB_PATH))
+	assert.Nil(t, open(TEST_DB_PATH))
 	fi, err := os.Stat(TEST_DB_PATH)
-	test.ExpectSuccess(t, err)
+	assert.Nil(t, err)
 	if fi.Size() == 0 {
 		t.Errorf("Verify database existence - database has 0 size.")
 	}
@@ -360,14 +360,14 @@ func testBucketInitialization(t *testing.T, bucketName []byte) {
 	tr.Add(func() error {
 		return tr.InitializeBucket(bucketName)
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 	err := db.View(func(tx *bolt.Tx) error {
 		if tx.Bucket(bucketName) == nil {
 			t.Errorf("Expected created bucket, got nil.")
 		}
 		return nil
 	})
-	test.ExpectSuccess(t, err)
+	assert.Nil(t, err)
 }
 
 func testGetValue(expectedValue string, bucketName, lastIdKey []byte, t *testing.T) {
@@ -379,9 +379,9 @@ func testGetValue(expectedValue string, bucketName, lastIdKey []byte, t *testing
 		}
 		return nil
 	})
-	test.ExpectSuccess(t, tr.execute())
+	assert.Nil(t, tr.execute())
 }
 
 func removeDb(t *testing.T) {
-	test.ExpectSuccess(t, os.Remove(TEST_DB_PATH))
+	assert.Nil(t, os.Remove(TEST_DB_PATH))
 }

@@ -19,7 +19,7 @@ type Transaction interface {
 	Add(exec func() error)
 }
 
-type AnybarManager interface {
+type Anybar interface {
 	RemoveAndQuit(bucketName []byte, id string, t Transaction)
 	AddToActivePorts(title, icon string, bucketName []byte, id string, t Transaction)
 	EnsureActivePorts(activePorts ActivePorts)
@@ -40,4 +40,9 @@ type Entity interface {
 
 type Item interface {
 	GetItem() *AlfredItem
+}
+
+type Alfred interface {
+	PrintEntities(entities interface{})
+	PrintResult(result string)
 }

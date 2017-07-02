@@ -4,6 +4,14 @@ const (
 	MAX_RESULTS = 1000
 )
 
+type JqlResult struct {
+	MaxResults int
+	Issues     []Issue
+}
+
+type Issue struct {
+}
+
 func GetJqlResult(jql string) {
 	startAt := 0
 	result := getPart(startAt, MAX_RESULTS)
