@@ -127,13 +127,14 @@ func getSyncTaskFunc() func(resources.Entity) func() {
 	}
 }
 
-func createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int, t resources.Transaction) (*resources.Task, error) {
+func createTask(name, projectId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int, goal *resources.Goal, t resources.Transaction) (*resources.Task, error) {
 	task := resources.NewTask(name)
 	if projectId != "" && projectId != "-" {
 		task.Project = &resources.Project{Id: projectId}
 	}
-	if goalId != "" && goalId != "-" {
-		task.Goal = &resources.Goal{Id: goalId}
+	if goal != nil {
+		task.Goal = goal
+		task.BasePoints = goal.Priority
 	}
 	if deadline != "" {
 		task.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
@@ -171,7 +172,15 @@ func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, n
 	var id string
 	t := db.NewTransaction()
 	t.Add(func() error {
-		task, err := createTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note, active, basePoints, t)
+		var goal *resources.Goal
+		if goalId != "-" && goalId != "" {
+			goal = &resources.Goal{}
+			err := t.RetrieveEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal, false)
+			if err != nil {
+				return err
+			}
+		}
+		task, err := createTask(name, projectId, deadline, estimate, scheduled, taskType, note, active, basePoints, goal, t)
 		if err != nil {
 			return err
 		}
