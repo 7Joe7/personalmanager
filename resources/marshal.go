@@ -48,7 +48,7 @@ func (ts Tasks) MarshalJSON() ([]byte, error) {
 			}
 		}
 		items = append(items, &AlfredItem{
-			Name:  fmt.Sprintf("Total estimate: %s", utils.MinutesToHMFormat(sum)),
+			Name:  fmt.Sprintf("Count: %d, estimate: %s", len(ts.Tasks), utils.MinutesToHMFormat(sum)),
 			Valid: false,
 			Icon:  NewAlfredIcon(ICO_BLACK),
 			Mods:  getEmptyMods(),

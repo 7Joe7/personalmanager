@@ -6,7 +6,9 @@ personal-manager.db
 *.backup
 personal-manager.log
 personalmanager
+daemon/daemon
 custom
 debug-database
 modify-task
 export-config.json
+**/.DS_Store

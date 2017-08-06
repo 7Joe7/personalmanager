@@ -63,11 +63,6 @@ func main() {
 
 	flag.Parse()
 
-	err := ensureAppSupportFolder(rutils.GetAppSupportFolderPath())
-	if err != nil {
-		panic(err)
-	}
-
 	f, err := os.OpenFile(fmt.Sprintf("%s/%s", rutils.GetAppSupportFolderPath(), resources.LOG_FILE_NAME), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
@@ -103,19 +98,19 @@ func main() {
 		operations.AddHabit(*name, *repetition, *note, *deadline, *goalId, *activeFlag, *negativeFlag, *basePoints, *habitRepetitionGoal)
 		resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"))
 	case resources.ACT_PRINT_TASKS:
-		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_PERSONAL_TASKS:
-		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetPersonalTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetPersonalTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_PERSONAL_NEXT_TASKS:
 		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS:
-		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_SHOPPING_TASKS:
 		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetShoppingTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
 	case resources.ACT_PRINT_WORK_NEXT_TASKS:
-		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetWorkNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetWorkNextTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_WORK_UNSCHEDULED_TASKS:
-		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetWorkUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus()})
+		resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetWorkUnscheduledTasks(), NoneAllowed: *noneAllowed, Status: operations.GetStatus(), Sum: true})
 	case resources.ACT_PRINT_TASK_NOTE:
 		resources.Alf.PrintResult(operations.GetTask(*id).Note)
 	case resources.ACT_PRINT_PROJECTS:
@@ -283,20 +278,4 @@ func logBinaryCall() {
 		repetitionGoal: %v.`, *action, *id, *name, *projectId, *goalId, *taskId,
 		*habitId, *repetition, *deadline, *estimate, *scheduled, *taskType, *note, *noneAllowed, *activeFlag,
 		*doneFlag, *donePrevious, *undonePrevious, *basePoints, *habitRepetitionGoal)
-}
-
-// Creating application support folder if it doesn't exist
-func ensureAppSupportFolder(appSupportFolderPath string) error {
-	_, err := os.Stat(appSupportFolderPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			err = os.Mkdir(appSupportFolderPath, os.FileMode(0744))
-			if err != nil {
-				return err
-			}
-		} else {
-			return err
-		}
-	}
-	return nil
 }
