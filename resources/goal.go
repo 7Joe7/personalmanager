@@ -53,6 +53,20 @@ func (g *Goal) Load(tr Transaction) error {
 	return nil
 }
 
+func (g *Goal) Less(entity Entity) bool {
+	otherGoal := entity.(*Goal)
+	if g.Done != otherGoal.Done {
+		return otherGoal.Done
+	}
+	if g.Active != otherGoal.Active {
+		return g.Active
+	}
+	if g.Priority != otherGoal.Priority {
+		return g.Priority > otherGoal.Priority
+	}
+	return true
+}
+
 func (g *Goal) MarshalJSON() ([]byte, error) {
 	type mGoal Goal
 	if g.Tasks != nil && len(g.Tasks) != 0 {
@@ -71,16 +85,12 @@ func (g *Goal) MarshalJSON() ([]byte, error) {
 
 func (g *Goal) getItem(id string) *AlfredItem {
 	var iconPath string
-	var order int
 	switch {
 	case g.Done:
-		order = 7500 - g.Priority
 		iconPath = ICO_GREEN
 	case g.Active:
-		order = 150 - g.Priority
 		iconPath = ICO_CYAN
 	default:
-		order = 5000 - g.Priority
 		iconPath = ICO_BLACK
 	}
 	var doneNumber int
@@ -107,5 +117,5 @@ func (g *Goal) getItem(id string) *AlfredItem {
 		Subtitle: subtitle,
 		Icon:     NewAlfredIcon(iconPath),
 		Valid:    true,
-		order:    order}
+		entity:   g}
 }

@@ -71,7 +71,9 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 					countPointChange(h, status, 1)
 				}
 			}
-			if deadline != "" {
+			if deadline == "-" {
+				h.Deadline = nil
+			} else if deadline != "" {
 				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 			}
 			if toggleDonePrevious {
@@ -256,7 +258,7 @@ func addHabit(name, repetition, description, deadline, goalId string, activeFlag
 	if description != "" {
 		h.Description = description
 	}
-	if goalId != "" && goalId == "-" {
+	if goalId != "" && goalId != "-" {
 		h.Goal = &resources.Goal{Id: goalId}
 	}
 	if negativeFlag {

@@ -1,7 +1,6 @@
 package alfred
 
 import (
-	"os"
 	"testing"
 
 	"bytes"
@@ -15,8 +14,7 @@ type testObj struct {
 }
 
 func TestNewAlfred(t *testing.T) {
-	a := NewAlfred(os.Stdout)
-	assert.Equal(t, os.Stdout, a.output, "wrong references")
+	NewAlfred()
 }
 
 func TestPrintResult(t *testing.T) {
@@ -34,8 +32,8 @@ func TestPrintResult(t *testing.T) {
 
 	for _, v := range vectors {
 		out := bytes.NewBuffer(make([]byte, 0, len(v.input)))
-		a := &alfred{out}
-		a.PrintResult(v.input)
+		a := &alfred{}
+		a.PrintResult(v.input, out)
 		o := make([]byte, len(v.output), len(v.output))
 		_, err := out.Read(o)
 		assert.Equal(t, v.err == nil, err == nil, "wrong failure condition")
@@ -68,8 +66,8 @@ func TestPrintEntities(t *testing.T) {
 
 	for _, v := range vectors {
 		out := bytes.NewBuffer(make([]byte, 0))
-		a := &alfred{out}
-		a.PrintEntities(v.input)
+		a := &alfred{}
+		a.PrintEntities(v.input, out)
 		o := make([]byte, len(v.output), len(v.output))
 		_, err := out.Read(o)
 		assert.Equal(t, v.err == nil, err == nil, "wrong failure condition")

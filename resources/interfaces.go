@@ -1,5 +1,7 @@
 package resources
 
+import "io"
+
 type Transaction interface {
 	GetValue(bucketName, key []byte) []byte
 	SetValue(bucketName, key, value []byte) error
@@ -36,6 +38,7 @@ type Entity interface {
 	SetId(string)
 	GetId() string
 	Load(Transaction) error
+	Less(Entity) bool
 }
 
 type Item interface {
@@ -43,6 +46,6 @@ type Item interface {
 }
 
 type Alfred interface {
-	PrintEntities(entities interface{})
-	PrintResult(result string)
+	PrintEntities(entities interface{}, writer io.Writer)
+	PrintResult(result string, writer io.Writer)
 }

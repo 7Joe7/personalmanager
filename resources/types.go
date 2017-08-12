@@ -61,10 +61,10 @@ type AlfredItem struct {
 	Valid    bool        `json:"valid"`
 	Icon     *AlfredIcon `json:"icon,omitempty"`
 	Mods     *Mods       `json:"mods,omitempty"`
-	order    int
+	entity   Entity
 }
 
-type items []*AlfredItem
+type alfredItems []*AlfredItem
 
 type AlfredIcon struct {
 	Type string `json:"type,omitempty"`
@@ -88,6 +88,10 @@ func (t *Tag) Load(tr Transaction) error {
 	return nil
 }
 
+func (t *Tag) Less(entity Entity) bool {
+	return true
+}
+
 type Status struct {
 	Score     int
 	Yesterday int
@@ -102,6 +106,10 @@ func (s *Status) GetId() string {
 
 func (s *Status) Load(tr Transaction) error {
 	return nil
+}
+
+func (s *Status) Less(entity Entity) bool {
+	return true
 }
 
 type ActivePorts []*ActivePort
@@ -131,4 +139,8 @@ func (r *Review) GetId() string {
 
 func (r *Review) Load(tr Transaction) error {
 	return nil
+}
+
+func (r *Review) Less(entity Entity) bool {
+	return true
 }

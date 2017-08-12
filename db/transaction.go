@@ -94,7 +94,7 @@ func (t *transaction) DeleteEntity(bucketName, id []byte) error {
 }
 
 func (t *transaction) RetrieveEntity(bucketName, id []byte, entity resources.Entity, shallow bool) error {
-	log.Printf(`Retriving entity:
+	log.Printf(`Retrieving entity:
 	bucketName: %s,
 	id: %s,
 	entity: %v,

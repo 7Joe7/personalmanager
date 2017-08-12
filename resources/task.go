@@ -2,10 +2,9 @@ package resources
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
-
-	"fmt"
 
 	"github.com/7joe7/personalmanager/utils"
 )
@@ -58,6 +57,29 @@ func (t *Task) Load(tr Transaction) error {
 	return nil
 }
 
+func (t *Task) Less(entity Entity) bool {
+	otherTask := entity.(*Task)
+	if t.InProgress != otherTask.InProgress {
+		return t.InProgress
+	}
+	if t.Done != otherTask.Done {
+		return !t.Done
+	}
+	if (t.Goal != nil && t.Goal.Active) != (otherTask.Goal != nil && otherTask.Goal.Active) {
+		return t.Goal != nil && t.Goal.Active
+	}
+	if t.BasePoints != otherTask.BasePoints {
+		return t.BasePoints > otherTask.BasePoints
+	}
+	if (t.Deadline != nil) != (otherTask.Deadline != nil) {
+		return t.Deadline != nil
+	}
+	if t.Deadline != nil {
+		return t.Deadline.Before(*otherTask.Deadline)
+	}
+	return true
+}
+
 func (t *Task) MarshalJSON() ([]byte, error) {
 	type mTask Task
 	if t.Project != nil {
@@ -90,7 +112,6 @@ func (t *Task) Export() string {
 func (t *Task) getItem(id string) *AlfredItem {
 	var subtitle string
 	var comma bool
-	var order int
 
 	if t.Deadline != nil {
 		subtitle = t.Deadline.Format(DATE_FORMAT)
@@ -157,22 +178,16 @@ func (t *Task) getItem(id string) *AlfredItem {
 
 	var icoPath string
 	if t.InProgress {
-		order = 2
 		icoPath = ICO_BLUE
 	} else if t.Done {
-		order = 2000 - t.BasePoints
 		icoPath = ICO_GREEN
 	} else if t.Deadline != nil && t.Deadline.Before(time.Now().Add(time.Hour*24)) {
-		order = 250 - t.BasePoints
 		icoPath = ICO_RED
 	} else if todayTagPresent {
-		order = 500 - t.BasePoints
 		icoPath = ICO_ORANGE
 	} else if t.Goal != nil && t.Goal.Active {
-		order = 750 - t.BasePoints
 		icoPath = ICO_CYAN
 	} else {
-		order = 1000 - t.BasePoints
 		icoPath = ICO_YELLOW
 	}
 
@@ -182,7 +197,7 @@ func (t *Task) getItem(id string) *AlfredItem {
 		Subtitle: subtitle,
 		Icon:     NewAlfredIcon(icoPath),
 		Valid:    true,
-		order:    order}
+		entity:   t}
 }
 
 func (t *Task) CountScoreChange() int {

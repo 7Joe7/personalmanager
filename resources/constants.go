@@ -14,7 +14,8 @@ const (
 	MSG_EXPORT_SUCCESS = "Successfully exported %s."
 	MSG_SYNC_SUCCESS   = "Successfully synchronized %s."
 
-	LOG_FILE_NAME = "personal-manager.log"
+	LOG_FILE_NAME        = "personal-manager.log"
+	LOG_DAEMON_FILE_NAME = "pema-daemon.log"
 
 	HBT_REPETITION_DAILY   = "Daily"
 	HBT_REPETITION_WEEKLY  = "Weekly"
@@ -130,6 +131,9 @@ const (
 	TASK_TYPE_PERSONAL = "PERSONAL"
 	TASK_TYPE_WORK     = "WORK"
 	TASK_TYPE_SHOPPING = "SHOPPING"
+
+	STOP_CHARACTER = "\r\n\r\n"
+	PORT           = 7007
 )
 
 var (

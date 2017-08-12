@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.erneker.personalmanager</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>hello</string>
+        <string>world</string>
+    </array>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/joe/Library/Application Support/Alfred 3/Workflow Data/org.erneker.personalmanager/pema-daemon.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/joe/Library/Application Support/Alfred 3/Workflow Data/org.erneker.personalmanager/pema-daemon.log</string>
+    <key>Program</key>
+	<string>/Users/joe/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.7925D680-5674-4BC2-9CA8-B7019A650147/daemon</string>
+</dict>
+</plist>

@@ -20,7 +20,9 @@ func getModifyReviewFunc(r *resources.Review, repetition, deadline string) func(
 		if repetition != "" {
 			r.Repetition = repetition
 		}
-		if deadline != "" {
+		if deadline == "-" {
+			r.Deadline = nil
+		} else if deadline != "" {
 			r.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 		}
 	}

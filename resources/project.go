@@ -51,6 +51,17 @@ func (p *Project) Load(tr Transaction) error {
 	return nil
 }
 
+func (p *Project) Less(entity Entity) bool {
+	otherProject := entity.(*Project)
+	if p.Done != otherProject.Done {
+		return !p.Done
+	}
+	if p.Active != otherProject.Active {
+		return p.Active
+	}
+	return true
+}
+
 func (p *Project) MarshalJSON() ([]byte, error) {
 	type mProject Project
 	if p.Tasks != nil && len(p.Tasks) != 0 {
@@ -68,16 +79,12 @@ func (p *Project) MarshalJSON() ([]byte, error) {
 
 func (p *Project) getItem(id string) *AlfredItem {
 	var iconPath string
-	var order int
 	switch {
 	case p.Done:
-		order = 7500
 		iconPath = ICO_GREEN
 	case p.Active:
-		order = 100
 		iconPath = ICO_CYAN
 	default:
-		order = 5000
 		iconPath = ICO_BLACK
 	}
 	var doneTasksNumber int
@@ -99,5 +106,5 @@ func (p *Project) getItem(id string) *AlfredItem {
 		Subtitle: subtitle,
 		Icon:     NewAlfredIcon(iconPath),
 		Valid:    true,
-		order:    order}
+		entity:   p}
 }

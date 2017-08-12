@@ -46,7 +46,7 @@ var (
 	expectedHabitsJson      = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}}]}`, testDeadlineFormatted, testDeadlineFormatted)
 
 	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"No habit","arg":"-","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`, testDeadlineFormatted, testDeadlineFormatted)
-	testHabitsOrdering     = map[int]string{0: "testHabitActive", 1: "testHabitNonActive", 2: "testHabitDone"}
+	testHabitsOrdering     = []string{"testHabitActive", "testHabitNonActive", "testHabitDone"}
 
 	testItems             = Items{[]*AlfredItem{(&Review{Repetition: HBT_REPETITION_WEEKLY, Deadline: utils.GetFirstSaturday()}).GetItem()}}
 	expectedTestItemsJson = fmt.Sprintf(`{"items":[{"title":"Review repeated Weekly, next: %s.","valid":true,"icon":{"path":"./icons/black@2x.png"}}]}`, utils.GetFirstSaturday().Format("2.1.2006"))
@@ -54,11 +54,12 @@ var (
 
 func TestOrdering(t *testing.T) {
 	tHabits := Habits{Habits: map[string]*Habit{"testHabitActive": testHabitActive, "testHabitDone": testHabitDone, "testHabitNonActive": testHabitNonActive}}
-	items := items{}
+	items := alfredItems{}
 	for id, habit := range tHabits.Habits {
 		items = append(items, habit.getItem(id))
 	}
 	sort.Sort(items)
+	fmt.Println(items)
 	for i := 0; i < len(items); i++ {
 		if testHabitsOrdering[i] != items[i].Arg {
 			t.Errorf("Expected order to be %s, got %s.", testHabitsOrdering[i], items[i].Arg)
@@ -89,7 +90,6 @@ func TestMarshalTasks(t *testing.T) {
 	testMarshalling(testTags, expectedNoneTagsJson, t)
 	testMarshalling(testGoals, expectedNoneGoalsJson, t)
 	testMarshalling(testHabits, expectedNoneHabitsJson, t)
-
 	testMarshalling(testItems, expectedTestItemsJson, t)
 }
 
@@ -123,8 +123,6 @@ func TestGetHabitNonActiveItem(t *testing.T) {
 	ai := testHabitNonActive.getItem(testId)
 	testCommonAttr(ai, true, testId, testHabitNonActive.Name, fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT,
 		testHabitNonActive.Successes, testHabitNonActive.Tries), ICO_BLACK, t)
-	expectedOrder := HBT_BASE_ORDER_DAILY
-	assert.Equal(t, expectedOrder, ai.order)
 }
 
 func TestGetHabitActiveItem(t *testing.T) {
@@ -133,8 +131,6 @@ func TestGetHabitActiveItem(t *testing.T) {
 		testHabitActive.Successes, testHabitActive.Tries,
 		testHabitActive.ActualStreak, testHabitActive.Deadline.Format(DATE_FORMAT),
 		testHabitActive.BasePoints), ICO_RED, t)
-	expectedOrder := HBT_BASE_ORDER_DAILY - testHabitActive.BasePoints
-	assert.Equal(t, expectedOrder, ai.order)
 }
 
 func TestGetHabitDoneItem(t *testing.T) {
@@ -142,8 +138,6 @@ func TestGetHabitDoneItem(t *testing.T) {
 	testCommonAttr(ai, true, testId, testHabitDone.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT,
 		testHabitDone.Successes, testHabitDone.Tries, testHabitDone.ActualStreak,
 		testHabitDone.Deadline.Format(DATE_FORMAT), testHabitDone.BasePoints), ICO_GREEN, t)
-	expectedOrder := HBT_DONE_BASE_ORDER - testHabitDone.BasePoints
-	assert.Equal(t, expectedOrder, ai.order)
 }
 
 func TestGetStatusItem(t *testing.T) {

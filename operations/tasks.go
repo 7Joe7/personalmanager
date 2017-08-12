@@ -31,7 +31,9 @@ func getModifyTaskFunc(t *resources.Task, name, projectId, goalId, deadline, est
 		default:
 			t.Goal = &resources.Goal{Id: goalId}
 		}
-		if deadline != "" {
+		if deadline == "-" {
+			t.Deadline = nil
+		} else if deadline != "" {
 			t.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 		}
 		if estimate != "" {
@@ -136,7 +138,7 @@ func createTask(name, projectId, deadline, estimate, scheduled, taskType, note s
 		task.Goal = goal
 		task.BasePoints = goal.Priority
 	}
-	if deadline != "" {
+	if deadline != "" && deadline != "-" {
 		task.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
 	}
 	if estimate != "" {

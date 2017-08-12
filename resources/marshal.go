@@ -29,15 +29,18 @@ func (s *Status) getItem() *AlfredItem {
 		Name:  fmt.Sprintf(NAME_FORMAT_STATUS, s.Score, s.Today, s.Yesterday),
 		Valid: false,
 		Icon:  NewAlfredIcon(ICO_HABIT),
-		Mods:  getEmptyMods(),
-		order: 0}
+		Mods:  getEmptyMods()}
 }
 
 func (ts Tasks) MarshalJSON() ([]byte, error) {
-	items := items{}
+	items := alfredItems{}
 	var zeroCount int
+	for id, t := range ts.Tasks {
+		items = append(items, t.getItem(id))
+	}
+	sort.Sort(items)
 	if ts.Status != nil {
-		items = append(items, ts.Status.getItem())
+		items = append(alfredItems{ts.Status.getItem()}, items...)
 		zeroCount = -1
 	}
 	if ts.Sum {
@@ -47,79 +50,78 @@ func (ts Tasks) MarshalJSON() ([]byte, error) {
 				sum += t.TimeEstimate.Minutes()
 			}
 		}
-		items = append(items, &AlfredItem{
+		items = append(alfredItems{&AlfredItem{
 			Name:  fmt.Sprintf("Count: %d, estimate: %s", len(ts.Tasks), utils.MinutesToHMFormat(sum)),
 			Valid: false,
 			Icon:  NewAlfredIcon(ICO_BLACK),
-			Mods:  getEmptyMods(),
-			order: 1})
-	}
-	for id, t := range ts.Tasks {
-		items = append(items, t.getItem(id))
+			Mods:  getEmptyMods()}}, items...)
 	}
 	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == zeroCount, "task"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
-	sort.Sort(items)
 	return marshalItems(items)
 }
 
 func (ps Projects) MarshalJSON() ([]byte, error) {
-	items := items{}
+	items := alfredItems{}
 	var zeroCount int
-	if ps.Status != nil {
-		items = append(items, ps.Status.getItem())
-		zeroCount = 1
-	}
 	for id, p := range ps.Projects {
 		items = append(items, p.getItem(id))
+	}
+	sort.Sort(items)
+	if ps.Status != nil {
+		items = append(alfredItems{ps.Status.getItem()}, items...)
+		zeroCount = 1
 	}
 	if zeroItem := getZeroItem(ps.NoneAllowed, len(items) == zeroCount, "project"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
-	sort.Sort(items)
 	return marshalItems(items)
 }
 
 func (ts Tags) MarshalJSON() ([]byte, error) {
-	items := items{}
+	items := alfredItems{}
 	var zeroCount int
-	if ts.Status != nil {
-		items = append(items, ts.Status.getItem())
-		zeroCount = 1
-	}
 	for id, t := range ts.Tags {
 		items = append(items, t.getItem(id))
+	}
+	sort.Sort(items)
+	if ts.Status != nil {
+		items = append(alfredItems{ts.Status.getItem()}, items...)
+		zeroCount = 1
 	}
 	if zeroItem := getZeroItem(ts.NoneAllowed, len(items) == zeroCount, "tag"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
-	sort.Sort(items)
 	return marshalItems(items)
 }
 
 func (gs Goals) MarshalJSON() ([]byte, error) {
-	items := items{}
+	items := alfredItems{}
 	var zeroCount int
-	if gs.Status != nil {
-		items = append(items, gs.Status.getItem())
-		zeroCount = 1
-	}
 	for id, g := range gs.Goals {
 		items = append(items, g.getItem(id))
+	}
+	sort.Sort(items)
+	if gs.Status != nil {
+		items = append(alfredItems{gs.Status.getItem()}, items...)
+		zeroCount = 1
 	}
 	if zeroItem := getZeroItem(gs.NoneAllowed, len(items) == zeroCount, "goal"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
-	sort.Sort(items)
 	return marshalItems(items)
 }
 
 func (hs Habits) MarshalJSON() ([]byte, error) {
-	items := items{}
+	items := alfredItems{}
 	var zeroCount int
+	for id, h := range hs.Habits {
+		items = append(items, h.getItem(id))
+	}
+	sort.Sort(items)
 	if hs.Status != nil {
-		items = append(items, hs.Status.getItem())
+		items = append(alfredItems{hs.Status.getItem()}, items...)
 		zeroCount = 1
 	}
 	if hs.Overview {
@@ -153,27 +155,18 @@ func (hs Habits) MarshalJSON() ([]byte, error) {
 			Valid: false,
 			Icon:  NewAlfredIcon(ICO_BLACK),
 			Mods:  getEmptyMods(),
-			order: 1,
 		})
 	}
-	for id, h := range hs.Habits {
-		items = append(items, h.getItem(id))
-	}
+
 	if zeroItem := getZeroItem(hs.NoneAllowed, len(items) == zeroCount, "habit"); zeroItem != nil {
 		items = append(items, zeroItem)
 	}
-	sort.Sort(items)
 	return marshalItems(items)
 }
 
-func (ho items) Len() int      { return len(ho) }
-func (ho items) Swap(i, j int) { ho[i], ho[j] = ho[j], ho[i] }
-func (ho items) Less(i, j int) bool {
-	if ho[i].order == ho[j].order {
-		return ho[i].Name < ho[j].Name
-	}
-	return ho[i].order < ho[j].order
-}
+func (ho alfredItems) Len() int           { return len(ho) }
+func (ho alfredItems) Swap(i, j int)      { ho[i], ho[j] = ho[j], ho[i] }
+func (ho alfredItems) Less(i, j int) bool { return ho[i] != nil && ho[i].entity.Less(ho[j].entity) }
 
 func getZeroItem(noneAllowed, empty bool, elementType string) *AlfredItem {
 	if noneAllowed {
@@ -182,15 +175,13 @@ func getZeroItem(noneAllowed, empty bool, elementType string) *AlfredItem {
 			Arg:   "-",
 			Icon:  NewAlfredIcon(ICO_BLACK),
 			Valid: true,
-			Mods:  getEmptyMods(),
-			order: 10000}
+			Mods:  getEmptyMods()}
 	} else if empty {
 		return &AlfredItem{
 			Name:  fmt.Sprintf(NAME_FORMAT_EMPTY, elementType),
 			Valid: false,
 			Icon:  NewAlfredIcon(ICO_BLACK),
-			Mods:  getEmptyMods(),
-			order: 10000}
+			Mods:  getEmptyMods()}
 	}
 	return nil
 }

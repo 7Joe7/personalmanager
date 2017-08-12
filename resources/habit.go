@@ -46,20 +46,41 @@ func (h *Habit) Load(tr Transaction) error {
 	return nil
 }
 
-func (h *Habit) GetIconColourAndOrder() (string, string, int) {
+func (h *Habit) Less(entity Entity) bool {
+	otherHabit := entity.(*Habit)
+	if h.Done != otherHabit.Done {
+		return otherHabit.Done
+	}
+	if h.Active != otherHabit.Active {
+		return h.Active
+	}
+	if (h.ActualStreak > 21) != (otherHabit.ActualStreak > 21) {
+		return otherHabit.ActualStreak > 21
+	}
+	if h.Repetition != otherHabit.Repetition {
+		return h.Repetition == HBT_REPETITION_DAILY ||
+			(otherHabit.Repetition != HBT_REPETITION_DAILY &&
+				h.Repetition == HBT_REPETITION_WEEKLY)
+	}
+	if h.BasePoints != otherHabit.BasePoints {
+		return h.BasePoints > otherHabit.BasePoints
+	}
+	return true
+}
+
+func (h *Habit) GetIconColourAndOrder() (string, string) {
 	if h.Active {
 		if h.Done || h.Learned {
-			return ICO_GREEN, "green", HBT_DONE_BASE_ORDER
+			return ICO_GREEN, "green"
 		} else {
-			var order int
 			var ico, colour string
 			switch h.Repetition {
 			case HBT_REPETITION_DAILY:
-				ico, colour, order = ICO_RED, "red", HBT_BASE_ORDER_DAILY
+				ico, colour = ICO_RED, "red"
 			case HBT_REPETITION_WEEKLY:
-				ico, colour, order = ICO_ORANGE, "orange", HBT_BASE_ORDER_WEEKLY
+				ico, colour = ICO_ORANGE, "orange"
 			case HBT_REPETITION_MONTHLY:
-				ico, colour, order = ICO_YELLOW, "yellow", HBT_BASE_ORDER_MONTHLY
+				ico, colour = ICO_YELLOW, "yellow"
 			}
 			if h.Negative {
 				if h.Count > h.Limit {
@@ -73,12 +94,11 @@ func (h *Habit) GetIconColourAndOrder() (string, string, int) {
 			if h.ActualStreak > 21 {
 				ico = ICO_BLUE
 				colour = "blue"
-				order += 1000
 			}
-			return ico, colour, order
+			return ico, colour
 		}
 	} else {
-		return ICO_BLACK, "black", HBT_BASE_ORDER_DAILY
+		return ICO_BLACK, "black"
 	}
 }
 
@@ -104,14 +124,13 @@ func (h *Habit) getItem(id string) *AlfredItem {
 	default:
 		subtitle = fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT, h.Successes, h.Tries)
 	}
-	iconPath, _, order := h.GetIconColourAndOrder()
+	iconPath, _ := h.GetIconColourAndOrder()
 	icon := NewAlfredIcon(iconPath)
-	order -= h.BasePoints
 	return &AlfredItem{
 		Name:     h.Name,
 		Arg:      id,
 		Subtitle: subtitle,
 		Icon:     icon,
 		Valid:    true,
-		order:    order}
+		entity:   h}
 }
