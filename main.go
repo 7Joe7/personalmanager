@@ -8,16 +8,19 @@ import (
 	"runtime/debug"
 	"encoding/json"
 	"net"
+	"io"
+	"strings"
+	"text/template"
 
 	"github.com/7joe7/personalmanager/resources"
 	rutils "github.com/7joe7/personalmanager/resources/utils"
-	"io"
-	"strings"
+	"github.com/7joe7/personalmanager/utils"
+	"os/exec"
 )
 
 var (
 	// parameters
-	action, id, name, projectId, goalId, taskId, habitId, repetition, deadline, estimate, scheduled, taskType, note *string
+	action, id, name, projectId, goalId, taskId, habitId, repetition, deadline, alarm, estimate, scheduled, taskType, note *string
 	noneAllowed, activeFlag, doneFlag, donePrevious, undonePrevious, negativeFlag, learnedFlag                      *bool
 	basePoints, habitRepetitionGoal                                                                                 *int
 )
@@ -32,6 +35,7 @@ func init() {
 	habitId = flag.String("habitId", "", "Provide habit id for habit assignment.")
 	repetition = flag.String("repetition", "", "Select repetition period.")
 	deadline = flag.String("deadline", "", "Specify deadline in format 'dd.MM.YYYY HH:mm'.")
+	alarm = flag.String("alarm", "", "Specify alarm in format 'dd.MM.YYYY HH:mm'.")
 	estimate = flag.String("estimate", "", "Specify time estimate in format '2h45m'.")
 	scheduled = flag.String("scheduled", "", "Provide schedule period. (NEXT|NONE)")
 	taskType = flag.String("taskType", "", "Provide task type. (PERSONAL|WORK)")
@@ -47,6 +51,11 @@ func init() {
 	habitRepetitionGoal = flag.Int("habitRepetitionGoal", -1, "Set habit goal repetition number.")
 }
 
+type plistData struct {
+	BinaryAddress string
+	SupportFolderAddress string
+}
+
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -58,24 +67,41 @@ func main() {
 
 	flag.Parse()
 
-	f, err := os.OpenFile(fmt.Sprintf("%s/%s", rutils.GetAppSupportFolderPath(), resources.LOG_FILE_NAME), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		panic(err)
+	runningBinary := utils.GetRunningBinaryPath()
+	plistAddress := fmt.Sprintf("%s/Library/LaunchAgents/org.erneker.personalmanager.plist", os.Getenv("HOME"))
+	if _, err := os.Stat(plistAddress); os.IsNotExist(err) {
+		tmpl, err := template.ParseFiles(fmt.Sprintf("%s/org.erneker.personalmanager.plist.tmpl", runningBinary))
+		if err != nil {
+			log.Fatalln(err)
+		}
+		plist, err := os.Create(plistAddress)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		pd := plistData{
+			BinaryAddress: runningBinary,
+			SupportFolderAddress: rutils.GetAppSupportFolderPath(),
+		}
+		err = tmpl.Execute(plist, pd)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		out, err := exec.Command("launchctl", "load", plistAddress).CombinedOutput()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		log.Println("loaded personal manager daemon", string(out))
 	}
-	defer f.Close()
-	log.SetOutput(f)
-
-	logBinaryCall()
 
 	cmd := resources.NewCommand(*action, *id, *name, *projectId, *goalId, *taskId,
-		*repetition, *deadline, *estimate, *scheduled,
+		*repetition, *deadline, *alarm, *estimate, *scheduled,
 		*taskType, *note, *noneAllowed, *activeFlag,
 		*doneFlag, *donePrevious, *undonePrevious, *negativeFlag,
 		*learnedFlag, *basePoints, *habitRepetitionGoal)
 
 	cmdBytes, err := json.Marshal(cmd)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	addr := fmt.Sprintf("127.0.0.1:%d", resources.PORT)

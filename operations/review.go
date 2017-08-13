@@ -6,11 +6,11 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 )
 
-func modifyReview(repetition, deadline string) {
+func modifyReview(cmd *resources.Command) {
 	r := &resources.Review{}
 	t := db.NewTransaction()
 	t.Add(func() error {
-		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, false, r, getModifyReviewFunc(r, repetition, deadline))
+		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_REVIEW_SETTINGS_KEY, false, r, getModifyReviewFunc(r, cmd.Repetition, cmd.Deadline))
 	})
 	t.Execute()
 }

@@ -9,55 +9,55 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 )
 
-func getModifyTaskFunc(t *resources.Task, name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool, status *resources.Status) func() {
+func getModifyTaskFunc(t *resources.Task, cmd *resources.Command, status *resources.Status) func() {
 	return func() {
-		if name != "" {
-			t.Name = name
+		if cmd.Name != "" {
+			t.Name = cmd.Name
 		}
-		if basePoints != -1 {
-			t.BasePoints = basePoints
+		if cmd.BasePoints != -1 {
+			t.BasePoints = cmd.BasePoints
 		}
-		switch projectId {
+		switch cmd.ProjectID {
 		case "-":
 			t.Project = nil
 		case "":
 		default:
-			t.Project = &resources.Project{Id: projectId}
+			t.Project = &resources.Project{Id: cmd.ProjectID}
 		}
-		switch goalId {
+		switch cmd.GoalID {
 		case "-":
 			t.Goal = nil
 		case "":
 		default:
-			t.Goal = &resources.Goal{Id: goalId}
+			t.Goal = &resources.Goal{Id: cmd.GoalID}
 		}
-		if deadline == "-" {
+		if cmd.Deadline == "-" {
 			t.Deadline = nil
-		} else if deadline != "" {
-			t.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+		} else if cmd.Deadline != "" {
+			t.Deadline = utils.ParseTime(resources.DATE_FORMAT, cmd.Deadline)
 		}
-		if estimate != "" {
-			dur, err := time.ParseDuration(estimate)
+		if cmd.Estimate != "" {
+			dur, err := time.ParseDuration(cmd.Estimate)
 			if err != nil {
 				panic(err)
 			}
 			t.TimeEstimate = &dur
 		}
-		scheduleTask(scheduled, t)
-		if taskType != "" {
-			t.Type = taskType
+		scheduleTask(cmd.Scheduled, t)
+		if cmd.TaskType != "" {
+			t.Type = cmd.TaskType
 		}
-		if note != "" {
-			t.Note = note
+		if cmd.Note != "" {
+			t.Note = cmd.Note
 		}
-		if activeFlag {
+		if cmd.ActiveFlag {
 			if t.InProgress {
 				stopProgress(t)
 			} else {
 				startProgress(t)
 			}
 		}
-		if doneFlag {
+		if cmd.DoneFlag {
 			change := t.CountScoreChange()
 			if t.Done {
 				t.Done = false
@@ -129,38 +129,38 @@ func getSyncTaskFunc() func(resources.Entity) func() {
 	}
 }
 
-func createTask(name, projectId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int, goal *resources.Goal, t resources.Transaction) (*resources.Task, error) {
-	task := resources.NewTask(name)
-	if projectId != "" && projectId != "-" {
-		task.Project = &resources.Project{Id: projectId}
+func createTask(cmd *resources.Command, goal *resources.Goal, t resources.Transaction) (*resources.Task, error) {
+	task := resources.NewTask(cmd.Name)
+	if cmd.ProjectID != "" && cmd.ProjectID != "-" {
+		task.Project = &resources.Project{Id: cmd.ProjectID}
 	}
 	if goal != nil {
 		task.Goal = goal
 		task.BasePoints = goal.Priority
 	}
-	if deadline != "" && deadline != "-" {
-		task.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+	if cmd.Deadline != "" && cmd.Deadline != "-" {
+		task.Deadline = utils.ParseTime(resources.DATE_FORMAT, cmd.Deadline)
 	}
-	if estimate != "" {
-		dur, err := time.ParseDuration(estimate)
+	if cmd.Estimate != "" {
+		dur, err := time.ParseDuration(cmd.Estimate)
 		if err != nil {
 			return nil, err
 		}
 		task.TimeEstimate = &dur
 	}
-	if scheduled != "" {
-		task.Scheduled = scheduled
+	if cmd.Scheduled != "" {
+		task.Scheduled = cmd.Scheduled
 	}
-	if taskType != "" {
-		task.Type = taskType
+	if cmd.TaskType != "" {
+		task.Type = cmd.TaskType
 	}
-	if note != "" {
-		task.Note = note
+	if cmd.Note != "" {
+		task.Note = cmd.Note
 	}
-	if basePoints != -1 {
-		task.BasePoints = basePoints
+	if cmd.BasePoints != -1 {
+		task.BasePoints = cmd.BasePoints
 	}
-	if active {
+	if cmd.ActiveFlag {
 		task.InProgress = true
 		task.InProgressSince = utils.GetTimePointer(time.Now())
 	}
@@ -170,19 +170,19 @@ func createTask(name, projectId, deadline, estimate, scheduled, taskType, note s
 	return task, nil
 }
 
-func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, active bool, basePoints int) string {
+func addTask(cmd *resources.Command) string {
 	var id string
 	t := db.NewTransaction()
 	t.Add(func() error {
 		var goal *resources.Goal
-		if goalId != "-" && goalId != "" {
+		if cmd.GoalID != "-" && cmd.GoalID != "" {
 			goal = &resources.Goal{}
-			err := t.RetrieveEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), goal, false)
+			err := t.RetrieveEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(cmd.GoalID), goal, false)
 			if err != nil {
 				return err
 			}
 		}
-		task, err := createTask(name, projectId, deadline, estimate, scheduled, taskType, note, active, basePoints, goal, t)
+		task, err := createTask(cmd, goal, t)
 		if err != nil {
 			return err
 		}
@@ -191,7 +191,7 @@ func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, n
 			return err
 		}
 		if task.Project != nil {
-			err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, task.Project, func() {
+			err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(cmd.ProjectID), true, task.Project, func() {
 				task.Project.Tasks = append(task.Project.Tasks, task)
 			})
 			if err != nil {
@@ -199,7 +199,7 @@ func addTask(name, projectId, goalId, deadline, estimate, scheduled, taskType, n
 			}
 		}
 		if task.Goal != nil {
-			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func() {
+			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(cmd.GoalID), true, task.Goal, func() {
 				task.Goal.Tasks = append(task.Goal.Tasks, task)
 			})
 			if err != nil {
@@ -285,30 +285,30 @@ func deleteTask(taskId string) {
 	t.Execute()
 }
 
-func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, taskType, note string, basePoints int, activeFlag, doneFlag bool) {
+func modifyTask(cmd *resources.Command) {
 	task := &resources.Task{}
 	changeStatus := &resources.Status{}
 	status := &resources.Status{}
 	t := db.NewTransaction()
 	t.Add(func() error {
 		var err error
-		if activeFlag {
-			err = toggleActiveTask(t, taskId)
+		if cmd.ActiveFlag {
+			err = toggleActiveTask(t, cmd.ID)
 			if err != nil {
 				return err
 			}
 		}
-		if doneFlag {
-			err = setActiveTaskDone(t, taskId)
+		if cmd.DoneFlag {
+			err = setActiveTaskDone(t, cmd.ID)
 			if err != nil {
 				return err
 			}
 		}
-		err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), task, true)
+		err = t.RetrieveEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(cmd.ID), task, true)
 		if err != nil {
 			return err
 		}
-		switch projectId {
+		switch cmd.ProjectID {
 		case "-":
 			if task.Project != nil {
 				err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(task.Project.Id), true, task.Project, func() {
@@ -320,7 +320,7 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 			}
 		case "":
 		default:
-			if task.Project != nil && task.Project.Id != projectId {
+			if task.Project != nil && task.Project.Id != cmd.ProjectID {
 				err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(task.Project.Id), true, task.Project, func() {
 					task.Project.Tasks = rutils.RemoveTaskFromTasks(task.Project.Tasks, task)
 				})
@@ -329,14 +329,14 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 				}
 			}
 			task.Project = &resources.Project{}
-			err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), true, task.Project, func() {
+			err = t.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(cmd.ProjectID), true, task.Project, func() {
 				task.Project.Tasks = append(task.Project.Tasks, task)
 			})
 			if err != nil {
 				return err
 			}
 		}
-		switch goalId {
+		switch cmd.GoalID {
 		case "-":
 			if task.Goal != nil {
 				err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(task.Goal.Id), true, task.Goal, func() {
@@ -348,7 +348,7 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 			}
 		case "":
 		default:
-			if task.Goal != nil && task.Goal.Id != goalId {
+			if task.Goal != nil && task.Goal.Id != cmd.GoalID {
 				err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(task.Goal.Id), true, task.Goal, func() {
 					task.Goal.Tasks = rutils.RemoveTaskFromTasks(task.Goal.Tasks, task)
 				})
@@ -357,15 +357,15 @@ func modifyTask(taskId, name, projectId, goalId, deadline, estimate, scheduled, 
 				}
 			}
 			task.Goal = &resources.Goal{}
-			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, task.Goal, func() {
+			err = t.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(cmd.GoalID), true, task.Goal, func() {
 				task.Goal.Tasks = append(task.Goal.Tasks, task)
 			})
 			if err != nil {
 				return err
 			}
-			basePoints = task.Goal.Priority
+			cmd.BasePoints = task.Goal.Priority
 		}
-		err = t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), false, task, getModifyTaskFunc(task, name, projectId, goalId, deadline, estimate, scheduled, taskType, note, basePoints, activeFlag, doneFlag, changeStatus))
+		err = t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(cmd.ID), false, task, getModifyTaskFunc(task, cmd, changeStatus))
 		if err != nil {
 			return err
 		}

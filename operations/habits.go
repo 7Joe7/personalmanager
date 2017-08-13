@@ -3,50 +3,52 @@ package operations
 import (
 	"time"
 
+	"log"
+
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
 )
 
-func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, learnedFlag bool, basePoints, repetitionGoal int, status *resources.Status, tr resources.Transaction) func() {
+func getModifyHabitFunc(h *resources.Habit, cmd *resources.Command, status *resources.Status) func() {
 	return func() {
-		if name != "" {
-			h.Name = name
+		if cmd.Name != "" {
+			h.Name = cmd.Name
 		}
-		if description != "" {
-			h.Description = description
+		if cmd.Note != "" {
+			h.Description = cmd.Note
 		}
-		switch goalId {
+		switch cmd.GoalID {
 		case "-":
 			h.Goal = nil
 		case "":
 		default:
-			h.Goal = &resources.Goal{Id: goalId}
+			h.Goal = &resources.Goal{Id: cmd.GoalID}
 		}
-		if toggleActive {
+		if cmd.ActiveFlag {
 			if h.Active {
 				deactivateHabit(h)
 				//anybar.RemoveAndQuit(resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
 			} else {
-				activateHabit(h, repetition)
+				activateHabit(h, cmd.Repetition)
 				//_, colour, _ := h.GetIconColourAndOrder()
 				//anybar.AddToActivePorts(h.Name, colour, resources.DB_DEFAULT_HABITS_BUCKET_NAME, h.Id, tr)
 			}
 		}
-		if negativeFlag {
+		if cmd.NegativeFlag {
 			h.Negative = !h.Negative
 		}
-		if learnedFlag {
+		if cmd.LearnedFlag {
 			h.Learned = !h.Learned
 		}
 		if h.Active {
-			if basePoints != -1 {
-				h.BasePoints = basePoints
+			if cmd.BasePoints != -1 {
+				h.BasePoints = cmd.BasePoints
 			}
-			if repetitionGoal != -1 {
-				h.Limit = repetitionGoal
+			if cmd.HabitRepetitionGoal != -1 {
+				h.Limit = cmd.HabitRepetitionGoal
 			}
-			if toggleDone {
+			if cmd.DoneFlag {
 				if h.Negative {
 					h.Count++
 					h.Average = (h.Average*float64(h.Tries) + 1) / float64(h.Tries)
@@ -71,12 +73,20 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 					countPointChange(h, status, 1)
 				}
 			}
-			if deadline == "-" {
+			if cmd.Deadline == "-" {
 				h.Deadline = nil
-			} else if deadline != "" {
-				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+			} else if cmd.Deadline != "" {
+				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, cmd.Deadline)
 			}
-			if toggleDonePrevious {
+			if cmd.Alarm == "-" {
+				h.AlarmTime = nil
+			} else if cmd.Alarm != "" {
+				h.AlarmTime = utils.ParseTime(resources.DATE_HOUR_MINUTE_FORMAT, cmd.Alarm)
+				for h.AlarmTime.After(*h.Deadline) {
+					h.AlarmTime = utils.GetTimePointer(h.AlarmTime.Add(time.Hour * -24))
+				}
+			}
+			if cmd.DonePrevious {
 				previousActualStreak := h.ActualStreak
 				succeedHabit(h, removePeriod(h.Repetition, h.Deadline))
 				if h.Done {
@@ -96,7 +106,7 @@ func getModifyHabitFunc(h *resources.Habit, name, repetition, description, deadl
 					status.Yesterday += h.ActualStreak * h.ActualStreak * h.BasePoints
 				}
 			}
-			if toggleUndonePrevious {
+			if cmd.UndonePrevious {
 				h.LastStreakEnd = removePeriod(h.Repetition, h.Deadline)
 				h.LastStreak = h.ActualStreak - 1
 				h.ActualStreak = -1
@@ -190,11 +200,17 @@ func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) fun
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
 					h.Deadline = addPeriod(h.Repetition, h.Deadline)
+					if h.AlarmTime != nil {
+						h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+					}
 				} else if h.Negative && h.Limit >= h.Count {
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
 					changeStatus.Score += h.ActualStreak * h.ActualStreak * h.BasePoints
 					h.Deadline = addPeriod(h.Repetition, h.Deadline)
+					if h.AlarmTime != nil {
+						h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+					}
 				} else {
 					numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
 					for i := 0; i < numberOfMissedDeadlines; i++ {
@@ -210,6 +226,9 @@ func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) fun
 							changeStatus.Score -= h.ActualStreak * h.ActualStreak * h.BasePoints
 						}
 						h.Deadline = addPeriod(h.Repetition, h.Deadline)
+						if h.AlarmTime != nil {
+							h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+						}
 					}
 					h.Done = false
 					h.Tries += numberOfMissedDeadlines
@@ -253,31 +272,38 @@ func deactivateHabit(h *resources.Habit) {
 	h.Count = 0
 }
 
-func addHabit(name, repetition, description, deadline, goalId string, activeFlag, negativeFlag bool, basePoints, repetitionGoal int) {
-	h := resources.NewHabit(name)
-	if description != "" {
-		h.Description = description
+func addHabit(cmd *resources.Command) {
+	log.Println("addHabit:", cmd)
+	h := resources.NewHabit(cmd.Name)
+	if cmd.Note != "" {
+		h.Description = cmd.Note
 	}
-	if goalId != "" && goalId != "-" {
-		h.Goal = &resources.Goal{Id: goalId}
+	if cmd.GoalID != "" && cmd.GoalID != "-" {
+		h.Goal = &resources.Goal{Id: cmd.GoalID}
 	}
-	if negativeFlag {
+	if cmd.NegativeFlag {
 		h.Negative = true
 	}
-	if repetitionGoal != -1 {
-		h.Limit = repetitionGoal
+	if cmd.HabitRepetitionGoal != -1 {
+		h.Limit = cmd.HabitRepetitionGoal
 	}
-	if activeFlag {
-		activateHabit(h, repetition)
-		if repetition != resources.HBT_REPETITION_DAILY {
-			if deadline == "" {
+	if cmd.ActiveFlag {
+		activateHabit(h, cmd.Repetition)
+		if cmd.Repetition != resources.HBT_REPETITION_DAILY {
+			if cmd.Deadline == "" {
 				h.Deadline = utils.GetFirstSaturday()
 			} else {
-				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, deadline)
+				h.Deadline = utils.ParseTime(resources.DATE_FORMAT, cmd.Deadline)
 			}
 		}
-		if basePoints != -1 {
-			h.BasePoints = basePoints
+		if cmd.BasePoints != -1 {
+			h.BasePoints = cmd.BasePoints
+		}
+		if cmd.Alarm != "" {
+			h.AlarmTime = utils.ParseTime(resources.DATE_HOUR_MINUTE_FORMAT, cmd.Alarm)
+			for h.AlarmTime.After(*h.Deadline) {
+				h.AlarmTime = utils.GetTimePointer(h.AlarmTime.Add(time.Hour * -24))
+			}
 		}
 	}
 	tr := db.NewTransaction()
@@ -320,14 +346,14 @@ func deleteHabit(habitId string) {
 	t.Execute()
 }
 
-func modifyHabit(habitId, name, repetition, description, deadline, goalId string, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, learnedFlag bool, basePoints, repetitionGoal int) {
+func modifyHabit(cmd *resources.Command) {
 	habit := &resources.Habit{}
 	habitStatus := &resources.Status{}
 	status := &resources.Status{}
 	t := db.NewTransaction()
 	t.Add(func() error {
-		modifyHabit := getModifyHabitFunc(habit, name, repetition, description, deadline, goalId, toggleActive, toggleDone, toggleDonePrevious, toggleUndonePrevious, negativeFlag, learnedFlag, basePoints, repetitionGoal, habitStatus, t)
-		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(habitId), false, habit, modifyHabit); err != nil {
+		modifyHabit := getModifyHabitFunc(habit, cmd, habitStatus)
+		if err := t.ModifyEntity(resources.DB_DEFAULT_HABITS_BUCKET_NAME, []byte(cmd.ID), false, habit, modifyHabit); err != nil {
 			return err
 		}
 		if err := t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getAddScoreFunc(status, habitStatus)); err != nil {

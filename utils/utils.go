@@ -38,7 +38,7 @@ func getDurationForRepetitionPeriod(repetition string) int {
 }
 
 func parseTime(format, deadline string) *time.Time {
-	d, err := time.Parse(format, deadline)
+	d, err := time.ParseInLocation(format, deadline, time.Local)
 	if err != nil {
 		panic(err)
 	}

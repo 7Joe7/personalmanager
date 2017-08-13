@@ -6,8 +6,7 @@
     <string>org.erneker.personalmanager</string>
     <key>ProgramArguments</key>
     <array>
-        <string>hello</string>
-        <string>world</string>
+	    <string>/Users/joe/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.7925D680-5674-4BC2-9CA8-B7019A650147/daemon</string>
     </array>
     <key>KeepAlive</key>
     <true/>

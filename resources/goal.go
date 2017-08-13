@@ -64,7 +64,7 @@ func (g *Goal) Less(entity Entity) bool {
 	if g.Priority != otherGoal.Priority {
 		return g.Priority > otherGoal.Priority
 	}
-	return true
+	return g.Name < otherGoal.Name
 }
 
 func (g *Goal) MarshalJSON() ([]byte, error) {

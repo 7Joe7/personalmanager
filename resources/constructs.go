@@ -35,13 +35,13 @@ func NewAlfredIcon(path string) *AlfredIcon {
 
 func NewCommand(
 	action, id, name, projectId, goalId, taskId,
-	repetition, deadline, estimate, scheduled,
+	repetition, deadline, alarm, estimate, scheduled,
 	taskType, note string, noneAllowed, activeFlag,
 	doneFlag, donePrevious, undonePrevious, negativeFlag,
 	learnedFlag bool, basePoints, habitRepetitionGoal int) *Command {
 	return &Command{
 		Action: action, ID: id, Name: name, ProjectID: projectId, GoalID: goalId,
-		TaskID: taskId, Repetition: repetition, Deadline: deadline, Estimate: estimate,
+		TaskID: taskId, Repetition: repetition, Deadline: deadline, Alarm: alarm, Estimate: estimate,
 		Scheduled: scheduled, TaskType: taskType, Note: note, NoneAllowed: noneAllowed,
 		ActiveFlag: activeFlag, DoneFlag: doneFlag, DonePrevious: donePrevious,
 		UndonePrevious: undonePrevious, NegativeFlag: negativeFlag, LearnedFlag: learnedFlag,

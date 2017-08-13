@@ -59,7 +59,7 @@ func (p *Project) Less(entity Entity) bool {
 	if p.Active != otherProject.Active {
 		return p.Active
 	}
-	return true
+	return p.Name < otherProject.Name
 }
 
 func (p *Project) MarshalJSON() ([]byte, error) {

@@ -43,9 +43,9 @@ var (
 
 	testHabits              = Habits{Habits: map[string]*Habit{"testHabitActive": testHabitActive, "testHabitDone": testHabitDone, "testHabitNonActive": testHabitNonActive}}
 	expectedEmptyHabitsJson = `{"items":[{"title":"There are no habits.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
-	expectedHabitsJson      = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}}]}`, testDeadlineFormatted, testDeadlineFormatted)
+	expectedHabitsJson      = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, deadline 13.8.2017, points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}}]}`)
 
-	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, %s, base points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, %s, base points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"No habit","arg":"-","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`, testDeadlineFormatted, testDeadlineFormatted)
+	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, deadline 13.8.2017, points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"No habit","arg":"-","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`)
 	testHabitsOrdering     = []string{"testHabitActive", "testHabitNonActive", "testHabitDone"}
 
 	testItems             = Items{[]*AlfredItem{(&Review{Repetition: HBT_REPETITION_WEEKLY, Deadline: utils.GetFirstSaturday()}).GetItem()}}
@@ -127,15 +127,15 @@ func TestGetHabitNonActiveItem(t *testing.T) {
 
 func TestGetHabitActiveItem(t *testing.T) {
 	ai := testHabitActive.getItem(testId)
-	testCommonAttr(ai, true, testId, testHabitActive.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT,
+	testCommonAttr(ai, true, testId, testHabitActive.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_DAILY_HABIT,
 		testHabitActive.Successes, testHabitActive.Tries,
-		testHabitActive.ActualStreak, testHabitActive.Deadline.Format(DATE_FORMAT),
+		testHabitActive.ActualStreak,
 		testHabitActive.BasePoints), ICO_RED, t)
 }
 
 func TestGetHabitDoneItem(t *testing.T) {
 	ai := testHabitDone.getItem(testId)
-	testCommonAttr(ai, true, testId, testHabitDone.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_HABIT,
+	testCommonAttr(ai, true, testId, testHabitDone.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_NOT_DAILY,
 		testHabitDone.Successes, testHabitDone.Tries, testHabitDone.ActualStreak,
 		testHabitDone.Deadline.Format(DATE_FORMAT), testHabitDone.BasePoints), ICO_GREEN, t)
 }

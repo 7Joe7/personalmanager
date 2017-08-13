@@ -37,6 +37,7 @@ func TestEnsureValues(t *testing.T) {
 
 func TestSynchronize(t *testing.T) {
 	tm := &transactionMock{functionsCalled: []string{}}
+	resources.Alr = &AlarmManagerMock{}
 	synchronize(tm, false)
 	tm.Execute()
 	verifyTransactionFlow(t, tm)

@@ -5,18 +5,18 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 )
 
-func getModifyTagFunc(t *resources.Tag, name string) func() {
+func getModifyTagFunc(t *resources.Tag, cmd *resources.Command) func() {
 	return func() {
-		if name != "" {
-			t.Name = name
+		if cmd.Name != "" {
+			t.Name = cmd.Name
 		}
 	}
 }
 
-func AddTag(name string) {
+func AddTag(cmd *resources.Command) {
 	tr := db.NewTransaction()
 	tr.Add(func() error {
-		return tr.AddEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, resources.NewTag(name))
+		return tr.AddEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, resources.NewTag(cmd.Name))
 	})
 	tr.Execute()
 }
@@ -25,9 +25,9 @@ func DeleteTag(tagId string) {
 	db.DeleteEntity([]byte(tagId), resources.DB_DEFAULT_TAGS_BUCKET_NAME)
 }
 
-func ModifyTag(tagId, name string) {
+func ModifyTag(cmd *resources.Command) {
 	tag := &resources.Tag{}
-	db.ModifyEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(tagId), false, tag, getModifyTagFunc(tag, name))
+	db.ModifyEntity(resources.DB_DEFAULT_TAGS_BUCKET_NAME, []byte(cmd.ID), false, tag, getModifyTagFunc(tag, cmd))
 }
 
 func GetTag(tagId string) *resources.Tag {

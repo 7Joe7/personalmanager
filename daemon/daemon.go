@@ -28,6 +28,7 @@ import (
     "github.com/everdev/mack"
     "github.com/pkg/errors"
     "github.com/7joe7/personalmanager/operations/exporter"
+    "github.com/7joe7/personalmanager/operations/alarm"
 )
 
 func main() {
@@ -57,11 +58,14 @@ func main() {
         panic(err)
     }
 
-    runningBinaryPath := utils.GetRunningBinaryPath()
-    log.Println("running binary path:", runningBinaryPath)
+    runningBinary := utils.GetRunningBinaryPath()
+    log.Println("running binary:", runningBinary)
 
     resources.Alf = alfred.NewAlfred()
-    resources.Abr = anybar.NewAnybarManager("/Users/joe/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.7925D680-5674-4BC2-9CA8-B7019A650147")
+    resources.Abr = anybar.NewAnybarManager(runningBinary)
+    resources.Alr = alarm.NewAlarmManager()
+
+    go resources.Alr.Run()
 
     db.Open()
     t := db.NewTransaction()
@@ -69,6 +73,8 @@ func main() {
     operations.EnsureValues(t)
     operations.Synchronize(t)
     t.Execute()
+
+    resources.Alr.Sync()
 
     listen, err := net.Listen("tcp4", ":" + strconv.Itoa(resources.PORT))
     if err != nil {
@@ -96,7 +102,10 @@ func main() {
                 continue
             }
             log.Println("acknowledged a connection")
-            handleMessage(conn)
+            err = handleMessage(conn)
+            if err != nil {
+                log.Printf("unable to handle command. %v\n", err)
+            }
         }
     }()
 
@@ -109,7 +118,7 @@ func main() {
     os.Exit(0)
 }
 
-func handleMessage(conn net.Conn) *resources.Command {
+func handleMessage(conn net.Conn) error {
     defer conn.Close()
     buf := make([]byte, 4096)
     r   := bufio.NewReader(conn)
@@ -129,16 +138,20 @@ func handleMessage(conn net.Conn) *resources.Command {
                 cmd := &resources.Command{}
                 err = json.Unmarshal([]byte(data), cmd)
                 if err != nil {
-                    log.Println("unable to unmarshal command:", err)
-                    return nil
+                    return err
                 }
                 log.Printf("received command: %v\n", cmd)
                 err = handleCommand(cmd, conn)
-                return cmd
+                if err != nil {
+                    return err
+                }
+                if cmd.Alarm != "" {
+                    resources.Alr.Sync()
+                }
+                return nil
             }
         default:
-            log.Fatalf("Receive data failed: %v", err)
-            return nil
+            return err
         }
     }
 }
@@ -149,19 +162,19 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
     t.Execute()
     switch cmd.Action {
     case resources.ACT_CREATE_TASK:
-        operations.AddTask(cmd.Name, cmd.ProjectID, cmd.GoalID, cmd.Deadline, cmd.Estimate, cmd.Scheduled, cmd.TaskType, cmd.Note, cmd.ActiveFlag, cmd.BasePoints)
+        operations.AddTask(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "task"), conn)
     case resources.ACT_CREATE_PROJECT:
-        operations.AddProject(cmd.Name)
+        operations.AddProject(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "project"), conn)
     case resources.ACT_CREATE_TAG:
-        operations.AddTag(cmd.Name)
+        operations.AddTag(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "tag"), conn)
     case resources.ACT_CREATE_GOAL:
-        goals.AddGoal(cmd.Name, cmd.ProjectID, cmd.HabitID, cmd.HabitRepetitionGoal, cmd.BasePoints)
+        goals.AddGoal(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "goal"), conn)
     case resources.ACT_CREATE_HABIT:
-        operations.AddHabit(cmd.Name, cmd.Repetition, cmd.Note, cmd.Deadline, cmd.GoalID, cmd.ActiveFlag, cmd.NegativeFlag, cmd.BasePoints, cmd.HabitRepetitionGoal)
+        operations.AddHabit(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"), conn)
     case resources.ACT_PRINT_TASKS:
         resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: cmd.NoneAllowed, Status: operations.GetStatus(), Sum: true}, conn)
@@ -224,22 +237,22 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
         operations.DeleteHabit(cmd.ID)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "habit"), conn)
     case resources.ACT_MODIFY_TASK:
-        operations.ModifyTask(cmd.ID, cmd.Name, cmd.ProjectID, cmd.GoalID, cmd.Deadline, cmd.Estimate, cmd.Scheduled, cmd.TaskType, cmd.Note, cmd.BasePoints, cmd.ActiveFlag, cmd.DoneFlag)
+        operations.ModifyTask(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "task"), conn)
     case resources.ACT_MODIFY_PROJECT:
-        operations.ModifyProject(cmd.ID, cmd.Name, cmd.TaskID, cmd.GoalID, cmd.ActiveFlag, cmd.DoneFlag)
+        operations.ModifyProject(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "project"), conn)
     case resources.ACT_MODIFY_TAG:
-        operations.ModifyTag(cmd.ID, cmd.Name)
+        operations.ModifyTag(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "tag"), conn)
     case resources.ACT_MODIFY_GOAL:
-        goals.ModifyGoal(cmd.ID, cmd.Name, cmd.TaskID, cmd.ProjectID, cmd.HabitID, cmd.ActiveFlag, cmd.DoneFlag, cmd.HabitRepetitionGoal, cmd.BasePoints)
+        goals.ModifyGoal(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "goal"), conn)
     case resources.ACT_MODIFY_HABIT:
-        operations.ModifyHabit(cmd.ID, cmd.Name, cmd.Repetition, cmd.Note, cmd.Deadline, cmd.GoalID, cmd.ActiveFlag, cmd.DoneFlag, cmd.DonePrevious, cmd.UndonePrevious, cmd.NegativeFlag, cmd.LearnedFlag, cmd.BasePoints, cmd.HabitRepetitionGoal)
+        operations.ModifyHabit(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "habit"), conn)
     case resources.ACT_MODIFY_REVIEW:
-        operations.ModifyReview(cmd.Repetition, cmd.Deadline)
+        operations.ModifyReview(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_MODIFY_SUCCESS, "review"), conn)
     case resources.ACT_SYNC_ANYBAR_PORTS:
         t := db.NewTransaction()

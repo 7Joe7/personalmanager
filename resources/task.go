@@ -74,10 +74,10 @@ func (t *Task) Less(entity Entity) bool {
 	if (t.Deadline != nil) != (otherTask.Deadline != nil) {
 		return t.Deadline != nil
 	}
-	if t.Deadline != nil {
+	if t.Deadline != nil && t.Deadline.Day() != otherTask.Deadline.Day() {
 		return t.Deadline.Before(*otherTask.Deadline)
 	}
-	return true
+	return t.Name < otherTask.Name
 }
 
 func (t *Task) MarshalJSON() ([]byte, error) {

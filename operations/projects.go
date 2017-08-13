@@ -5,14 +5,14 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 )
 
-func getModifyProjectFunc(p *resources.Project, name, taskId, goalId string, activeFlag, doneFlag bool, tr resources.Transaction) func() {
+func getModifyProjectFunc(p *resources.Project, cmd *resources.Command, tr resources.Transaction) func() {
 	return func() {
-		if name != "" {
-			p.Name = name
+		if cmd.Name != "" {
+			p.Name = cmd.Name
 		}
-		if taskId != "" && taskId != "-" {
+		if cmd.TaskID != "" && cmd.TaskID != "-" {
 			task := &resources.Task{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(taskId), true, task, func() {
+			err := tr.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(cmd.TaskID), true, task, func() {
 				task.Project = p
 			})
 			if err != nil {
@@ -20,9 +20,9 @@ func getModifyProjectFunc(p *resources.Project, name, taskId, goalId string, act
 			}
 			p.Tasks = append(p.Tasks, task)
 		}
-		if goalId != "" && goalId != "-" {
+		if cmd.GoalID != "" && cmd.GoalID != "-" {
 			goal := &resources.Goal{}
-			err := tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(goalId), true, goal, func() {
+			err := tr.ModifyEntity(resources.DB_DEFAULT_GOALS_BUCKET_NAME, []byte(cmd.GoalID), true, goal, func() {
 				goal.Project = p
 			})
 			if err != nil {
@@ -30,19 +30,19 @@ func getModifyProjectFunc(p *resources.Project, name, taskId, goalId string, act
 			}
 			p.Goals = append(p.Goals, goal)
 		}
-		if activeFlag {
+		if cmd.ActiveFlag {
 			p.Active = !p.Active
 		}
-		if doneFlag {
+		if cmd.DoneFlag {
 			p.Done = !p.Done
 		}
 	}
 }
 
-func addProject(name string) {
+func addProject(cmd *resources.Command) {
 	tr := db.NewTransaction()
 	tr.Add(func() error {
-		return tr.AddEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, resources.NewProject(name))
+		return tr.AddEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, resources.NewProject(cmd.Name))
 	})
 	tr.Execute()
 }
@@ -82,11 +82,11 @@ func deleteProject(projectId string) {
 	tr.Execute()
 }
 
-func modifyProject(projectId, name, taskId, goalId string, activeFlag, doneFlag bool) {
+func modifyProject(cmd *resources.Command) {
 	project := &resources.Project{}
 	tr := db.NewTransaction()
 	tr.Add(func() error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(projectId), false, project, getModifyProjectFunc(project, name, taskId, goalId, activeFlag, doneFlag, tr))
+		return tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(cmd.ProjectID), false, project, getModifyProjectFunc(project, cmd, tr))
 	})
 	tr.Execute()
 }

@@ -63,18 +63,23 @@ const (
 
 	ANY_SLEEP_TIME = 400
 
-	DEADLINE_FORMAT = "2.1.2006 15:04"
-	DATE_FORMAT     = "2.1.2006"
+	DATE_HOUR_MINUTE_FORMAT = "2.1.2006 15:04"
+	DATE_FORMAT             = "2.1.2006"
+	HOUR_MINUTE_FORMAT      = "15:04"
 
-	SUB_FORMAT_ACTIVE_HABIT     = "%d/%d, actual %d, %v, base points %d"
-	SUB_FORMAT_ACTIVE_BAD_HABIT = "Today: %d/%d, average: %.2f, overall: %d/%d, actual: %d, %v, base points %d"
-	SUB_FORMAT_NON_ACTIVE_HABIT = "%d/%d"
-	SUB_FORMAT_TASK             = "%s %s"
-	SUB_FORMAT_PROJECT          = "%s"
-	SUB_FORMAT_TAG              = ""
-	SUB_FORMAT_GOAL             = "Priority %d, %d/%d"
-	NAME_FORMAT_STATUS          = "Total %d, today %d, yesterday %d."
-	NAME_FORMAT_EMPTY           = "There are no %ss."
+	SUB_FORMAT_ACTIVE_DAILY_HABIT            = "%d/%d, actual %d, points %d"
+	SUB_FORMAT_ACTIVE_DAILY_HABIT_WITH_ALARM = "%d/%d, actual %d, alarm %v, points %d"
+	SUB_FORMAT_ACTIVE_NOT_DAILY              = "%d/%d, actual %d, deadline %v, points %d"
+	SUB_FORMAT_ACTIVE_NOT_DAILY_WITH_ALARM   = "%d/%d, actual %d, alarm %v, deadline %v, points %d"
+	SUB_FORMAT_ACTIVE_BAD_HABIT              = "%d/%d, actual %d, today %d/%d, average %.2f, points %d"
+	SUB_FORMAT_ACTIVE_BAD_HABIT_NOT_DAILY    = "%d/%d, actual %d, period %d/%d, average %.2f, till %v, points %d"
+	SUB_FORMAT_NON_ACTIVE_HABIT              = "%d/%d"
+	SUB_FORMAT_TASK                          = "%s %s"
+	SUB_FORMAT_PROJECT                       = "%s"
+	SUB_FORMAT_TAG                           = ""
+	SUB_FORMAT_GOAL                          = "Priority %d, %d/%d"
+	NAME_FORMAT_STATUS                       = "Total %d, today %d, yesterday %d."
+	NAME_FORMAT_EMPTY                        = "There are no %ss."
 
 	HBT_DONE_BASE_ORDER    = 4000
 	HBT_BASE_ORDER_DAILY   = 1000

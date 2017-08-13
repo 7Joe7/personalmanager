@@ -67,6 +67,7 @@ func synchronize(t resources.Transaction, backup bool) {
 			if err != nil {
 				return err
 			}
+			resources.Alr.Sync()
 		}
 		return nil
 	})

@@ -34,6 +34,11 @@ type Anybar interface {
 	Ping(port int) bool
 }
 
+type AlarmManager interface {
+	Sync()
+	Run()
+}
+
 type Entity interface {
 	SetId(string)
 	GetId() string

@@ -10,6 +10,7 @@ type Command struct {
 	HabitID             string `json:"habit_id,omitempty"`
 	Repetition          string `json:"repetition,omitempty"`
 	Deadline            string `json:"deadline,omitempty"`
+	Alarm               string `json:"alarm,omitempty"`
 	Estimate            string `json:"estimate,omitempty"`
 	Scheduled           string `json:"scheduled,omitempty"`
 	TaskType            string `json:"task_type,omitempty"`
