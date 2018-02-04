@@ -1,0 +1,1634 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="03ac1275-86f5-48eb-aec2-7690b5f3603f" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/operations/dayPlan.go" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/resources/plannedItem.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/daemon/daemon.go" afterPath="$PROJECT_DIR$/daemon/daemon.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/operations/alarm/alarm.go" afterPath="$PROJECT_DIR$/operations/alarm/alarm.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/operations/habits.go" afterPath="$PROJECT_DIR$/operations/habits.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/operations/operations.go" afterPath="$PROJECT_DIR$/operations/operations.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/operations/projects.go" afterPath="$PROJECT_DIR$/operations/projects.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/operations/sync.go" afterPath="$PROJECT_DIR$/operations/sync.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/constants.go" afterPath="$PROJECT_DIR$/resources/constants.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/goal.go" afterPath="$PROJECT_DIR$/resources/goal.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/habit.go" afterPath="$PROJECT_DIR$/resources/habit.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/marshal.go" afterPath="$PROJECT_DIR$/resources/marshal.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/marshal_test.go" afterPath="$PROJECT_DIR$/resources/marshal_test.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/project.go" afterPath="$PROJECT_DIR$/resources/project.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/task.go" afterPath="$PROJECT_DIR$/resources/task.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/types.go" afterPath="$PROJECT_DIR$/resources/types.go" />
+    </list>
+    <ignored path="personalmanager.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DatabaseView">
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="personalmanager" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="daemon.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/daemon/daemon.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="223" column="108" lean-forward="true" selection-start-line="223" selection-start-column="108" selection-end-line="223" selection-end-column="108" />
+              <folding>
+                <element signature="e#14#850#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="exporter.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/operations/exporter/exporter.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="6">
+              <caret line="31" column="5" lean-forward="false" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="task.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/task.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2024">
+              <caret line="99" column="9" lean-forward="false" selection-start-line="99" selection-start-column="9" selection-end-line="99" selection-end-column="9" />
+              <folding>
+                <marker date="1504193785000" expanded="true" signature="1759:2146" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="plannedItem.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/plannedItem.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="198">
+              <caret line="9" column="1" lean-forward="false" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
+              <folding>
+                <element signature="e#19#32#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="constants.go" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/resources/constants.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="352">
+              <caret line="16" column="49" lean-forward="true" selection-start-line="16" selection-start-column="49" selection-end-line="16" selection-end-column="49" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="alarm.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/operations/alarm/alarm.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="110">
+              <caret line="5" column="10" lean-forward="false" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="goal.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/goal.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1650">
+              <caret line="78" column="5" lean-forward="false" selection-start-line="78" selection-start-column="5" selection-end-line="78" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="habit.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/habit.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3432">
+              <caret line="162" column="13" lean-forward="false" selection-start-line="162" selection-start-column="13" selection-end-line="162" selection-end-column="13" />
+              <folding>
+                <element signature="e#19#104#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="projects.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/operations/projects.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="82" column="1" lean-forward="false" selection-start-line="82" selection-start-column="1" selection-end-line="82" selection-end-column="1" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="marshal.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resources/marshal.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="154">
+              <caret line="13" column="21" lean-forward="false" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="operations.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/operations/operations.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2838">
+              <caret line="131" column="13" lean-forward="false" selection-start-line="131" selection-start-column="13" selection-end-line="131" selection-end-column="13" />
+              <folding>
+                <element signature="e#20#76#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tasks.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/operations/tasks.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="814">
+              <caret line="44" column="9" lean-forward="false" selection-start-line="38" selection-start-column="8" selection-end-line="44" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="habits.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/operations/habits.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="23" column="16" lean-forward="false" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dayPlan.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/operations/dayPlan.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="110">
+              <caret line="12" column="10" lean-forward="false" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
+              <folding>
+                <element signature="e#20#132#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>SUB_FORMAT_ACTIVE_BAD_HABIT</find>
+      <find>SUB_FORMAT_ACTIVE_HABIT</find>
+      <find>Les</find>
+      <find>createTask</find>
+      <find>Adding entity</find>
+      <find>h.AlarmTime.After(*h.Deadline)</find>
+      <find>AddHabit</find>
+      <find>cmd.Alarm != &quot;&quot;</find>
+      <find>handleMessage</find>
+      <find>alarm&quot;</find>
+      <find>\&quot;</find>
+      <find>getHabits</find>
+      <find>expectedHabitsJson</find>
+      <find>deadline</find>
+      <find>getItem(</find>
+      <find>PRINT_</find>
+      <find>getItem</find>
+      <find>Less</find>
+      <find>Items</find>
+      <find>Tasks</find>
+      <find>&quot;items&quot;</find>
+      <find>Less(</find>
+      <find>elementType</find>
+      <find>status</find>
+      <find>TimeEstimate</find>
+      <find>21</find>
+      <find>MODIFY_PROJ</find>
+      <find>Modify</find>
+      <find>CFG_EXPORT_CONFIG_PATH</find>
+      <find>getAppSupportFolderPath</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>alf</replace>
+      <replace>resources.Alf</replace>
+      <replace>resources.Abr</replace>
+      <replace>resources.Abr.</replace>
+      <replace>&quot;</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/operations</dir>
+      <dir>$PROJECT_DIR$/resources</dir>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="modificationStamps">
+      <map>
+        <entry key="$USER_HOME$/Documents/IdeaProjects/Gradle/GradleWebAppSample" value="5693985375000" />
+        <entry key="$USER_HOME$/Documents/IdeaProjects/cbs-installer" value="1427197961000" />
+        <entry key="$USER_HOME$/Documents/IdeaProjects/safeq-mac-client" value="1426858438000" />
+        <entry key="$USER_HOME$/Downloads/ud867-master/3.02-Exercise-ImportAJavaProject" value="2867923824000" />
+        <entry key="$PROJECT_DIR$/../db-validator" value="2929222502000" />
+        <entry key="$PROJECT_DIR$/../document-management" value="2907821878000" />
+        <entry key="$PROJECT_DIR$/../safeq" value="42473658218000" />
+        <entry key="$PROJECT_DIR$/../services-restarting-tool" value="2916632364000" />
+        <entry key="$PROJECT_DIR$/../terminalserver" value="2940632206000" />
+        <entry key="/Volumes/C 2/Users/Joe/Projects/safeq" value="42228376318000" />
+        <entry key="/Volumes/C/Users/Joe/Projects/entitlement-migration" value="2881762028000" />
+        <entry key="/Volumes/C/Users/Joe/Projects/mps-installer" value="1439896985000" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/test/alfredMock_test.go" />
+        <option value="$PROJECT_DIR$/test/managerMock_test.go" />
+        <option value="$PROJECT_DIR$/operations/configuration/configuration.go" />
+        <option value="$PROJECT_DIR$/operations/initiation.go" />
+        <option value="$PROJECT_DIR$/operations/goals.go" />
+        <option value="$PROJECT_DIR$/test/managerMock.go" />
+        <option value="$PROJECT_DIR$/db/db_test.go" />
+        <option value="$PROJECT_DIR$/operations/anybar/anybar_test.go" />
+        <option value="$PROJECT_DIR$/operations/tasks_test.go" />
+        <option value="$PROJECT_DIR$/test/utils.go" />
+        <option value="$PROJECT_DIR$/operations/goals/goals_test.go" />
+        <option value="$PROJECT_DIR$/daemon/run.sh" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/daemon/daemon.log" />
+        <option value="$PROJECT_DIR$/db/transaction.go" />
+        <option value="$PROJECT_DIR$/operations/alfred/alfred.go" />
+        <option value="$PROJECT_DIR$/operations/alfred/alfred_test.go" />
+        <option value="$PROJECT_DIR$/operations/anybar/anybar.go" />
+        <option value="$PROJECT_DIR$/daemon/org.erneker.personalmanager.plist" />
+        <option value="$PROJECT_DIR$/daemon/org.erneker.personalmanager.plist.tmpl" />
+        <option value="$PROJECT_DIR$/deploy.sh" />
+        <option value="$PROJECT_DIR$/resources/project.go" />
+        <option value="$PROJECT_DIR$/main.go" />
+        <option value="$PROJECT_DIR$/resources/constructs.go" />
+        <option value="$PROJECT_DIR$/resources/command.go" />
+        <option value="$PROJECT_DIR$/operations/tasks.go" />
+        <option value="$PROJECT_DIR$/operations/tags.go" />
+        <option value="$PROJECT_DIR$/operations/goals/goals.go" />
+        <option value="$PROJECT_DIR$/operations/review.go" />
+        <option value="$PROJECT_DIR$/operations/habits_test.go" />
+        <option value="$PROJECT_DIR$/resources/interfaces.go" />
+        <option value="$PROJECT_DIR$/resources/singletons.go" />
+        <option value="$PROJECT_DIR$/operations/alarmManager_mock.go" />
+        <option value="$PROJECT_DIR$/operations/alarmManagerMock.go" />
+        <option value="$PROJECT_DIR$/operations/operations_test.go" />
+        <option value="$PROJECT_DIR$/utils/utils.go" />
+        <option value="$PROJECT_DIR$/operations/alarm/alarm.go" />
+        <option value="$PROJECT_DIR$/operations/sync.go" />
+        <option value="$PROJECT_DIR$/resources/marshal_test.go" />
+        <option value="$PROJECT_DIR$/resources/goal.go" />
+        <option value="$PROJECT_DIR$/operations/operations.go" />
+        <option value="$PROJECT_DIR$/resources/types.go" />
+        <option value="$PROJECT_DIR$/resources/plannedItem.go" />
+        <option value="$PROJECT_DIR$/resources/marshal.go" />
+        <option value="$PROJECT_DIR$/operations/dayPlan.go" />
+        <option value="$PROJECT_DIR$/operations/habits.go" />
+        <option value="$PROJECT_DIR$/resources/task.go" />
+        <option value="$PROJECT_DIR$/resources/habit.go" />
+        <option value="$PROJECT_DIR$/operations/projects.go" />
+        <option value="$PROJECT_DIR$/daemon/daemon.go" />
+        <option value="$PROJECT_DIR$/resources/constants.go" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="4" />
+    <option name="y" value="22" />
+    <option name="width" value="1436" />
+    <option name="height" value="878" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="1" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="AndroidView" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="personalmanager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="personalmanager" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="personalmanager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="personalmanager" type="462c0819:PsiDirectoryNode" />
+              <item name="daemon" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="personalmanager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="personalmanager" type="462c0819:PsiDirectoryNode" />
+              <item name="operations" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="personalmanager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="personalmanager" type="462c0819:PsiDirectoryNode" />
+              <item name="operations" type="462c0819:PsiDirectoryNode" />
+              <item name="alfred" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="personalmanager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="personalmanager" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="personalmanager" type="58d84e3e:PackageViewProjectNode" />
+              <item name="personalmanager" type="616d4139:PackageViewModuleNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable.Global.libraries.is.expanded" value="true" />
+    <property name="configurable.Project.libraries.is.expanded" value="true" />
+    <property name="configurable.Module.libraries.is.expanded" value="false" />
+    <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
+    <property name="go.libraries.notification.had.been.shown" value="true" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="prop_add_unversioned_files" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="js.eslint.eslintPackage" value="" />
+    <property name="SearchEverywhereHistoryKey" value="projects&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/projects.go&#10;habits&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/habits.go&#10;Task&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/resources/task.go&#10;operations&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/operations.go&#10;anybar.go&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/anybar/anybar.go&#10;alfred_test&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/alfred/alfred_test.go&#10;pig&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/sources.etixlabs.com/dcim/jungle/pig/pig.go&#10;tasks_t&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/tasks_test.go&#10;main&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/main.go&#10;habit&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/habits.go&#10;expor&#9;FILE&#9;file:///Users/joe/Projects/gocode/src/github.com/7joe7/personalmanager/operations/exporter/exporter.go" />
+    <property name="nodejs_interpreter_path" value="/usr/local/bin/node" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/daemon" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/anybar" />
+      <recent name="$PROJECT_DIR$/icons" />
+      <recent name="$PROJECT_DIR$/resources" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/operations/goals" />
+      <recent name="$PROJECT_DIR$/operations/configuration" />
+      <recent name="$PROJECT_DIR$/test" />
+      <recent name="$PROJECT_DIR$/operations" />
+      <recent name="$PROJECT_DIR$/resources" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Bash.deploy.sh">
+    <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/7joe7/personalmanager/operations" />
+      <pattern value="^TestGetNumberOfMissedDeadlines$" />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+    </configuration>
+    <configuration default="true" type="BashConfigurationType" factoryName="Bash">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <module name="" />
+      <envs>
+        <env name="GOPATH" value="/Users/joe/Projects/gocode" />
+        <env name="PATH" value="/Users/joe/Downloads/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin" />
+      </envs>
+    </configuration>
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
+    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android App">
+      <module name="" />
+      <option name="DEPLOY" value="true" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <Java />
+      <Profilers>
+        <option name="ENABLE_ADVANCED_PROFILING" value="true" />
+        <option name="GAPID_ENABLED" value="false" />
+        <option name="GAPID_DISABLE_PCS" value="false" />
+        <option name="SUPPORT_LIB_ENABLED" value="true" />
+        <option name="INSTRUMENTATION_ENABLED" value="true" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
+      <module name="" />
+      <option name="TESTING_TYPE" value="0" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="EXTRA_OPTIONS" value="" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <Java />
+      <Profilers>
+        <option name="ENABLE_ADVANCED_PROFILING" value="true" />
+        <option name="GAPID_ENABLED" value="false" />
+        <option name="GAPID_DISABLE_PCS" value="false" />
+        <option name="SUPPORT_LIB_ENABLED" value="true" />
+        <option name="INSTRUMENTATION_ENABLED" value="true" />
+      </Profilers>
+      <method />
+    </configuration>
+    <configuration default="true" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+      <method />
+    </configuration>
+    <configuration default="true" type="GoAppEngineRunConfiguration" factoryName="Go App Engine">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$/" />
+      <method />
+    </configuration>
+    <configuration default="true" type="GoRunFileConfiguration" factoryName="Go Single File">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <method />
+    </configuration>
+    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list />
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method />
+    </configuration>
+    <configuration default="true" type="JarApplication" factoryName="JAR Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Java Scratch" factoryName="Java Scratch">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="SCRATCH_FILE_ID" value="0" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="personalmanager" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration name="backup-database" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action backup-database" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="create-habit" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action create-habit -name ahoj -active -deadline 25.12.2016 -negative" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="create-project" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action create-project -name &quot;Some project&quot;" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="create-task" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action create-task -name &quot;2 new and cool task&quot;" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="custom" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action custom" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="debug-database" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action debug-database -id ./personal-manager.db" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="delete-habit" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action delete-habit -id 149" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="delete-task" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action delete-task -id 642" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="deploy.sh" type="BashConfigurationType" factoryName="Bash">
+      <option name="INTERPRETER_OPTIONS" value="zsh" />
+      <option name="INTERPRETER_PATH" value="/usr/bin/env" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/deploy.sh" />
+      <option name="PARAMETERS" value="" />
+      <module name="personalmanager" />
+      <envs>
+        <env name="GOPATH" value="/Users/joe/Projects/gocode" />
+        <env name="PATH" value="/Users/joe/Downloads/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin" />
+      </envs>
+    </configuration>
+    <configuration name="go run daemon.go" type="GoRunFileConfiguration" factoryName="Go Single File">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/daemon/daemon.go" />
+    </configuration>
+    <configuration name="gobench habits_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gobench" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/operations/habits_test.go" />
+    </configuration>
+    <configuration name="habits_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true">
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/operations/habits_test.go" />
+    </configuration>
+    <configuration name="modify-goal" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action modify-goal -id 1 -done" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="modify-habit" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action modify-habit -id 137 -done" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="modify-task" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action modify-task -id 890 -projectId 36" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="print-goals" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action print-active-goals" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="print-habits" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action print-habits -active" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="print-projects-allowed" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action print-projects -noneAllowed" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="print-projects" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action print-projects -noneAllowed" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="print-review" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action print-review" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="print-tasks" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <output_file path="$PROJECT_DIR$" />
+      <module name="personalmanager" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-action print-work-unscheduled-tasks" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <kind value="FILE" />
+    </configuration>
+    <configuration name="test.sh" type="BashConfigurationType" factoryName="Bash" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="bash" />
+      <option name="INTERPRETER_PATH" value="/usr/bin/env" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.sh" />
+      <option name="PARAMETERS" value="" />
+      <module name="personalmanager" />
+      <envs />
+    </configuration>
+    <list size="23">
+      <item index="0" class="java.lang.String" itemvalue="Bash.deploy.sh" />
+      <item index="1" class="java.lang.String" itemvalue="Go Single File.go run daemon.go" />
+      <item index="2" class="java.lang.String" itemvalue="Go Application.backup-database" />
+      <item index="3" class="java.lang.String" itemvalue="Go Application.create-habit" />
+      <item index="4" class="java.lang.String" itemvalue="Go Application.create-project" />
+      <item index="5" class="java.lang.String" itemvalue="Go Application.create-task" />
+      <item index="6" class="java.lang.String" itemvalue="Go Application.custom" />
+      <item index="7" class="java.lang.String" itemvalue="Go Application.debug-database" />
+      <item index="8" class="java.lang.String" itemvalue="Go Application.delete-habit" />
+      <item index="9" class="java.lang.String" itemvalue="Go Application.delete-task" />
+      <item index="10" class="java.lang.String" itemvalue="Go Application.modify-goal" />
+      <item index="11" class="java.lang.String" itemvalue="Go Application.modify-habit" />
+      <item index="12" class="java.lang.String" itemvalue="Go Application.modify-task" />
+      <item index="13" class="java.lang.String" itemvalue="Go Application.print-goals" />
+      <item index="14" class="java.lang.String" itemvalue="Go Application.print-habits" />
+      <item index="15" class="java.lang.String" itemvalue="Go Application.print-projects" />
+      <item index="16" class="java.lang.String" itemvalue="Go Application.print-projects-allowed" />
+      <item index="17" class="java.lang.String" itemvalue="Go Application.print-review" />
+      <item index="18" class="java.lang.String" itemvalue="Go Application.print-tasks" />
+      <item index="19" class="java.lang.String" itemvalue="Bash.test.sh" />
+      <item index="20" class="java.lang.String" itemvalue="Go Test.TestGetNumberOfMissedDeadlines in habits_test.go" />
+      <item index="21" class="java.lang.String" itemvalue="Go Test.gobench habits_test.go" />
+      <item index="22" class="java.lang.String" itemvalue="Go Test.habits_test.go" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="03ac1275-86f5-48eb-aec2-7690b5f3603f" name="Default" comment="" />
+      <created>1473169569083</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1473169569083</updated>
+      <workItem from="1473169570563" duration="57000" />
+      <workItem from="1473169697660" duration="201000" />
+      <workItem from="1473169899598" duration="31058000" />
+      <workItem from="1473357584548" duration="25072000" />
+      <workItem from="1473430828826" duration="108330000" />
+      <workItem from="1473699650764" duration="1840000" />
+      <workItem from="1473778100274" duration="25569000" />
+      <workItem from="1473875207178" duration="15042000" />
+      <workItem from="1473946388337" duration="3187000" />
+      <workItem from="1474019756404" duration="33930000" />
+      <workItem from="1474194393640" duration="14793000" />
+      <workItem from="1474311283882" duration="3108000" />
+      <workItem from="1474400991584" duration="2880000" />
+      <workItem from="1474565339253" duration="13976000" />
+      <workItem from="1474644058389" duration="3848000" />
+      <workItem from="1474812092301" duration="13271000" />
+      <workItem from="1474996293168" duration="8008000" />
+      <workItem from="1475186189607" duration="2110000" />
+      <workItem from="1475258577650" duration="4527000" />
+      <workItem from="1475857856464" duration="7203000" />
+      <workItem from="1476005520566" duration="668000" />
+      <workItem from="1476007449651" duration="12331000" />
+      <workItem from="1476135347551" duration="2275000" />
+      <workItem from="1476231181085" duration="1439000" />
+      <workItem from="1476526386582" duration="6473000" />
+      <workItem from="1476629621212" duration="1291000" />
+      <workItem from="1476826930334" duration="2659000" />
+      <workItem from="1477005872051" duration="2548000" />
+      <workItem from="1487469120511" duration="106000" />
+      <workItem from="1487469267465" duration="1177000" />
+      <workItem from="1487470480520" duration="281000" />
+      <workItem from="1487470799779" duration="239000" />
+      <workItem from="1487471126682" duration="1146000" />
+      <workItem from="1487473746808" duration="1091000" />
+      <workItem from="1487475896206" duration="257000" />
+      <workItem from="1487476189388" duration="273000" />
+      <workItem from="1487476539552" duration="51000" />
+      <workItem from="1487476633877" duration="346000" />
+      <workItem from="1487509767503" duration="5918000" />
+      <workItem from="1487547120074" duration="2992000" />
+      <workItem from="1488672930335" duration="3339000" />
+      <workItem from="1488786285170" duration="601000" />
+      <workItem from="1489837566549" duration="378000" />
+      <workItem from="1489837975184" duration="719000" />
+      <workItem from="1489838790692" duration="98000" />
+      <workItem from="1489838966183" duration="34000" />
+      <workItem from="1489839044153" duration="289000" />
+      <workItem from="1489839444979" duration="371000" />
+      <workItem from="1489840128737" duration="457000" />
+      <workItem from="1489840801679" duration="258000" />
+      <workItem from="1489841094697" duration="273000" />
+      <workItem from="1489841940478" duration="288000" />
+      <workItem from="1490000193658" duration="663000" />
+      <workItem from="1490100624019" duration="609000" />
+      <workItem from="1490779457629" duration="2146000" />
+      <workItem from="1492089330894" duration="1810000" />
+      <workItem from="1492445526578" duration="3078000" />
+      <workItem from="1498310310740" duration="5439000" />
+      <workItem from="1498926402895" duration="18706000" />
+      <workItem from="1499070683093" duration="602000" />
+      <workItem from="1499072517095" duration="628000" />
+      <workItem from="1499079623287" duration="71000" />
+      <workItem from="1499080250126" duration="618000" />
+      <workItem from="1499083293724" duration="602000" />
+      <workItem from="1499085122233" duration="626000" />
+      <workItem from="1499102983316" duration="301000" />
+      <workItem from="1499108187767" duration="743000" />
+      <workItem from="1499170554223" duration="596000" />
+      <workItem from="1499179291415" duration="38000" />
+      <workItem from="1501931107541" duration="5803000" />
+      <workItem from="1502046470936" duration="731000" />
+      <workItem from="1502047289280" duration="74000" />
+      <workItem from="1502047447120" duration="86000" />
+      <workItem from="1502047615685" duration="13661000" />
+      <workItem from="1502173959433" duration="1377000" />
+      <workItem from="1502310607287" duration="287000" />
+      <workItem from="1502558791014" duration="144000" />
+      <workItem from="1502559057311" duration="27488000" />
+      <workItem from="1503226993957" duration="1772000" />
+      <workItem from="1503263596856" duration="5188000" />
+      <workItem from="1503387667750" duration="553000" />
+      <workItem from="1503403931255" duration="14713000" />
+      <workItem from="1503662756424" duration="1897000" />
+      <workItem from="1503907046292" duration="19000" />
+      <workItem from="1503907092125" duration="46000" />
+      <workItem from="1504049708216" duration="1115000" />
+      <workItem from="1504107558337" duration="6113000" />
+      <workItem from="1504189920390" duration="59000" />
+      <workItem from="1504192253737" duration="2132000" />
+      <workItem from="1504508755427" duration="48000" />
+      <workItem from="1504509920825" duration="1399000" />
+      <workItem from="1504533022742" duration="330000" />
+      <workItem from="1505119395483" duration="776000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TestHistory">
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 09m 02s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 09m 13s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 10m 10s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 10m 37s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 11m 05s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 11m 19s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 13m 07s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestGetNumberOfMissedDeadlines_in_habits_test_go - 2016.09.22 at 21h 20m 49s.xml">
+      <configuration name="TestGetNumberOfMissedDeadlines in habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="gobench_habits_test_go - 2016.09.22 at 21h 21m 05s.xml">
+      <configuration name="gobench habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="gobench_habits_test_go - 2016.09.22 at 21h 21m 14s.xml">
+      <configuration name="gobench habits_test.go" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="491763000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="4" y="22" width="1436" height="878" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32923076" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29473683" sideWeight="0.51578194" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31842107" sideWeight="0.49713057" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32872504" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28157896" sideWeight="0.4842181" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25035867" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3263158" sideWeight="0.4878049" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39631337" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug Logs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Execute Anonymous" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Salesforce" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32872504" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32923076" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31617647" sideWeight="0.5030303" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32872504" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31643626" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30261138" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24848485" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32872504" sideWeight="0.4969697" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39692307" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints-dialog>
+        <breakpoints-dialog />
+      </breakpoints-dialog>
+      <option name="time" value="40" />
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="GoApplicationRunConfiguration">
+        <watch expression="h" />
+        <watch expression="entity" />
+        <watch expression="v" />
+        <watch expression="c" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="9" column="6" lean-forward="true" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/daemon/daemon.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2058">
+          <caret line="440" column="13" lean-forward="true" selection-start-line="440" selection-start-column="13" selection-end-line="440" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/db/transaction.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="103" column="5" lean-forward="false" selection-start-line="103" selection-start-column="5" selection-end-line="103" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/db/db.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="16" column="5" lean-forward="false" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/anybar/anybar.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="19" column="1" lean-forward="false" selection-start-line="19" selection-start-column="1" selection-end-line="19" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/alfred/alfred_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="11" column="30" lean-forward="false" selection-start-line="11" selection-start-column="30" selection-end-line="11" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/math/floor.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="35" column="5" lean-forward="false" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/sort/sort.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="217" column="5" lean-forward="false" selection-start-line="217" selection-start-column="5" selection-end-line="217" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/os/env.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="79" column="5" lean-forward="false" selection-start-line="79" selection-start-column="5" selection-end-line="79" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/daemon/org.erneker.personalmanager.plist.tmpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="15" column="35" lean-forward="false" selection-start-line="15" selection-start-column="15" selection-end-line="15" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/utils/api.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="27" column="18" lean-forward="false" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/utils/utils.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="836">
+          <caret line="43" column="1" lean-forward="true" selection-start-line="43" selection-start-column="1" selection-end-line="43" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/daemon/org.erneker.personalmanager.plist">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="21" lean-forward="false" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/project.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="279">
+          <caret line="61" column="37" lean-forward="false" selection-start-line="61" selection-start-column="37" selection-end-line="61" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/habits_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="131" column="6" lean-forward="true" selection-start-line="131" selection-start-column="6" selection-end-line="131" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/constructs.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="41" column="16" lean-forward="true" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/command.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="17" column="19" lean-forward="true" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/goals/goals.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="28" column="28" lean-forward="false" selection-start-line="28" selection-start-column="28" selection-end-line="28" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/tags.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-21">
+          <caret line="10" column="29" lean-forward="false" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/review.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="1" lean-forward="true" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/time/tick.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="20" column="5" lean-forward="false" selection-start-line="20" selection-start-column="5" selection-end-line="20" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/singletons.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="19" lean-forward="false" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/time/sleep.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="82" column="5" lean-forward="false" selection-start-line="82" selection-start-column="5" selection-end-line="82" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/time/format.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="750" column="5" lean-forward="false" selection-start-line="750" selection-start-column="5" selection-end-line="750" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/time/zoneinfo.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="65" column="4" lean-forward="false" selection-start-line="65" selection-start-column="4" selection-end-line="65" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2068">
+          <caret line="110" column="0" lean-forward="false" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/operations_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="38" column="51" lean-forward="false" selection-start-line="38" selection-start-column="51" selection-end-line="38" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/alarmManagerMock.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/api.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="27" column="18" lean-forward="false" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/utils.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="748">
+          <caret line="40" column="26" lean-forward="false" selection-start-line="40" selection-start-column="26" selection-end-line="40" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/sync.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1298">
+          <caret line="68" column="13" lean-forward="false" selection-start-line="68" selection-start-column="13" selection-end-line="68" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/marshal_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="18" column="41" lean-forward="false" selection-start-line="18" selection-start-column="41" selection-end-line="18" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/alfred/alfred.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="19" column="40" lean-forward="false" selection-start-line="19" selection-start-column="40" selection-end-line="19" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/interfaces.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="53" column="17" lean-forward="false" selection-start-line="53" selection-start-column="4" selection-end-line="53" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/time/time.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="594">
+          <caret line="605" column="18" lean-forward="false" selection-start-line="605" selection-start-column="18" selection-end-line="605" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="17" column="5" lean-forward="false" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/task.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2024">
+          <caret line="99" column="9" lean-forward="false" selection-start-line="99" selection-start-column="9" selection-end-line="99" selection-end-column="9" />
+          <folding>
+            <marker date="1504193785000" expanded="true" signature="1759:2146" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/plannedItem.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="9" column="1" lean-forward="false" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
+          <folding>
+            <element signature="e#19#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/alarm/alarm.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="5" column="10" lean-forward="false" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/goal.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1650">
+          <caret line="78" column="5" lean-forward="false" selection-start-line="78" selection-start-column="5" selection-end-line="78" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/marshal.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="13" column="21" lean-forward="false" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/tasks.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="814">
+          <caret line="44" column="9" lean-forward="false" selection-start-line="38" selection-start-column="8" selection-end-line="44" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/habits.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="23" column="16" lean-forward="false" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/dayPlan.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="12" column="10" lean-forward="false" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
+          <folding>
+            <element signature="e#20#132#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/habit.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3432">
+          <caret line="162" column="13" lean-forward="false" selection-start-line="162" selection-start-column="13" selection-end-line="162" selection-end-column="13" />
+          <folding>
+            <element signature="e#19#104#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/operations.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2838">
+          <caret line="131" column="13" lean-forward="false" selection-start-line="131" selection-start-column="13" selection-end-line="131" selection-end-column="13" />
+          <folding>
+            <element signature="e#20#76#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deploy.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="17" column="74" lean-forward="false" selection-start-line="17" selection-start-column="74" selection-end-line="17" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/projects.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="82" column="1" lean-forward="false" selection-start-line="82" selection-start-column="1" selection-end-line="82" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/operations/exporter/exporter.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6">
+          <caret line="31" column="5" lean-forward="false" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/daemon/daemon.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="223" column="108" lean-forward="true" selection-start-line="223" selection-start-column="108" selection-end-line="223" selection-end-column="108" />
+          <folding>
+            <element signature="e#14#850#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resources/constants.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="16" column="49" lean-forward="true" selection-start-line="16" selection-start-column="49" selection-end-line="16" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>bundle (v0.0.1, rbenv: 2.1.5) [gem]</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.7</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>personalmanager</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>GOPATH &lt;personalmanager&gt;</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

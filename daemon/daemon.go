@@ -176,6 +176,8 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
     case resources.ACT_CREATE_HABIT:
         operations.AddHabit(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"), conn)
+    case resources.ACT_PRINT_DAY_PLAN:
+        resources.Alf.PrintEntities(resources.PlannedItems{PlannedItems: operations.GetDayPlan(), Status: operations.GetStatus(), Sum: true}, conn)
     case resources.ACT_PRINT_TASKS:
         resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetTasks(), NoneAllowed: cmd.NoneAllowed, Status: operations.GetStatus(), Sum: true}, conn)
     case resources.ACT_PRINT_PERSONAL_TASKS:
@@ -184,6 +186,10 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
         resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetNextTasks(), NoneAllowed: cmd.NoneAllowed, Status: operations.GetStatus(), Sum: true}, conn)
     case resources.ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS:
         resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetUnscheduledTasks(), NoneAllowed: cmd.NoneAllowed, Status: operations.GetStatus(), Sum: true}, conn)
+    case resources.ACT_PRINT_GOAL_TASKS:
+        resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetGoalTasks(cmd.ID), NoneAllowed: cmd.NoneAllowed, Status: operations.GetStatus(), Sum: true}, conn)
+    case resources.ACT_PRINT_PROJECT_GOALS:
+        resources.Alf.PrintEntities(resources.Goals{Goals: operations.GetProjectGoals(cmd.ID), NoneAllowed: cmd.NoneAllowed, Status: operations.GetStatus()}, conn)
     case resources.ACT_PRINT_SHOPPING_TASKS:
         resources.Alf.PrintEntities(resources.Tasks{Tasks: operations.GetShoppingTasks(), NoneAllowed: cmd.NoneAllowed, Status: operations.GetStatus()}, conn)
     case resources.ACT_PRINT_WORK_NEXT_TASKS:
@@ -219,8 +225,12 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
     case resources.ACT_PRINT_REVIEW:
         resources.Alf.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}}, conn)
     case resources.ACT_EXPORT_SHOPPING_TASKS:
-        exporter.ExportShoppingTasks(resources.CFG_EXPORT_CONFIG_PATH)
-        resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"), conn)
+        err := exporter.ExportShoppingTasks(fmt.Sprintf("%s/%s", rutils.GetAppSupportFolderPath(), resources.CFG_EXPORT_CONFIG_PATH))
+        if err == nil {
+            resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"), conn)
+        } else {
+            resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_FAILURE, err), conn)
+        }
     case resources.ACT_DELETE_TASK:
         operations.DeleteTask(cmd.ID)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "task"), conn)
@@ -345,6 +355,8 @@ func addPeriod(repetition string, deadline *time.Time) *time.Time {
         return utils.GetTimePointer(deadline.Add(7 * 24 * time.Hour))
     case resources.HBT_REPETITION_MONTHLY:
         return utils.GetTimePointer(deadline.AddDate(0, 1, 0))
+    case resources.HBT_REPETITION_YEARLY:
+        return utils.GetTimePointer(deadline.AddDate(1, 0, 0))
     }
     return nil
 }

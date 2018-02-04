@@ -33,6 +33,7 @@ func (am *AlManager) Sync() {
 	for _, h := range habits {
 		am.times[fmt.Sprintf("%s-habit", h.AlarmTime.Format(resources.DATE_HOUR_MINUTE_FORMAT))] = &alTime{time: h.AlarmTime, title: "Time to grow"}
 	}
+	log.Println("syncing alarms")
 	am.resetTimer <- struct{}{}
 }
 
@@ -57,6 +58,7 @@ func (am *AlManager) Run() {
 		if nearestAlarm != nil {
 			timer.Reset(nearestAlarm.time.Sub(time.Now()))
 		}
+		log.Println("waiting for timer, reset or quit of alarm worker")
 		select {
 		case <-timer.C:
 			if nearestAlarm != nil {

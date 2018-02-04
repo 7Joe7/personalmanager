@@ -281,6 +281,10 @@ func GetIncompleteGoals() map[string]*resources.Goal {
 	return FilterGoals(false, func(g *resources.Goal) bool { return !g.Done })
 }
 
+func GetProjectGoals(id string) map[string]*resources.Goal {
+	return FilterGoals(false, func(g *resources.Goal) bool { return !g.Done && g.Project != nil && g.Project.Id == id })
+}
+
 func FilterGoals(shallow bool, filter func(*resources.Goal) bool) map[string]*resources.Goal {
 	goals := map[string]*resources.Goal{}
 	var goal *resources.Goal

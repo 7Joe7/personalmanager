@@ -86,6 +86,15 @@ func getModifyHabitFunc(h *resources.Habit, cmd *resources.Command, status *reso
 					h.AlarmTime = utils.GetTimePointer(h.AlarmTime.Add(time.Hour * -24))
 				}
 			}
+			if cmd.Estimate == "-" {
+				h.TimeEstimate = nil
+			} else if cmd.Estimate != "" {
+				dur, err := time.ParseDuration(cmd.Estimate)
+				if err != nil {
+					panic(err)
+				}
+				h.TimeEstimate = &dur
+			}
 			if cmd.DonePrevious {
 				previousActualStreak := h.ActualStreak
 				succeedHabit(h, removePeriod(h.Repetition, h.Deadline))
@@ -131,6 +140,8 @@ func countPointChange(h *resources.Habit, status *resources.Status, coefficient 
 		change *= 2
 	case resources.HBT_REPETITION_MONTHLY:
 		change *= 3
+	case resources.HBT_REPETITION_YEARLY:
+		change *= 4
 	}
 	if h.Done {
 		status.Score += change
@@ -163,6 +174,8 @@ func addPeriod(repetition string, deadline *time.Time) *time.Time {
 		return utils.GetTimePointer(deadline.Add(7 * 24 * time.Hour))
 	case resources.HBT_REPETITION_MONTHLY:
 		return utils.GetTimePointer(deadline.AddDate(0, 1, 0))
+	case resources.HBT_REPETITION_YEARLY:
+		return utils.GetTimePointer(deadline.AddDate(1, 0, 0))
 	}
 	return nil
 }
@@ -178,6 +191,8 @@ func removePeriod(repetition string, deadline *time.Time) *time.Time {
 		return utils.GetTimePointer(deadline.Add(-7 * 24 * time.Hour))
 	case resources.HBT_REPETITION_MONTHLY:
 		return utils.GetTimePointer(deadline.AddDate(0, -1, 0))
+	case resources.HBT_REPETITION_YEARLY:
+		return utils.GetTimePointer(deadline.AddDate(1, 0, 0))
 	}
 	return nil
 }
@@ -243,6 +258,9 @@ func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) fun
 }
 
 func getNumberOfMissedDeadlines(h *resources.Habit) int {
+	if h.Deadline == nil {
+		return 0
+	}
 	return (int(time.Now().Sub(*(h.Deadline)).Hours()) / utils.GetDurationForRepetitionPeriod(h.Repetition)) + 1
 }
 
@@ -287,6 +305,13 @@ func addHabit(cmd *resources.Command) {
 	if cmd.HabitRepetitionGoal != -1 {
 		h.Limit = cmd.HabitRepetitionGoal
 	}
+	if cmd.Estimate != "" {
+		dur, err := time.ParseDuration(cmd.Estimate)
+		if err != nil {
+			panic(err)
+		}
+		h.TimeEstimate = &dur
+	}
 	if cmd.ActiveFlag {
 		activateHabit(h, cmd.Repetition)
 		if cmd.Repetition != resources.HBT_REPETITION_DAILY {
@@ -299,7 +324,7 @@ func addHabit(cmd *resources.Command) {
 		if cmd.BasePoints != -1 {
 			h.BasePoints = cmd.BasePoints
 		}
-		if cmd.Alarm != "" {
+		if cmd.Alarm != "" && cmd.Alarm != "-" {
 			h.AlarmTime = utils.ParseTime(resources.DATE_HOUR_MINUTE_FORMAT, cmd.Alarm)
 			for h.AlarmTime.After(*h.Deadline) {
 				h.AlarmTime = utils.GetTimePointer(h.AlarmTime.Add(time.Hour * -24))

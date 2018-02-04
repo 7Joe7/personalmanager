@@ -36,7 +36,9 @@ func getModifyTaskFunc(t *resources.Task, cmd *resources.Command, status *resour
 		} else if cmd.Deadline != "" {
 			t.Deadline = utils.ParseTime(resources.DATE_FORMAT, cmd.Deadline)
 		}
-		if cmd.Estimate != "" {
+		if cmd.Estimate == "-" {
+			t.TimeEstimate = nil
+		} else if cmd.Estimate != "" {
 			dur, err := time.ParseDuration(cmd.Estimate)
 			if err != nil {
 				panic(err)
@@ -122,7 +124,7 @@ func getSyncTaskFunc() func(resources.Entity) func() {
 	return func(entity resources.Entity) func() {
 		return func() {
 			t := entity.(*resources.Task)
-			if t.Scheduled != resources.TASK_SCHEDULED_NEXT && t.Deadline != nil && t.Deadline.Before(time.Now().Add(time.Hour*24*4)) {
+			if t.Scheduled != resources.TASK_SCHEDULED_NEXT && t.Deadline != nil && t.Deadline.Before(time.Now().Add(time.Hour*24)) {
 				scheduleTask(resources.TASK_SCHEDULED_NEXT, t)
 			}
 		}
@@ -444,6 +446,12 @@ func getPersonalTasks() map[string]*resources.Task {
 func getUnscheduledTasks() map[string]*resources.Task {
 	return FilterTasks(func(t *resources.Task) bool {
 		return !t.Done && (t.Scheduled == "" || t.Scheduled == resources.TASK_NOT_SCHEDULED) && (t.Type == "" || t.Type == resources.TASK_TYPE_PERSONAL)
+	})
+}
+
+func getGoalTasks(id string) map[string]*resources.Task {
+	return FilterTasks(func(t *resources.Task) bool {
+		return !t.Done && (t.Goal != nil && t.Goal.Id == id)
 	})
 }
 

@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"log"
+
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/operations"
 	"github.com/7joe7/personalmanager/resources"
@@ -19,8 +21,8 @@ type exportConfig struct {
 	AdminEmailPassword string `json:"adminEmailPassword"`
 }
 
-func ExportShoppingTasks(cfgAddress string) {
-	exportTasks(cfgAddress)
+func ExportShoppingTasks(cfgAddress string) error {
+	return exportTasks(cfgAddress)
 }
 
 func SetEmail(email string) {
@@ -29,7 +31,7 @@ func SetEmail(email string) {
 
 // TODO change to exportEntities - add Export method to all entities
 // TODO allow to send somebody else
-func exportTasks(cfgAddress string) {
+func exportTasks(cfgAddress string) error {
 	tasks := map[string]*resources.Task{}
 	var email string
 	tr := db.NewTransaction()
@@ -49,8 +51,10 @@ func exportTasks(cfgAddress string) {
 	config := readExportConfig(cfgAddress)
 	err := smtp.SendMail(fmt.Sprintf("%s:%d", config.SmtpAddress, config.SmtpPort), smtp.PlainAuth("", config.AdminEmailAddress, config.AdminEmailPassword, config.SmtpAddress), config.AdminEmailAddress, []string{email}, []byte(message))
 	if err != nil {
-		panic(err)
+		log.Println("Error exporting shopping tasks:", err)
+		return err
 	}
+	return nil
 }
 
 func setEmail(email string) {

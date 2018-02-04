@@ -12,6 +12,7 @@ const (
 	MSG_MODIFY_SUCCESS = "Successfully modified %s."
 	MSG_SET_SUCCESS    = "Successfully set %s to %s."
 	MSG_EXPORT_SUCCESS = "Successfully exported %s."
+	MSG_EXPORT_FAILURE = "Export failed %v."
 	MSG_SYNC_SUCCESS   = "Successfully synchronized %s."
 
 	LOG_FILE_NAME        = "personal-manager.log"
@@ -20,8 +21,9 @@ const (
 	HBT_REPETITION_DAILY   = "Daily"
 	HBT_REPETITION_WEEKLY  = "Weekly"
 	HBT_REPETITION_MONTHLY = "Monthly"
+	HBT_REPETITION_YEARLY  = "Yearly"
 
-	CFG_EXPORT_CONFIG_PATH = "./export-config.json"
+	CFG_EXPORT_CONFIG_PATH = "export-config.json"
 
 	ICO_BLACK_ALT    = "./icons/black_alt@2x.png"
 	ICO_BLACK        = "./icons/black@2x.png"
@@ -87,10 +89,13 @@ const (
 	HBT_BASE_ORDER_MONTHLY = 1500
 
 	ACT_CREATE_TASK                      = "create-task"
+	ACT_PRINT_DAY_PLAN                   = "print-day-plan"
 	ACT_PRINT_TASKS                      = "print-tasks"
 	ACT_PRINT_PERSONAL_TASKS             = "print-personal-tasks"
 	ACT_PRINT_PERSONAL_NEXT_TASKS        = "print-next-tasks"
 	ACT_PRINT_PERSONAL_UNSCHEDULED_TASKS = "print-unscheduled-tasks"
+	ACT_PRINT_GOAL_TASKS                 = "print-goal-tasks"
+	ACT_PRINT_PROJECT_GOALS              = "print-project-goals"
 	ACT_PRINT_SHOPPING_TASKS             = "print-shopping-tasks"
 	ACT_PRINT_WORK_NEXT_TASKS            = "print-work-next-tasks"
 	ACT_PRINT_WORK_UNSCHEDULED_TASKS     = "print-work-unscheduled-tasks"

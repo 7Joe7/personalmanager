@@ -58,6 +58,10 @@ func synchronize(t resources.Transaction, backup bool) {
 			if err != nil {
 				return err
 			}
+			err = addBonusIfAllHabitsDone(t, resources.HBT_REPETITION_YEARLY, habitStatus)
+			if err != nil {
+				return err
+			}
 			status := &resources.Status{}
 			err = t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getSyncStatusFunc(status, habitStatus))
 			if err != nil {
@@ -67,7 +71,6 @@ func synchronize(t resources.Transaction, backup bool) {
 			if err != nil {
 				return err
 			}
-			resources.Alr.Sync()
 		}
 		return nil
 	})

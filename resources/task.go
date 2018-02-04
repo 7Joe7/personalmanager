@@ -36,6 +36,10 @@ func (t *Task) GetId() string {
 	return t.Id
 }
 
+func (t *Task) GetTimeEstimate() *time.Duration {
+	return t.TimeEstimate
+}
+
 func (t *Task) Load(tr Transaction) error {
 	if t.Project != nil {
 		err := tr.RetrieveEntity(DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(t.Project.Id), t.Project, true)
@@ -58,26 +62,54 @@ func (t *Task) Load(tr Transaction) error {
 }
 
 func (t *Task) Less(entity Entity) bool {
-	otherTask := entity.(*Task)
-	if t.InProgress != otherTask.InProgress {
-		return t.InProgress
+	switch entity.(type) {
+	case *Task:
+		otherTask := entity.(*Task)
+		if t.InProgress != otherTask.InProgress {
+			return t.InProgress
+		}
+		if t.Done != otherTask.Done {
+			return !t.Done
+		}
+		if (t.Goal != nil && t.Goal.Active) != (otherTask.Goal != nil && otherTask.Goal.Active) {
+			return t.Goal != nil && t.Goal.Active
+		}
+		if t.BasePoints != otherTask.BasePoints {
+			return t.BasePoints > otherTask.BasePoints
+		}
+		if (t.Deadline != nil) != (otherTask.Deadline != nil) {
+			return t.Deadline != nil
+		}
+		if t.Deadline != nil && t.Deadline.Day() != otherTask.Deadline.Day() {
+			return t.Deadline.Before(*otherTask.Deadline)
+		}
+		if (t.TimeEstimate == nil) != (otherTask.TimeEstimate == nil) {
+			return t.TimeEstimate != nil
+		}
+		if t.TimeEstimate != nil && t.TimeEstimate.Minutes() != otherTask.TimeEstimate.Minutes() {
+			return t.TimeEstimate.Minutes() < otherTask.TimeEstimate.Minutes()
+		}
+		return t.Name < otherTask.Name
+	case *Habit:
+		otherHabit := entity.(*Habit)
+		if t.InProgress {
+			return true
+		}
+		if otherHabit.Repetition == HBT_REPETITION_DAILY {
+			return false
+		}
+		if t.BasePoints != otherHabit.BasePoints {
+			return t.BasePoints > otherHabit.BasePoints
+		}
+		if (t.TimeEstimate == nil) != (otherHabit.TimeEstimate == nil) {
+			return t.TimeEstimate != nil
+		}
+		if t.TimeEstimate != nil && t.TimeEstimate.Minutes() != otherHabit.TimeEstimate.Minutes() {
+			return t.TimeEstimate.Minutes() < otherHabit.TimeEstimate.Minutes()
+		}
+		return false
 	}
-	if t.Done != otherTask.Done {
-		return !t.Done
-	}
-	if (t.Goal != nil && t.Goal.Active) != (otherTask.Goal != nil && otherTask.Goal.Active) {
-		return t.Goal != nil && t.Goal.Active
-	}
-	if t.BasePoints != otherTask.BasePoints {
-		return t.BasePoints > otherTask.BasePoints
-	}
-	if (t.Deadline != nil) != (otherTask.Deadline != nil) {
-		return t.Deadline != nil
-	}
-	if t.Deadline != nil && t.Deadline.Day() != otherTask.Deadline.Day() {
-		return t.Deadline.Before(*otherTask.Deadline)
-	}
-	return t.Name < otherTask.Name
+	return false
 }
 
 func (t *Task) MarshalJSON() ([]byte, error) {
@@ -109,7 +141,7 @@ func (t *Task) Export() string {
 	return result
 }
 
-func (t *Task) getItem(id string) *AlfredItem {
+func (t *Task) GetAlfredItem(id string) *AlfredItem {
 	var subtitle string
 	var comma bool
 

@@ -83,7 +83,7 @@ func (g *Goal) MarshalJSON() ([]byte, error) {
 	return json.Marshal(mGoal(*g))
 }
 
-func (g *Goal) getItem(id string) *AlfredItem {
+func (g *Goal) GetAlfredItem(id string) *AlfredItem {
 	var iconPath string
 	switch {
 	case g.Done:

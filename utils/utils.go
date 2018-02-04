@@ -33,8 +33,9 @@ func getDurationForRepetitionPeriod(repetition string) int {
 		return int(time.Duration(int64(604800000000000)).Hours())
 	case "Monthly": // approximation 1814400000000000
 		return int(time.Duration(int64(2592000000000000)).Hours())
+	default:
+		return 1
 	}
-	return 0
 }
 
 func parseTime(format, deadline string) *time.Time {

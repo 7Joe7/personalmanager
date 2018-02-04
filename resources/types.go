@@ -8,6 +8,13 @@ type Items struct {
 	Items []*AlfredItem `json:"items"`
 }
 
+type PlannedItems struct {
+	PlannedItems map[string]PlannedItem
+	NoneAllowed  bool
+	Status       *Status
+	Sum          bool
+}
+
 type Tasks struct {
 	Tasks       map[string]*Task
 	NoneAllowed bool

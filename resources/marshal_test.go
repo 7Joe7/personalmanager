@@ -43,9 +43,9 @@ var (
 
 	testHabits              = Habits{Habits: map[string]*Habit{"testHabitActive": testHabitActive, "testHabitDone": testHabitDone, "testHabitNonActive": testHabitNonActive}}
 	expectedEmptyHabitsJson = `{"items":[{"title":"There are no habits.","valid":false,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`
-	expectedHabitsJson      = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, deadline 13.8.2017, points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}}]}`)
+	expectedHabitsJson      = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, deadline %s, points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}}]}`, testDeadlineFormatted)
 
-	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, deadline 13.8.2017, points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"No habit","arg":"-","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`)
+	expectedNoneHabitsJson = fmt.Sprintf(`{"items":[{"title":"testing active habit","arg":"testHabitActive","subtitle":"7/18, actual 3, points 8","valid":true,"icon":{"path":"./icons/red@2x.png"}},{"title":"testing non active habit","arg":"testHabitNonActive","subtitle":"5/15","valid":true,"icon":{"path":"./icons/black@2x.png"}},{"title":"testing done habit","arg":"testHabitDone","subtitle":"2/4, actual 1, deadline %s, points 4","valid":true,"icon":{"path":"./icons/green@2x.png"}},{"title":"No habit","arg":"-","valid":true,"icon":{"path":"./icons/black@2x.png"},"mods":{"ctrl":{"valid":false,"subtitle":""},"alt":{"valid":false,"subtitle":""},"cmd":{"valid":false,"subtitle":""},"Fn":{"valid":false,"subtitle":""},"Shift":{"valid":false,"subtitle":""}}}]}`, testDeadlineFormatted)
 	testHabitsOrdering     = []string{"testHabitActive", "testHabitNonActive", "testHabitDone"}
 
 	testItems             = Items{[]*AlfredItem{(&Review{Repetition: HBT_REPETITION_WEEKLY, Deadline: utils.GetFirstSaturday()}).GetItem()}}
@@ -56,7 +56,7 @@ func TestOrdering(t *testing.T) {
 	tHabits := Habits{Habits: map[string]*Habit{"testHabitActive": testHabitActive, "testHabitDone": testHabitDone, "testHabitNonActive": testHabitNonActive}}
 	items := alfredItems{}
 	for id, habit := range tHabits.Habits {
-		items = append(items, habit.getItem(id))
+		items = append(items, habit.GetAlfredItem(id))
 	}
 	sort.Sort(items)
 	fmt.Println(items)
@@ -94,22 +94,22 @@ func TestMarshalTasks(t *testing.T) {
 }
 
 func TestGetTaskItem(t *testing.T) {
-	ai := testTask.getItem(testId)
+	ai := testTask.GetAlfredItem(testId)
 	testCommonAttr(ai, true, testId, testTask.Name, fmt.Sprintf("%s; 0; Spent: 0h0m/?", testTask.Project.Name), "./icons/yellow@2x.png", t)
 }
 
 func TestGetProjectItem(t *testing.T) {
-	ai := testProject.getItem(testId)
+	ai := testProject.GetAlfredItem(testId)
 	testCommonAttr(ai, true, testId, testProject.Name, fmt.Sprintf(SUB_FORMAT_PROJECT, "0/0 tasks, 0/0 goals"), "./icons/black@2x.png", t)
 }
 
 func TestGetTagItem(t *testing.T) {
-	ai := testTag.getItem(testId)
+	ai := testTag.GetAlfredItem(testId)
 	testCommonAttr(ai, true, testId, testTag.Name, fmt.Sprintf(SUB_FORMAT_TAG), "", t)
 }
 
 func TestGetGoalItem(t *testing.T) {
-	ai := testGoal.getItem(testId)
+	ai := testGoal.GetAlfredItem(testId)
 	var doneTasksNumber int
 	for i := 0; i < len(testGoal.Tasks); i++ {
 		if testGoal.Tasks[i].Done {
@@ -120,13 +120,13 @@ func TestGetGoalItem(t *testing.T) {
 }
 
 func TestGetHabitNonActiveItem(t *testing.T) {
-	ai := testHabitNonActive.getItem(testId)
+	ai := testHabitNonActive.GetAlfredItem(testId)
 	testCommonAttr(ai, true, testId, testHabitNonActive.Name, fmt.Sprintf(SUB_FORMAT_NON_ACTIVE_HABIT,
 		testHabitNonActive.Successes, testHabitNonActive.Tries), ICO_BLACK, t)
 }
 
 func TestGetHabitActiveItem(t *testing.T) {
-	ai := testHabitActive.getItem(testId)
+	ai := testHabitActive.GetAlfredItem(testId)
 	testCommonAttr(ai, true, testId, testHabitActive.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_DAILY_HABIT,
 		testHabitActive.Successes, testHabitActive.Tries,
 		testHabitActive.ActualStreak,
@@ -134,14 +134,14 @@ func TestGetHabitActiveItem(t *testing.T) {
 }
 
 func TestGetHabitDoneItem(t *testing.T) {
-	ai := testHabitDone.getItem(testId)
+	ai := testHabitDone.GetAlfredItem(testId)
 	testCommonAttr(ai, true, testId, testHabitDone.Name, fmt.Sprintf(SUB_FORMAT_ACTIVE_NOT_DAILY,
 		testHabitDone.Successes, testHabitDone.Tries, testHabitDone.ActualStreak,
 		testHabitDone.Deadline.Format(DATE_FORMAT), testHabitDone.BasePoints), ICO_GREEN, t)
 }
 
 func TestGetStatusItem(t *testing.T) {
-	ai := testStatus.getItem()
+	ai := testStatus.GetAlfredItem()
 	testCommonAttr(ai, false, "", fmt.Sprintf(NAME_FORMAT_STATUS, testStatus.Score, testStatus.Today, testStatus.Yesterday), "", ICO_HABIT, t)
 }
 

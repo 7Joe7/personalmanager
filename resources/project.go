@@ -77,7 +77,7 @@ func (p *Project) MarshalJSON() ([]byte, error) {
 	return json.Marshal(mProject(*p))
 }
 
-func (p *Project) getItem(id string) *AlfredItem {
+func (p *Project) GetAlfredItem(id string) *AlfredItem {
 	var iconPath string
 	switch {
 	case p.Done:

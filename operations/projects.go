@@ -86,7 +86,7 @@ func modifyProject(cmd *resources.Command) {
 	project := &resources.Project{}
 	tr := db.NewTransaction()
 	tr.Add(func() error {
-		return tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(cmd.ProjectID), false, project, getModifyProjectFunc(project, cmd, tr))
+		return tr.ModifyEntity(resources.DB_DEFAULT_PROJECTS_BUCKET_NAME, []byte(cmd.ID), false, project, getModifyProjectFunc(project, cmd, tr))
 	})
 	tr.Execute()
 }

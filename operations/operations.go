@@ -1,8 +1,13 @@
 package operations
 
 import (
+	"github.com/7joe7/personalmanager/operations/goals"
 	"github.com/7joe7/personalmanager/resources"
 )
+
+func GetDayPlan() map[string]resources.PlannedItem {
+	return getDayPlan()
+}
 
 func GetReview() *resources.Review {
 	return getReview()
@@ -70,6 +75,14 @@ func GetNextTasks() map[string]*resources.Task {
 
 func GetUnscheduledTasks() map[string]*resources.Task {
 	return getUnscheduledTasks()
+}
+
+func GetGoalTasks(id string) map[string]*resources.Task {
+	return getGoalTasks(id)
+}
+
+func GetProjectGoals(id string) map[string]*resources.Goal {
+	return goals.GetProjectGoals(id)
 }
 
 func GetShoppingTasks() map[string]*resources.Task {
