@@ -101,11 +101,12 @@ func getModifyGoalFunc(g *resources.Goal, cmd *resources.Command, tr resources.T
 				resources.Abr.AddToActivePorts(g.Name, resources.ANY_CMD_CYAN, resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
 			}
 		}
+		status := &resources.Status{}
 		if cmd.DoneFlag {
 			var scoreChange int
 			for i := 0; i < len(g.Tasks); i++ {
 				if g.Tasks[i].Done {
-					scoreChange += g.Tasks[i].CountScoreChange()
+					scoreChange += g.Tasks[i].CountScoreChange(status)
 				}
 			}
 			if g.Done {
@@ -120,7 +121,6 @@ func getModifyGoalFunc(g *resources.Goal, cmd *resources.Command, tr resources.T
 					resources.Abr.RemoveAndQuit(resources.DB_DEFAULT_GOALS_BUCKET_NAME, g.Id, tr)
 				}
 			}
-			status := &resources.Status{}
 			err = tr.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, func() {
 				status.Score += scoreChange
 				status.Today += scoreChange
@@ -279,6 +279,10 @@ func GetNonActiveGoals() map[string]*resources.Goal {
 
 func GetIncompleteGoals() map[string]*resources.Goal {
 	return FilterGoals(false, func(g *resources.Goal) bool { return !g.Done })
+}
+
+func GetDoneGoals() map[string]*resources.Goal {
+	return FilterGoals(false, func(g *resources.Goal) bool { return g.Done })
 }
 
 func GetProjectGoals(id string) map[string]*resources.Goal {

@@ -115,7 +115,6 @@ func main() {
     <-c
     signal.Stop(c)
     close(c)
-    os.Exit(0)
 }
 
 func handleMessage(conn net.Conn) error {
@@ -214,6 +213,8 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
         resources.Alf.PrintEntities(resources.Goals{goals.GetNonActiveGoals(), cmd.NoneAllowed, operations.GetStatus()}, conn)
     case resources.ACT_PRINT_INCOMPLETE_GOALS:
         resources.Alf.PrintEntities(resources.Goals{goals.GetIncompleteGoals(), cmd.NoneAllowed, operations.GetStatus()}, conn)
+    case resources.ACT_PRINT_DONE_GOALS:
+        resources.Alf.PrintEntities(resources.Goals{goals.GetDoneGoals(), cmd.NoneAllowed, operations.GetStatus()}, conn)
     case resources.ACT_PRINT_HABITS:
         if cmd.ActiveFlag {
             resources.Alf.PrintEntities(resources.Habits{operations.GetActiveHabits(), cmd.NoneAllowed, operations.GetStatus(), true}, conn)

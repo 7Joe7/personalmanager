@@ -100,9 +100,10 @@ func (t *Tag) Less(entity Entity) bool {
 }
 
 type Status struct {
-	Score     int
-	Yesterday int
-	Today     int
+	Score         int
+	Yesterday     int
+	Today         int
+	WorkDoneToday int `json:"-"`
 }
 
 func (s *Status) SetId(id string) {}

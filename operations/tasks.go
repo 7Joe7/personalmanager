@@ -60,13 +60,15 @@ func getModifyTaskFunc(t *resources.Task, cmd *resources.Command, status *resour
 			}
 		}
 		if cmd.DoneFlag {
-			change := t.CountScoreChange()
+			change := t.CountScoreChange(status)
 			if t.Done {
 				t.Done = false
+				t.DoneTime = nil
 				status.Score -= change
 				status.Today -= change
 			} else {
 				t.Done = true
+				t.DoneTime = utils.GetTimePointer(time.Now())
 				if t.InProgress {
 					stopProgress(t)
 				}
@@ -366,6 +368,35 @@ func modifyTask(cmd *resources.Command) {
 				return err
 			}
 			cmd.BasePoints = task.Goal.Priority
+		}
+		lastSync := string(t.GetValue(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_LAST_SYNC_KEY))
+		tasksDoneToday := map[string]*resources.Task{}
+		var ts *resources.Task
+		getNewEntity := func() resources.Entity {
+			ts = &resources.Task{}
+			return ts
+		}
+		addEntity := func() { tasksDoneToday[task.Id] = ts }
+		t.FilterEntities(resources.DB_DEFAULT_TASKS_BUCKET_NAME, true, addEntity, getNewEntity, func() bool {
+			if !ts.Done || ts.DoneTime == nil {
+				return false
+			}
+			if lastSync == "" {
+				return true
+			}
+			lastSyncTime, err := time.Parse("Mon Jan 2 15:04:05 -0700 MST 2006", lastSync)
+			if err != nil {
+				panic(err)
+			}
+			if ts.DoneTime.Before(lastSyncTime) {
+				return false
+			}
+			return ts.DoneTime.Before(lastSyncTime.AddDate(0, 0, 1))
+		})
+		for _, taskDoneToday := range tasksDoneToday {
+			if taskDoneToday.TimeEstimate != nil {
+				changeStatus.WorkDoneToday += int(taskDoneToday.TimeEstimate.Hours())
+			}
 		}
 		err = t.ModifyEntity(resources.DB_DEFAULT_TASKS_BUCKET_NAME, []byte(cmd.ID), false, task, getModifyTaskFunc(task, cmd, changeStatus))
 		if err != nil {

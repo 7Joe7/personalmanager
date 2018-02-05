@@ -1,5 +1,9 @@
 package resources
 
+import (
+	"encoding/json"
+)
+
 type Command struct {
 	Action              string `json:"action,omitempty"`
 	ID                  string `json:"id,omitempty"`
@@ -24,4 +28,12 @@ type Command struct {
 	LearnedFlag         bool   `json:"learned_flag,omitempty"`
 	BasePoints          int    `json:"base_points,omitempty"`
 	HabitRepetitionGoal int    `json:"habit_repetition_goal,omitempty"`
+}
+
+func (cmd *Command) String() string {
+	jsonCmd, err := json.Marshal(cmd)
+	if err != nil {
+		return "unable to marshal command"
+	}
+	return string(jsonCmd)
 }

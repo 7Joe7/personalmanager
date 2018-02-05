@@ -232,10 +232,14 @@ func (t *Task) GetAlfredItem(id string) *AlfredItem {
 		entity:   t}
 }
 
-func (t *Task) CountScoreChange() int {
+func (t *Task) CountScoreChange(status *Status) int {
 	change := t.BasePoints * 10
 	if t.TimeEstimate != nil {
 		change += int(t.TimeEstimate.Minutes()) * t.BasePoints
 	}
-	return change
+	koef := 1
+	for status.WorkDoneToday > koef {
+		koef *= 2
+	}
+	return change * koef
 }

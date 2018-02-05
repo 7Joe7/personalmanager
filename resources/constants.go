@@ -118,6 +118,7 @@ const (
 	ACT_PRINT_ACTIVE_GOALS               = "print-active-goals"
 	ACT_PRINT_NON_ACTIVE_GOALS           = "print-non-active-goals"
 	ACT_PRINT_INCOMPLETE_GOALS           = "print-incomplete-goals"
+	ACT_PRINT_DONE_GOALS                 = "print-done-goals"
 	ACT_DELETE_GOAL                      = "delete-goal"
 	ACT_MODIFY_GOAL                      = "modify-goal"
 	ACT_CREATE_HABIT                     = "create-habit"
@@ -153,6 +154,7 @@ var (
 	DB_DEFAULT_PROJECTS_BUCKET_NAME = []byte("default.projects")
 	DB_DEFAULT_HABITS_BUCKET_NAME   = []byte("default.habits")
 	DB_DEFAULT_GOALS_BUCKET_NAME    = []byte("default.goals")
+    DB_DEFAULT_POINTS_BUCKET_NAME   = []byte("default.points")
 
 	BUCKETS_TO_INTIALIZE = [][]byte{
 		DB_DEFAULT_BASIC_BUCKET_NAME,
@@ -160,7 +162,8 @@ var (
 		DB_DEFAULT_TAGS_BUCKET_NAME,
 		DB_DEFAULT_TASKS_BUCKET_NAME,
 		DB_DEFAULT_GOALS_BUCKET_NAME,
-		DB_DEFAULT_HABITS_BUCKET_NAME}
+		DB_DEFAULT_HABITS_BUCKET_NAME,
+        DB_DEFAULT_POINTS_BUCKET_NAME}
 
 	DB_LAST_ID_KEY            = []byte("last.id")
 	DB_LAST_SYNC_KEY          = []byte("last.sync")

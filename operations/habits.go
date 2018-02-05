@@ -214,18 +214,22 @@ func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) fun
 					h.Done = true
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
-					h.Deadline = addPeriod(h.Repetition, h.Deadline)
 					if h.AlarmTime != nil {
-						h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+						for h.AlarmTime.Before(*h.Deadline) {
+							h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+						}
 					}
+					h.Deadline = addPeriod(h.Repetition, h.Deadline)
 				} else if h.Negative && h.Limit >= h.Count {
 					h.Tries += 1
 					succeedHabit(h, h.Deadline)
 					changeStatus.Score += h.ActualStreak * h.ActualStreak * h.BasePoints
-					h.Deadline = addPeriod(h.Repetition, h.Deadline)
 					if h.AlarmTime != nil {
-						h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+						for h.AlarmTime.Before(*h.Deadline) {
+							h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+						}
 					}
+					h.Deadline = addPeriod(h.Repetition, h.Deadline)
 				} else {
 					numberOfMissedDeadlines := getNumberOfMissedDeadlines(h)
 					for i := 0; i < numberOfMissedDeadlines; i++ {
@@ -240,10 +244,12 @@ func getSyncHabitFunc(changeStatus *resources.Status) func(resources.Entity) fun
 							failHabit(h)
 							changeStatus.Score -= h.ActualStreak * h.ActualStreak * h.BasePoints
 						}
-						h.Deadline = addPeriod(h.Repetition, h.Deadline)
 						if h.AlarmTime != nil {
-							h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+							for h.AlarmTime.Before(*h.Deadline) {
+								h.AlarmTime = addPeriod(h.Repetition, h.AlarmTime)
+							}
 						}
+						h.Deadline = addPeriod(h.Repetition, h.Deadline)
 					}
 					h.Done = false
 					h.Tries += numberOfMissedDeadlines
