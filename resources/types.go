@@ -8,6 +8,18 @@ type Items struct {
 	Items []*AlfredItem `json:"items"`
 }
 
+type PointStats struct {
+	PointStats map[string]*PointStat
+	Status     *Status
+	Sum        bool
+}
+
+type PointStatsSort []*PointStat
+
+func (ps PointStatsSort) Len() int           { return len(ps) }
+func (ps PointStatsSort) Swap(i, j int)      { ps[i], ps[j] = ps[j], ps[i] }
+func (ps PointStatsSort) Less(i, j int) bool { return ps[i] != nil && ps[i].Id.Before(ps[j].Id) }
+
 type PlannedItems struct {
 	PlannedItems map[string]PlannedItem
 	NoneAllowed  bool

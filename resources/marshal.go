@@ -8,6 +8,22 @@ import (
 	"github.com/7joe7/personalmanager/utils"
 )
 
+func (ps PointStats) MarshalJSON() ([]byte, error) {
+	items := alfredItems{}
+	for id, t := range ps.PointStats {
+		items = append(items, t.GetAlfredItem(id))
+	}
+	sort.Sort(items)
+	if ps.Sum {
+		items = append(alfredItems{&AlfredItem{
+			Name:  fmt.Sprintf("Count: %d, score: %d", len(ps.PointStats), ps.Status.Score),
+			Valid: false,
+			Icon:  NewAlfredIcon(ICO_BLACK),
+			Mods:  getEmptyMods()}}, items...)
+	}
+	return marshalItems(items)
+}
+
 // MarshalJSON for PlannedItems
 func (pi PlannedItems) MarshalJSON() ([]byte, error) {
 	items := alfredItems{}

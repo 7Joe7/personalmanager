@@ -5,6 +5,7 @@ import "io"
 type Transaction interface {
 	GetValue(bucketName, key []byte) []byte
 	SetValue(bucketName, key, value []byte) error
+	GetValues(bucketName []byte) (map[string]string, error)
 	ModifyValue(bucketName, key []byte, modify func([]byte) []byte) error
 	EnsureValue(bucketName, key, value []byte) error
 	EnsureEntity(bucketName, key []byte, entity Entity) error

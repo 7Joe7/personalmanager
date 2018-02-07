@@ -3,6 +3,9 @@ package operations
 import (
 	"time"
 
+	"fmt"
+	"strconv"
+
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
 	rutils "github.com/7joe7/personalmanager/resources/utils"
@@ -402,7 +405,35 @@ func modifyTask(cmd *resources.Command) {
 		if err != nil {
 			return err
 		}
-		return t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getAddScoreFunc(status, changeStatus))
+		err = t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getAddScoreFunc(status, changeStatus))
+		if err != nil {
+			return err
+		}
+		if err := t.ModifyValue(resources.DB_DEFAULT_POINTS_BUCKET_NAME, []byte(time.Now().Format("2006-01-02")), func(formerValue []byte) []byte {
+			if len(formerValue) == 0 {
+				return []byte(fmt.Sprint(changeStatus.Today))
+			}
+			before, err := strconv.Atoi(string(formerValue))
+			if err != nil {
+				panic(err)
+			}
+			return []byte(fmt.Sprint(before + changeStatus.Today))
+		}); err != nil {
+			return err
+		}
+		if err := t.ModifyValue(resources.DB_DEFAULT_POINTS_BUCKET_NAME, []byte(time.Now().AddDate(0, 0, -1).Format("2006-01-02")), func(formerValue []byte) []byte {
+			if len(formerValue) == 0 {
+				return []byte(fmt.Sprint(changeStatus.Yesterday))
+			}
+			before, err := strconv.Atoi(string(formerValue))
+			if err != nil {
+				panic(err)
+			}
+			return []byte(fmt.Sprint(before + changeStatus.Yesterday))
+		}); err != nil {
+			return err
+		}
+		return nil
 	})
 	t.Execute()
 }

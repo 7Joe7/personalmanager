@@ -1,6 +1,10 @@
 package goals
 
 import (
+	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
 	rutils "github.com/7joe7/personalmanager/resources/utils"
@@ -126,6 +130,18 @@ func getModifyGoalFunc(g *resources.Goal, cmd *resources.Command, tr resources.T
 				status.Today += scoreChange
 			})
 			if err != nil {
+				panic(err)
+			}
+			if err := tr.ModifyValue(resources.DB_DEFAULT_POINTS_BUCKET_NAME, []byte(time.Now().Format("2006-01-02")), func(formerValue []byte) []byte {
+				if len(formerValue) == 0 {
+					return []byte(fmt.Sprint(scoreChange))
+				}
+				before, err := strconv.Atoi(string(formerValue))
+				if err != nil {
+					panic(err)
+				}
+				return []byte(fmt.Sprint(before + scoreChange))
+			}); err != nil {
 				panic(err)
 			}
 		}

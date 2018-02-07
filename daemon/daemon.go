@@ -175,6 +175,8 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
     case resources.ACT_CREATE_HABIT:
         operations.AddHabit(cmd)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_CREATE_SUCCESS, "habit"), conn)
+    case resources.ACT_PRINT_POINTS_STATS:
+        resources.Alf.PrintEntities(resources.PointStats{PointStats: operations.GetPointStats(), Status: operations.GetStatus(), Sum: true}, conn)
     case resources.ACT_PRINT_DAY_PLAN:
         resources.Alf.PrintEntities(resources.PlannedItems{PlannedItems: operations.GetDayPlan(), Status: operations.GetStatus(), Sum: true}, conn)
     case resources.ACT_PRINT_TASKS:

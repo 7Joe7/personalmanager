@@ -32,6 +32,20 @@ func (t *transaction) SetValue(bucketName, key, value []byte) error {
 	return t.tx.Bucket(bucketName).Put(key, value)
 }
 
+func (t *transaction) GetValues(bucketName []byte) (map[string]string, error) {
+	log.Printf(`Getting values:
+    bucketName: %s.`, string(bucketName))
+	values := map[string]string{}
+	err := t.tx.Bucket(bucketName).ForEach(func(k, v []byte) error {
+		values[string(k)] = string(v)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return values, nil
+}
+
 func (t *transaction) ModifyValue(bucketName, key []byte, modify func([]byte) []byte) error {
 	log.Printf(`Modifying value:
 	bucketName: %s,

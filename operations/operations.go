@@ -5,6 +5,10 @@ import (
 	"github.com/7joe7/personalmanager/resources"
 )
 
+func GetPointStats() map[string]*resources.PointStat {
+	return getPointStats()
+}
+
 func GetDayPlan() map[string]resources.PlannedItem {
 	return getDayPlan()
 }

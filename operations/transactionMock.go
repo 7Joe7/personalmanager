@@ -9,6 +9,7 @@ import (
 const (
 	GET_VALUE_CALLED_FORMAT         = "GetValue%s%s"
 	SET_VALUE_CALLED_FORMAT         = "SetValue%s%s%s"
+	GET_VALUES_CALLED_FORMAT        = "GetValues%s"
 	ENSURE_VALUE_CALLED_FORMAT      = "EnsureValue%s%s%v"
 	MODIFY_VALUE_CALLED_FORMAT      = "ModifyValue%s%s%v"
 	ENSURE_ENTITY_CALLED_FORMAT     = "EnsureEntity%s%s%v"
@@ -38,6 +39,11 @@ func (tm *transactionMock) GetValue(bucketName, key []byte) []byte {
 func (tm *transactionMock) SetValue(bucketName, key, value []byte) error {
 	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(SET_VALUE_CALLED_FORMAT, string(bucketName), string(key), string(value)))
 	return nil
+}
+
+func (tm *transactionMock) GetValues(bucketName []byte) (map[string]string, error) {
+	tm.functionsCalled = append(tm.functionsCalled, fmt.Sprintf(GET_VALUES_CALLED_FORMAT, string(bucketName)))
+	return nil, nil
 }
 
 func (tm *transactionMock) EnsureValue(bucketName, key, defaultValue []byte) error {

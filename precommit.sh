@@ -20,4 +20,4 @@ for i in ${PACKAGES[@]}; do
     fi
 done
 
-if [ $failed == true ]; then echo "Found formatting issues"; exit 1; fi
+if [ $failed == true ]; then echo "Found formatting issues"; exit 0; fi

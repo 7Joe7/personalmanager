@@ -5,6 +5,9 @@ import (
 
 	"log"
 
+	"fmt"
+	"strconv"
+
 	"github.com/7joe7/personalmanager/db"
 	"github.com/7joe7/personalmanager/resources"
 	"github.com/7joe7/personalmanager/utils"
@@ -388,6 +391,30 @@ func modifyHabit(cmd *resources.Command) {
 			return err
 		}
 		if err := t.ModifyEntity(resources.DB_DEFAULT_BASIC_BUCKET_NAME, resources.DB_ACTUAL_STATUS_KEY, true, status, getAddScoreFunc(status, habitStatus)); err != nil {
+			return err
+		}
+		if err := t.ModifyValue(resources.DB_DEFAULT_POINTS_BUCKET_NAME, []byte(time.Now().Format("2006-01-02")), func(formerValue []byte) []byte {
+			if len(formerValue) == 0 {
+				return []byte(fmt.Sprint(habitStatus.Today))
+			}
+			before, err := strconv.Atoi(string(formerValue))
+			if err != nil {
+				panic(err)
+			}
+			return []byte(fmt.Sprint(before + habitStatus.Today))
+		}); err != nil {
+			return err
+		}
+		if err := t.ModifyValue(resources.DB_DEFAULT_POINTS_BUCKET_NAME, []byte(time.Now().AddDate(0, 0, -1).Format("2006-01-02")), func(formerValue []byte) []byte {
+			if len(formerValue) == 0 {
+				return []byte(fmt.Sprint(habitStatus.Yesterday))
+			}
+			before, err := strconv.Atoi(string(formerValue))
+			if err != nil {
+				panic(err)
+			}
+			return []byte(fmt.Sprint(before + habitStatus.Yesterday))
+		}); err != nil {
 			return err
 		}
 		return nil
