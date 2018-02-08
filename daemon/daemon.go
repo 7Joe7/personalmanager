@@ -228,12 +228,7 @@ func handleCommand(cmd *resources.Command, conn net.Conn) error {
     case resources.ACT_PRINT_REVIEW:
         resources.Alf.PrintEntities(resources.Items{[]*resources.AlfredItem{operations.GetReview().GetItem()}}, conn)
     case resources.ACT_EXPORT_SHOPPING_TASKS:
-        err := exporter.ExportShoppingTasks(fmt.Sprintf("%s/%s", rutils.GetAppSupportFolderPath(), resources.CFG_EXPORT_CONFIG_PATH))
-        if err == nil {
-            resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_SUCCESS, "shopping tasks"), conn)
-        } else {
-            resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_EXPORT_FAILURE, err), conn)
-        }
+        resources.Alf.PrintResult(exporter.ExportShoppingTasks(), conn)
     case resources.ACT_DELETE_TASK:
         operations.DeleteTask(cmd.ID)
         resources.Alf.PrintResult(fmt.Sprintf(resources.MSG_DELETE_SUCCESS, "task"), conn)

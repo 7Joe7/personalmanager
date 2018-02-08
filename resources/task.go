@@ -134,9 +134,6 @@ func (t *Task) Export() string {
 	if t.Deadline != nil {
 		result += fmt.Sprintf("\nDeadline: %v", t.Deadline)
 	}
-	if t.Goal != nil {
-		result += "\nGoal: " + t.Goal.Name
-	}
 	result += "\n"
 	return result
 }
